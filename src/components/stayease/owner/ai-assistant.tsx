@@ -186,7 +186,7 @@ export default function AIAssistant() {
                   <div className={`max-w-[80%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${
                     msg.role === 'assistant'
                       ? 'bg-muted text-foreground rounded-tl-sm'
-                      : 'bg-brand-teal text-white rounded-tr-sm'
+                      : 'bg-primary text-primary-foreground rounded-tr-sm'
                   }`}>
                     {msg.content.split('\n').map((line, i) => (
                       <p key={i} className={line === '' ? 'h-2' : ''}>

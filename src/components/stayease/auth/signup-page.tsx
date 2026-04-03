@@ -512,7 +512,7 @@ export default function SignupPage() {
                       <button
                         type="button"
                         onClick={() => setCurrentView('TERMS')}
-                        className="text-brand-teal hover:text-brand-deep font-semibold"
+                        className="text-brand-teal hover:text-foreground font-semibold"
                       >
                         Terms of Service
                       </button>{' '}
@@ -520,7 +520,7 @@ export default function SignupPage() {
                       <button
                         type="button"
                         onClick={() => setCurrentView('PRIVACY')}
-                        className="text-brand-teal hover:text-brand-deep font-semibold"
+                        className="text-brand-teal hover:text-foreground font-semibold"
                       >
                         Privacy Policy
                       </button>
@@ -605,7 +605,7 @@ export default function SignupPage() {
           Already have an account?{' '}
           <button
             onClick={() => setCurrentView('LOGIN')}
-            className="text-brand-teal hover:text-brand-deep font-semibold"
+            className="text-brand-teal hover:text-foreground font-semibold"
           >
             Sign In
           </button>

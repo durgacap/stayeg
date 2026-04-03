@@ -58,7 +58,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const PRIORITY_COLORS: Record<string, string> = {
   LOW: 'bg-blue-100 text-blue-700',
-  MEDIUM: 'bg-brand-sage-light text-amber-700',
+  MEDIUM: 'bg-brand-sage-light text-amber-500',
   HIGH: 'bg-brand-teal/15 text-brand-teal',
   URGENT: 'bg-red-100 text-red-700',
 };

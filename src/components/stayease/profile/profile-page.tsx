@@ -319,8 +319,8 @@ export default function ProfilePage() {
       <div className="bg-gradient-to-br from-brand-deep via-brand-sage to-brand-teal relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-white rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-white rounded-full blur-3xl" />
+          <div className="absolute top-0 left-1/4 w-64 h-64 bg-foreground/5 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-foreground/5 rounded-full blur-3xl" />
         </div>
 
         <div className="relative max-w-4xl mx-auto px-4 pt-8 pb-16">
@@ -394,7 +394,7 @@ export default function ProfilePage() {
                 <Button
                   onClick={handleSaveProfile}
                   size="sm"
-                  className="bg-white text-brand-teal hover:bg-white/90 gap-1"
+                  className="bg-card text-brand-teal hover:bg-muted gap-1"
                 >
                   <Check className="size-4" />
                   Save

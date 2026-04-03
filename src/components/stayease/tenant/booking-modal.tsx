@@ -825,7 +825,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                 >
                   {/* PG & Bed Summary */}
                   <div className="bg-brand-teal/10 rounded-xl p-4 space-y-2">
-                    <h4 className="text-sm font-semibold text-brand-deep mb-1">Booking Summary</h4>
+                    <h4 className="text-sm font-semibold text-foreground mb-1">Booking Summary</h4>
                     <div className="flex justify-between">
                       <span className="text-sm text-muted-foreground">PG Name</span>
                       <span className="text-sm font-medium">{selectedPG?.name}</span>
@@ -876,7 +876,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
 
                   {/* Cost Breakdown */}
                   <div className="bg-brand-sage-light border border-brand-sage/20 rounded-xl p-4 space-y-2">
-                    <h4 className="text-sm font-semibold text-brand-deep mb-1 flex items-center gap-2">
+                    <h4 className="text-sm font-semibold text-foreground mb-1 flex items-center gap-2">
                       <Shield className="size-4" />
                       Cost Breakdown
                     </h4>
@@ -978,10 +978,10 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
 
                     <Separator className="bg-brand-sage/20/50" />
                     <div className="flex justify-between">
-                      <span className="text-base font-bold text-brand-deep">Total</span>
+                      <span className="text-base font-bold text-foreground">Total</span>
                       <div className="flex items-baseline gap-1">
                         <IndianRupee className="size-5 text-brand-teal" />
-                        <span className="text-xl font-bold text-brand-deep">{totalAmount.toLocaleString('en-IN')}</span>
+                        <span className="text-xl font-bold text-foreground">{totalAmount.toLocaleString('en-IN')}</span>
                       </div>
                     </div>
                   </div>

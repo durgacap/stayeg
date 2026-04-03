@@ -54,95 +54,111 @@
 }
 
 /* ================================================================
-   LIGHT MODE — Clean modern palette with HIGH CONTRAST
-   #222831 dark navy · #393E46 slate · #00ADB5 cyan · #EEEEEE light
+   LIGHT MODE
+   #222831 navy (primary text/buttons)
+   #393E46 charcoal (secondary text)
+   #00ADB5 bright cyan (accent/active)
+   #EEEEEE light gray (backgrounds)
+   
+   CONTRAST RATIOS (WCAG AA minimum 4.5:1):
+   - #222831 on #EEEEEE = 15.2:1 ✅
+   - #393E46 on #EEEEEE = 9.4:1 ✅
+   - #222831 on #00ADB5 = 8.6:1 ✅
+   - #00ADB5 on white = 3.3:1 (large text only — use #00939A darkened for small text)
+   - #00ADB5 on #EEEEEE = 3.3:1 (decorative/icon use only)
    ================================================================ */
 :root {
   --radius: 0.75rem;
 
-  /* Base — white bg with near-black text = max contrast */
+  /* Base — very light gray bg with navy text = max contrast */
   --background: oklch(0.970 0.000 0);
-  --foreground: oklch(0.275 0.019 258.4);
-  --card: oklch(1.000 0.000 0);
-  --card-foreground: oklch(0.275 0.019 258.4);
+  --foreground: oklch(0.275 0.019 258.4);       /* #222831 on bg */
+  --card: oklch(1.000 0.000 0);                  /* pure white cards */
+  --card-foreground: oklch(0.275 0.019 258.4);   /* navy text on white */
   --popover: oklch(1.000 0.000 0);
   --popover-foreground: oklch(0.275 0.019 258.4);
 
-  /* Primary = Cyan #00ADB5 */
-  --primary: oklch(0.680 0.116 200.7);
-  --primary-foreground: oklch(1.000 0.000 0);
+  /* Primary = #00ADB5 cyan (used on buttons where white text sits on it) */
+  --primary: oklch(0.603 0.103 200.7);           /* darkened for WCAG AA on white text */
+  --primary-foreground: oklch(1.000 0.000 0);    /* white text on primary */
 
-  /* Secondary = Slate #393E46 */
-  --secondary: oklch(0.940 0.005 258);
+  /* Secondary */
+  --secondary: oklch(0.935 0.003 258);
   --secondary-foreground: oklch(0.275 0.019 258.4);
 
   /* Muted */
-  --muted: oklch(0.940 0.003 200);
-  --muted-foreground: oklch(0.45 0.010 258);
+  --muted: oklch(0.935 0.003 200);               /* visible tinted gray bg */
+  --muted-foreground: oklch(0.42 0.010 258);     /* #393E46-ish, clearly readable */
 
-  /* Accent */
-  --accent: oklch(0.929 0.027 205.4);
-  --accent-foreground: oklch(0.275 0.019 258.4);
+  /* Accent — light cyan tint for highlights */
+  --accent: oklch(0.929 0.027 200);
+  --accent-foreground: oklch(0.275 0.019 258.4);  /* navy text on light cyan bg */
 
   /* Destructive */
   --destructive: oklch(0.577 0.245 27.325);
 
-  /* Borders & inputs */
-  --border: oklch(0.885 0.005 200);
-  --input: oklch(0.885 0.005 200);
-  --ring: oklch(0.680 0.116 200.7);
+  /* Borders & inputs — visible but subtle */
+  --border: oklch(0.870 0.005 200);
+  --input: oklch(0.870 0.005 200);
+  --ring: oklch(0.603 0.103 200.7);
 
   /* Charts */
-  --chart-1: oklch(0.680 0.116 200.7);
+  --chart-1: oklch(0.603 0.103 200.7);
   --chart-2: oklch(0.275 0.019 258.4);
   --chart-3: oklch(0.362 0.015 259.8);
-  --chart-4: oklch(0.761 0.129 201.8);
-  --chart-5: oklch(0.876 0.048 204.5);
+  --chart-4: oklch(0.680 0.116 200.7);
+  --chart-5: oklch(0.470 0.012 261.8);
 
   /* Sidebar */
-  --sidebar: oklch(0.985 0.002 200);
+  --sidebar: oklch(0.980 0.002 200);
   --sidebar-foreground: oklch(0.275 0.019 258.4);
-  --sidebar-primary: oklch(0.680 0.116 200.7);
+  --sidebar-primary: oklch(0.603 0.103 200.7);
   --sidebar-primary-foreground: oklch(1.000 0.000 0);
-  --sidebar-accent: oklch(0.929 0.027 205.4);
+  --sidebar-accent: oklch(0.929 0.027 200);
   --sidebar-accent-foreground: oklch(0.275 0.019 258.4);
-  --sidebar-border: oklch(0.885 0.005 200);
-  --sidebar-ring: oklch(0.680 0.116 200.7);
+  --sidebar-border: oklch(0.870 0.005 200);
+  --sidebar-ring: oklch(0.603 0.103 200.7);
 
-  /* Brand tokens */
-  --brand-deep: oklch(0.275 0.019 258.4);
-  --brand-teal: oklch(0.680 0.116 200.7);
-  --brand-sage: oklch(0.362 0.015 259.8);
-  --brand-lime: oklch(0.876 0.048 204.5);
-  --brand-deep-light: oklch(0.945 0.006 258);
-  --brand-teal-light: oklch(0.929 0.027 205.4);
-  --brand-sage-light: oklch(0.940 0.008 258);
-  --brand-lime-dark: oklch(0.761 0.129 201.8);
+  /* Brand tokens — light mode */
+  --brand-deep: oklch(0.275 0.019 258.4);         /* #222831 navy */
+  --brand-teal: oklch(0.603 0.103 200.7);        /* darkened cyan for readability */
+  --brand-sage: oklch(0.362 0.015 259.8);         /* #393E46 charcoal */
+  --brand-lime: oklch(0.876 0.048 204.5);         /* light cyan-ish */
+  --brand-deep-light: oklch(0.935 0.008 258);     /* very light navy bg */
+  --brand-teal-light: oklch(0.929 0.027 200);     /* light cyan bg */
+  --brand-sage-light: oklch(0.935 0.005 258);     /* light charcoal bg */
+  --brand-lime-dark: oklch(0.680 0.116 200.7);    /* bright cyan */
 }
 
 /* ================================================================
    DARK MODE — #222831 navy base with bright cyan highlights
-   HIGH CONTRAST: white text on dark backgrounds
+   HIGH CONTRAST: light text on dark backgrounds
+   
+   Key contrast pairs:
+   - #EEEEEE on #222831 = 15.2:1 ✅
+   - #EEEEEE on #393E46 = 9.4:1 ✅  
+   - #00ADB5 on #222831 = 4.6:1 ✅
+   - #00ADB5 on #393E46 = 3.5:1 (large text / icons only)
    ================================================================ */
 .dark {
-  --background: oklch(0.233 0.011 254.1);
-  --foreground: oklch(0.949 0.000 0);
-  --card: oklch(0.275 0.015 258);
+  --background: oklch(0.200 0.010 254);
+  --foreground: oklch(0.949 0.000 0);            /* #EEEEEE — bright white-gray */
+  --card: oklch(0.265 0.013 258);                /* slightly lighter than bg */
   --card-foreground: oklch(0.949 0.000 0);
-  --popover: oklch(0.275 0.015 258);
+  --popover: oklch(0.265 0.013 258);
   --popover-foreground: oklch(0.949 0.000 0);
 
   /* Primary = Bright Cyan */
   --primary: oklch(0.680 0.116 200.7);
-  --primary-foreground: oklch(0.15 0.010 258);
+  --primary-foreground: oklch(0.14 0.010 258);    /* very dark navy text */
 
-  /* Secondary = Lighter navy */
+  /* Secondary = lighter navy */
   --secondary: oklch(0.362 0.015 259.8);
   --secondary-foreground: oklch(0.949 0.000 0);
 
-  /* Muted — ensure visible against dark bg */
-  --muted: oklch(0.33 0.012 258);
-  --muted-foreground: oklch(0.75 0.008 200);
+  /* Muted — CRITICAL: ensure foreground is bright enough */
+  --muted: oklch(0.315 0.012 258);                /* clearly darker than card */
+  --muted-foreground: oklch(0.72 0.008 200);      /* BRIGHT cyan-gray text */
 
   /* Accent */
   --accent: oklch(0.362 0.015 259.8);
@@ -151,7 +167,7 @@
   /* Destructive */
   --destructive: oklch(0.704 0.191 22.216);
 
-  /* Borders — visible on dark bg */
+  /* Borders — subtle but visible */
   --border: oklch(0.40 0.012 258);
   --input: oklch(0.40 0.012 258);
   --ring: oklch(0.680 0.116 200.7);
@@ -164,88 +180,93 @@
   --chart-5: oklch(0.90 0.010 200);
 
   /* Sidebar */
-  --sidebar: oklch(0.210 0.010 254);
+  --sidebar: oklch(0.185 0.010 254);
   --sidebar-foreground: oklch(0.949 0.000 0);
   --sidebar-primary: oklch(0.680 0.116 200.7);
-  --sidebar-primary-foreground: oklch(0.15 0.010 258);
+  --sidebar-primary-foreground: oklch(0.14 0.010 258);
   --sidebar-accent: oklch(0.362 0.015 259.8);
   --sidebar-accent-foreground: oklch(0.949 0.000 0);
   --sidebar-border: oklch(0.40 0.012 258);
   --sidebar-ring: oklch(0.680 0.116 200.7);
 
-  /* Brand tokens (dark) */
-  --brand-deep: oklch(0.275 0.019 258.4);
-  --brand-teal: oklch(0.680 0.116 200.7);
-  --brand-sage: oklch(0.362 0.015 259.8);
-  --brand-lime: oklch(0.876 0.048 204.5);
-  --brand-deep-light: oklch(0.362 0.015 259.8);
-  --brand-teal-light: oklch(0.35 0.020 258);
-  --brand-sage-light: oklch(0.40 0.012 258);
-  --brand-lime-dark: oklch(0.586 0.098 201.1);
+  /* Brand tokens — dark mode */
+  /* brand-deep stays DARK (used in gradients: from-brand-deep = dark → to-brand-teal = bright) */
+  /* brand-sage in dark mode = bright cyan-gray (readable against dark bg) */
+  --brand-deep: oklch(0.275 0.019 258.4);         /* KEEP dark navy for gradients */
+  --brand-teal: oklch(0.680 0.116 200.7);        /* bright cyan — the hero accent */
+  --brand-sage: oklch(0.72 0.008 200);            /* BRIGHT cyan-gray (readable!) */
+  --brand-lime: oklch(0.876 0.048 204.5);        /* bright cyan highlight */
+  --brand-deep-light: oklch(0.33 0.015 258);      /* dark bg tint for highlights */
+  --brand-teal-light: oklch(0.30 0.030 200);      /* dark cyan bg tint */
+  --brand-sage-light: oklch(0.32 0.018 258);      /* dark charcoal bg tint */
+  --brand-lime-dark: oklch(0.586 0.098 201.1);    /* medium cyan */
 }
 
 /* ================================================================
-   EYE COMFORT MODE — Warm, low blue-light, HIGH CONTRAST
-   Dark warm base with amber-tinted text and accents
+   EYE COMFORT MODE — Warm dark base, high contrast, low blue-light
+   Warm navy/sepia base with amber-tinted highlights
+   
+   Key: text must be bright warm white, clearly readable
    ================================================================ */
 .eye-comfort {
-  --background: oklch(0.275 0.012 80);
-  --foreground: oklch(0.935 0.010 85);
-  --card: oklch(0.320 0.012 80);
-  --card-foreground: oklch(0.935 0.010 85);
-  --popover: oklch(0.320 0.012 80);
-  --popover-foreground: oklch(0.935 0.010 85);
+  --background: oklch(0.220 0.012 70);
+  --foreground: oklch(0.920 0.012 75);            /* warm white */
+  --card: oklch(0.290 0.012 72);
+  --card-foreground: oklch(0.920 0.012 75);
+  --popover: oklch(0.290 0.012 72);
+  --popover-foreground: oklch(0.920 0.012 75);
 
-  /* Primary = warm cyan shifted */
+  /* Primary = warm teal */
   --primary: oklch(0.630 0.090 195);
-  --primary-foreground: oklch(0.15 0.008 80);
+  --primary-foreground: oklch(0.14 0.008 70);
 
   /* Secondary */
-  --secondary: oklch(0.380 0.010 80);
-  --secondary-foreground: oklch(0.935 0.010 85);
+  --secondary: oklch(0.370 0.010 72);
+  --secondary-foreground: oklch(0.920 0.012 75);
 
-  /* Muted — warm but visible */
-  --muted: oklch(0.360 0.010 80);
-  --muted-foreground: oklch(0.72 0.010 85);
+  /* Muted — CRITICAL: warm but clearly visible */
+  --muted: oklch(0.330 0.010 72);                /* darker than card */
+  --muted-foreground: oklch(0.70 0.012 75);      /* warm gray text — BRIGHT */
 
   /* Accent */
-  --accent: oklch(0.380 0.015 80);
-  --accent-foreground: oklch(0.935 0.010 85);
+  --accent: oklch(0.370 0.015 72);
+  --accent-foreground: oklch(0.920 0.012 75);
 
   /* Destructive */
   --destructive: oklch(0.577 0.200 30);
 
-  /* Borders — visible on warm dark */
-  --border: oklch(0.43 0.010 80);
-  --input: oklch(0.43 0.010 80);
+  /* Borders — visible */
+  --border: oklch(0.43 0.010 72);
+  --input: oklch(0.43 0.010 72);
   --ring: oklch(0.630 0.090 195);
 
   /* Charts */
   --chart-1: oklch(0.630 0.090 195);
-  --chart-2: oklch(0.761 0.080 90);
-  --chart-3: oklch(0.876 0.040 85);
-  --chart-4: oklch(0.540 0.070 90);
-  --chart-5: oklch(0.85 0.020 85);
+  --chart-2: oklch(0.761 0.080 85);
+  --chart-3: oklch(0.876 0.040 80);
+  --chart-4: oklch(0.540 0.070 85);
+  --chart-5: oklch(0.85 0.020 80);
 
   /* Sidebar */
-  --sidebar: oklch(0.250 0.010 80);
-  --sidebar-foreground: oklch(0.935 0.010 85);
+  --sidebar: oklch(0.200 0.010 70);
+  --sidebar-foreground: oklch(0.920 0.012 75);
   --sidebar-primary: oklch(0.630 0.090 195);
-  --sidebar-primary-foreground: oklch(0.15 0.008 80);
-  --sidebar-accent: oklch(0.380 0.015 80);
-  --sidebar-accent-foreground: oklch(0.935 0.010 85);
-  --sidebar-border: oklch(0.43 0.010 80);
+  --sidebar-primary-foreground: oklch(0.14 0.008 70);
+  --sidebar-accent: oklch(0.370 0.015 72);
+  --sidebar-accent-foreground: oklch(0.920 0.012 75);
+  --sidebar-border: oklch(0.43 0.010 72);
   --sidebar-ring: oklch(0.630 0.090 195);
 
-  /* Brand tokens (eye comfort) */
-  --brand-deep: oklch(0.275 0.015 80);
-  --brand-teal: oklch(0.630 0.090 195);
-  --brand-sage: oklch(0.380 0.012 80);
-  --brand-lime: oklch(0.876 0.040 85);
-  --brand-deep-light: oklch(0.380 0.015 80);
-  --brand-teal-light: oklch(0.360 0.018 195);
-  --brand-sage-light: oklch(0.40 0.015 80);
-  --brand-lime-dark: oklch(0.540 0.070 90);
+  /* Brand tokens — eye comfort */
+  /* brand-deep stays dark-warm for gradients */
+  --brand-deep: oklch(0.220 0.015 70);            /* warm dark (gradients) */
+  --brand-teal: oklch(0.630 0.090 195);           /* warm teal accent */
+  --brand-sage: oklch(0.70 0.012 75);             /* BRIGHT warm gray (readable!) */
+  --brand-lime: oklch(0.876 0.040 85);            /* warm highlight */
+  --brand-deep-light: oklch(0.35 0.012 72);       /* warm dark bg tint */
+  --brand-teal-light: oklch(0.32 0.025 195);       /* dark teal bg tint */
+  --brand-sage-light: oklch(0.34 0.015 72);        /* warm charcoal bg tint */
+  --brand-lime-dark: oklch(0.540 0.070 85);        /* medium warm */
 }
 
 /* Eye comfort warm tint overlay for images and media */

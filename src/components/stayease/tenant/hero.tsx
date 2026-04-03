@@ -345,7 +345,7 @@ export default function HeroSection() {
               <FadeInSection key={item.step} delay={idx * 0.15}>
                 <Card className={`relative overflow-hidden border-0 shadow-lg hover:shadow-xl transition-shadow group ${item.bgColor}`}>
                   {/* Step number */}
-                  <div className="absolute top-4 right-4 text-6xl font-black text-gray-100/60 group-hover:text-gray-200/60 transition-colors select-none">
+                  <div className="absolute top-4 right-4 text-6xl font-black text-foreground/5 group-hover:text-foreground/10 transition-colors select-none">
                     {item.step}
                   </div>
                   <CardContent className="p-6 md:p-8 relative">
@@ -362,7 +362,7 @@ export default function HeroSection() {
 
           {/* Connector lines on desktop */}
           <div className="hidden md:flex items-center justify-center max-w-4xl mx-auto -mt-[calc(50%+2rem)] mb-8 pointer-events-none">
-            <div className="flex-1 border-t-2 border-dashed border-brand-teal/25 mx-8" />
+            <div className="flex-1 border-t-2 border-dashed border-brand-teal/30 mx-8" />
           </div>
         </div>
       </section>
@@ -748,7 +748,7 @@ export default function HeroSection() {
               <Button
                 onClick={() => setCurrentView('PG_LISTING')}
                 size="lg"
-                className="bg-card text-brand-deep hover:bg-brand-teal-light rounded-xl px-8 shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] font-semibold text-base"
+                className="bg-card text-foreground hover:bg-brand-teal-light rounded-xl px-8 shadow-lg transition-all hover:shadow-xl hover:scale-[1.02] font-semibold text-base"
               >
                 <Search className="size-5 mr-2" />
                 Find PG Now

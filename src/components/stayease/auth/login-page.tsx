@@ -275,7 +275,7 @@ export default function LoginPage() {
                             </Label>
                             <button
                               onClick={handleForgotPassword}
-                              className="text-xs text-brand-teal hover:text-brand-deep font-medium"
+                              className="text-xs text-brand-teal hover:text-foreground font-medium"
                             >
                               Forgot Password?
                             </button>
@@ -395,7 +395,7 @@ export default function LoginPage() {
                     Don&apos;t have an account?{' '}
                     <button
                       onClick={() => setCurrentView('SIGNUP')}
-                      className="text-brand-teal hover:text-brand-deep font-semibold"
+                      className="text-brand-teal hover:text-foreground font-semibold"
                     >
                       Sign Up
                     </button>
@@ -446,7 +446,7 @@ export default function LoginPage() {
 
                   <p className="text-center text-xs text-muted-foreground mb-5">
                     Didn&apos;t receive code?{' '}
-                    <button className="text-brand-teal font-semibold hover:text-brand-deep">
+                    <button className="text-brand-teal font-semibold hover:text-foreground">
                       Resend OTP
                     </button>
                   </p>

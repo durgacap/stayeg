@@ -774,7 +774,7 @@ export default function CommunityPage() {
               >
                 <button
                   onClick={() => setActiveTab('groups')}
-                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand-teal hover:text-brand-deep transition-colors"
+                  className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-brand-teal hover:text-foreground transition-colors"
                 >
                   Explore groups
                   <ArrowRight className="size-4" />
@@ -789,7 +789,7 @@ export default function CommunityPage() {
                   </p>
                   <button
                     onClick={() => setActiveTab('groups')}
-                    className="inline-flex items-center gap-1 text-sm font-medium text-brand-teal hover:text-brand-deep transition-colors"
+                    className="inline-flex items-center gap-1 text-sm font-medium text-brand-teal hover:text-foreground transition-colors"
                   >
                     Explore more
                     <ArrowRight className="size-3.5" />
