@@ -355,6 +355,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
     return (
       <Dialog open={open} onOpenChange={handleClose}>
         <DialogContent className="sm:max-w-md">
+          <DialogTitle className="sr-only">Login to Book</DialogTitle>
           <div className="py-8 text-center">
             <motion.div
               initial={{ scale: 0.8, opacity: 0 }}

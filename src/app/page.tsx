@@ -12,7 +12,7 @@ import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useAppStore } from '@/store/use-app-store';
 import { ThemeToggle } from '@/components/layout/theme-toggle';
 import HeroSection from '@/components/stayease/tenant/hero';
@@ -229,6 +229,7 @@ function TopHeader() {
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-72">
+              <SheetTitle className="sr-only">Navigation Menu</SheetTitle>
               <div className="mt-6 space-y-2">
                 {isLoggedIn ? (
                   <>
