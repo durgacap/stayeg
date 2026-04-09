@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -7,31 +7,29 @@ export async function GET(request: NextRequest) {
     const role = searchParams.get('role');
     const pgId = searchParams.get('pgId');
 
-    const where: Record<string, unknown> = {};
-    if (role) where.role = role;
-
     // If pgId provided, get tenants for that PG
     if (pgId) {
-      const bookings = await db.booking.findMany({
-        where: { pgId, status: { in: ['ACTIVE', 'CONFIRMED'] } },
-        include: {
-          user: { select: { id: true, name: true, email: true, phone: true, avatar: true, gender: true } },
-          bed: { select: { id: true, bedNumber: true, status: true } },
-        }
-      });
-      return NextResponse.json(bookings);
+      const { data: bookings, error } = await supabase
+        .from('bookings')
+        .select('*, user:users(id,name,email,phone,avatar,gender), bed:beds(id,bed_number,status)')
+        .in('status', ['ACTIVE', 'CONFIRMED'])
+        .eq('pg_id', pgId);
+
+      if (error) throw error;
+      return NextResponse.json(bookings || []);
     }
 
-    const users = await db.user.findMany({
-      where,
-      select: {
-        id: true, name: true, email: true, phone: true, role: true,
-        avatar: true, gender: true, isVerified: true, createdAt: true,
-      },
-      orderBy: { createdAt: 'desc' }
-    });
+    let query = supabase
+      .from('users')
+      .select('id,name,email,phone,role,avatar,gender,is_verified,created_at')
+      .order('created_at', { ascending: false });
 
-    return NextResponse.json(users);
+    if (role) query = query.eq('role', role);
+
+    const { data: users, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json(users || []);
   } catch (error) {
     console.error('GET /api/auth error:', error);
     return NextResponse.json({ error: 'Failed to fetch users' }, { status: 500 });
@@ -41,16 +39,20 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const user = await db.user.create({
-      data: {
+    const { data: user, error } = await supabase
+      .from('users')
+      .insert({
         name: body.name,
         email: body.email,
         phone: body.phone,
         role: body.role || 'TENANT',
         gender: body.gender,
-        isVerified: body.isVerified || false,
-      }
-    });
+        is_verified: body.isVerified || false,
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
     return NextResponse.json(user, { status: 201 });
   } catch (error) {
     console.error('POST /api/auth error:', error);

@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -8,25 +8,19 @@ export async function GET(request: NextRequest) {
     const pgId = searchParams.get('pgId');
     const status = searchParams.get('status');
 
-    const where: Record<string, unknown> = {};
-    if (userId) where.userId = userId;
-    if (pgId) where.pgId = pgId;
-    if (status) where.status = status;
+    let query = supabase
+      .from('payments')
+      .select('*, pg:pgs(id,name), user:users(id,name,email,phone,avatar)')
+      .order('created_at', { ascending: false });
 
-    const payments = await db.payment.findMany({
-      where,
-      include: {
-        pg: {
-          select: { id: true, name: true },
-        },
-        user: {
-          select: { id: true, name: true, email: true, phone: true, avatar: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    if (userId) query = query.eq('user_id', userId);
+    if (pgId) query = query.eq('pg_id', pgId);
+    if (status) query = query.eq('status', status);
 
-    return NextResponse.json(payments);
+    const { data: payments, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json(payments || []);
   } catch (error) {
     console.error('Error fetching payments:', error);
     return NextResponse.json({ error: 'Failed to fetch payments' }, { status: 500 });
@@ -42,19 +36,22 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const payment = await db.payment.create({
-      data: {
-        userId,
-        pgId,
-        bookingId,
+    const { data: payment, error } = await supabase
+      .from('payments')
+      .insert({
+        user_id: userId,
+        pg_id: pgId,
+        booking_id: bookingId,
         amount,
         type: type || 'RENT',
         method: method || 'UPI',
         status: 'COMPLETED',
-        paidDate: new Date(),
-      },
-    });
+        paid_date: new Date().toISOString(),
+      })
+      .select()
+      .single();
 
+    if (error) throw error;
     return NextResponse.json(payment, { status: 201 });
   } catch (error) {
     console.error('Error creating payment:', error);
@@ -71,10 +68,18 @@ export async function PUT(request: NextRequest) {
     }
     const updateData: Record<string, unknown> = {};
     if (status) updateData.status = status;
-    if (paidDate) updateData.paidDate = new Date(paidDate);
+    if (paidDate) updateData.paid_date = new Date(paidDate).toISOString();
     if (method) updateData.method = method;
-    if (status === 'COMPLETED' && !paidDate) updateData.paidDate = new Date();
-    const payment = await db.payment.update({ where: { id }, data: updateData });
+    if (status === 'COMPLETED' && !paidDate) updateData.paid_date = new Date().toISOString();
+
+    const { data: payment, error } = await supabase
+      .from('payments')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
     return NextResponse.json(payment);
   } catch (error) {
     console.error('Error updating payment:', error);

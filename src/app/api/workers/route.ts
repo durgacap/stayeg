@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -7,12 +7,18 @@ export async function GET(request: NextRequest) {
     const pgId = searchParams.get('pgId');
     const role = searchParams.get('role');
 
-    const where: Record<string, unknown> = {};
-    if (pgId) where.pgId = pgId;
-    if (role) where.role = role;
+    let query = supabase
+      .from('workers')
+      .select('*')
+      .order('role', { ascending: true });
 
-    const workers = await db.worker.findMany({ where, orderBy: { role: 'asc' } });
-    return NextResponse.json(workers);
+    if (pgId) query = query.eq('pg_id', pgId);
+    if (role) query = query.eq('role', role);
+
+    const { data: workers, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json(workers || []);
   } catch (error) {
     console.error('GET /api/workers error:', error);
     return NextResponse.json({ error: 'Failed to fetch workers' }, { status: 500 });
@@ -22,15 +28,19 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const worker = await db.worker.create({
-      data: {
+    const { data: worker, error } = await supabase
+      .from('workers')
+      .insert({
         name: body.name,
         role: body.role,
         phone: body.phone,
-        pgId: body.pgId,
+        pg_id: body.pgId,
         shift: body.shift,
-      }
-    });
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
     return NextResponse.json(worker, { status: 201 });
   } catch (error) {
     console.error('POST /api/workers error:', error);
@@ -47,17 +57,22 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'id is required' }, { status: 400 });
     }
 
-    const worker = await db.worker.update({
-      where: { id },
-      data: {
-        ...(data.name !== undefined && { name: data.name }),
-        ...(data.role !== undefined && { role: data.role }),
-        ...(data.phone !== undefined && { phone: data.phone }),
-        ...(data.shift !== undefined && { shift: data.shift }),
-        ...(data.status !== undefined && { status: data.status }),
-        ...(data.pgId !== undefined && { pgId: data.pgId }),
-      }
-    });
+    const updateData: Record<string, unknown> = {};
+    if (data.name !== undefined) updateData.name = data.name;
+    if (data.role !== undefined) updateData.role = data.role;
+    if (data.phone !== undefined) updateData.phone = data.phone;
+    if (data.shift !== undefined) updateData.shift = data.shift;
+    if (data.status !== undefined) updateData.status = data.status;
+    if (data.pgId !== undefined) updateData.pg_id = data.pgId;
+
+    const { data: worker, error } = await supabase
+      .from('workers')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
     return NextResponse.json(worker);
   } catch (error) {
     console.error('PUT /api/workers error:', error);

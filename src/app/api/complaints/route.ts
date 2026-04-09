@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -8,25 +8,19 @@ export async function GET(request: NextRequest) {
     const pgId = searchParams.get('pgId');
     const status = searchParams.get('status');
 
-    const where: Record<string, unknown> = {};
-    if (userId) where.userId = userId;
-    if (pgId) where.pgId = pgId;
-    if (status) where.status = status;
+    let query = supabase
+      .from('complaints')
+      .select('*, pg:pgs(id,name), user:users(id,name,email,phone,avatar)')
+      .order('created_at', { ascending: false });
 
-    const complaints = await db.complaint.findMany({
-      where,
-      include: {
-        pg: {
-          select: { id: true, name: true },
-        },
-        user: {
-          select: { id: true, name: true, email: true, phone: true, avatar: true },
-        },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
+    if (userId) query = query.eq('user_id', userId);
+    if (pgId) query = query.eq('pg_id', pgId);
+    if (status) query = query.eq('status', status);
 
-    return NextResponse.json(complaints);
+    const { data: complaints, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json(complaints || []);
   } catch (error) {
     console.error('Error fetching complaints:', error);
     return NextResponse.json({ error: 'Failed to fetch complaints' }, { status: 500 });
@@ -42,20 +36,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    const complaint = await db.complaint.create({
-      data: {
-        userId,
-        pgId,
+    const { data: complaint, error } = await supabase
+      .from('complaints')
+      .insert({
+        user_id: userId,
+        pg_id: pgId,
         title,
         description,
         category: category || 'GENERAL',
         priority: priority || 'MEDIUM',
-      },
-      include: {
-        pg: { select: { name: true } },
-      },
-    });
+      })
+      .select('*, pg:pgs(name)')
+      .single();
 
+    if (error) throw error;
     return NextResponse.json(complaint, { status: 201 });
   } catch (error) {
     console.error('Error creating complaint:', error);
@@ -72,9 +66,17 @@ export async function PUT(request: NextRequest) {
     }
     const updateData: Record<string, unknown> = {};
     if (status) updateData.status = status;
-    if (assignedTo !== undefined) updateData.assignedTo = assignedTo;
+    if (assignedTo !== undefined) updateData.assigned_to = assignedTo;
     if (resolution !== undefined) updateData.resolution = resolution;
-    const complaint = await db.complaint.update({ where: { id }, data: updateData });
+
+    const { data: complaint, error } = await supabase
+      .from('complaints')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
     return NextResponse.json(complaint);
   } catch (error) {
     console.error('Error updating complaint:', error);

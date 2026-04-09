@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -7,12 +7,18 @@ export async function GET(request: NextRequest) {
     const type = searchParams.get('type');
     const city = searchParams.get('city');
 
-    const where: Record<string, unknown> = {};
-    if (type) where.type = type;
-    if (city) where.city = city;
+    let query = supabase
+      .from('vendors')
+      .select('*')
+      .order('rating', { ascending: false });
 
-    const vendors = await db.vendor.findMany({ where, orderBy: { rating: 'desc' } });
-    return NextResponse.json(vendors);
+    if (type) query = query.eq('type', type);
+    if (city) query = query.eq('city', city);
+
+    const { data: vendors, error } = await query;
+    if (error) throw error;
+
+    return NextResponse.json(vendors || []);
   } catch (error) {
     console.error('GET /api/vendors error:', error);
     return NextResponse.json({ error: 'Failed to fetch vendors' }, { status: 500 });
@@ -27,16 +33,20 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'name, type, and phone are required' }, { status: 400 });
     }
 
-    const vendor = await db.vendor.create({
-      data: {
+    const { data: vendor, error } = await supabase
+      .from('vendors')
+      .insert({
         name: body.name,
         type: body.type,
         phone: body.phone,
         email: body.email,
         city: body.city || 'Bangalore',
         area: body.area,
-      }
-    });
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
     return NextResponse.json(vendor, { status: 201 });
   } catch (error) {
     console.error('POST /api/vendors error:', error);

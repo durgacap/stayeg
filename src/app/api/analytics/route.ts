@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(request: NextRequest) {
@@ -10,72 +10,114 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'ownerId is required' }, { status: 400 });
     }
 
-    const pgs = await db.pG.findMany({ where: { ownerId }, select: { id: true } });
-    const pgIds = pgs.map(p => p.id);
+    // Get all PG IDs for this owner
+    const { data: pgs, error: pgError } = await supabase
+      .from('pgs')
+      .select('id')
+      .eq('owner_id', ownerId);
 
-    const totalPGs = pgs.length;
-    const totalRooms = await db.room.count({ where: { pgId: { in: pgIds } } });
-    const totalBeds = await db.bed.count({ where: { room: { pgId: { in: pgIds } } } });
-    const occupiedBeds = await db.bed.count({ where: { room: { pgId: { in: pgIds } }, status: 'OCCUPIED' } });
-    const availableBeds = totalBeds - occupiedBeds;
-    const occupancyRate = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
+    if (pgError) throw pgError;
+    const pgIds = (pgs || []).map((p: any) => p.id);
+    if (pgIds.length === 0) {
+      return NextResponse.json({
+        totalPGs: 0, totalRooms: 0, totalBeds: 0, occupiedBeds: 0,
+        availableBeds: 0, occupancyRate: 0, monthlyRevenue: 0,
+        pendingPayments: 0, pendingAmount: 0, totalTenants: 0,
+        activeBookings: 0, revenueTrend: [], genderDistribution: { male: 0, female: 0, unisex: 0 },
+        openComplaints: 0,
+      });
+    }
+
+    const totalPGs = pgIds.length;
+
+    // Rooms count
+    const { count: totalRooms } = await supabase
+      .from('rooms')
+      .select('*', { count: 'exact', head: true })
+      .in('pg_id', pgIds);
+
+    // Beds count
+    const { count: totalBeds } = await supabase
+      .from('beds')
+      .select('*', { count: 'exact', head: true })
+      .in('room_id', (await supabase.from('rooms').select('id').in('pg_id', pgIds)).data?.map((r: any) => r.id) || []);
+
+    // Occupied beds
+    const { count: occupiedBeds } = await supabase
+      .from('beds')
+      .select('*', { count: 'exact', head: true })
+      .eq('status', 'OCCUPIED')
+      .in('room_id', (await supabase.from('rooms').select('id').in('pg_id', pgIds)).data?.map((r: any) => r.id) || []);
+
+    const totalBedsNum = totalBeds || 0;
+    const occupiedBedsNum = occupiedBeds || 0;
+    const availableBeds = totalBedsNum - occupiedBedsNum;
+    const occupancyRate = totalBedsNum > 0 ? Math.round((occupiedBedsNum / totalBedsNum) * 100) : 0;
 
     // Payments
-    const payments = await db.payment.findMany({
-      where: { pgId: { in: pgIds } }
-    });
-    const completedPayments = payments.filter(p => p.status === 'COMPLETED');
-    const pendingPayments = payments.filter(p => p.status === 'PENDING');
-    const monthlyRevenue = completedPayments.reduce((sum, p) => sum + p.amount, 0);
-    const pendingAmount = pendingPayments.reduce((sum, p) => sum + p.amount, 0);
+    const { data: payments } = await supabase
+      .from('payments')
+      .select('*')
+      .in('pg_id', pgIds);
 
-    // Bookings
-    const totalTenants = occupiedBeds;
-    const activeBookings = await db.booking.count({ where: { pgId: { in: pgIds }, status: { in: ['ACTIVE', 'CONFIRMED'] } } });
+    const allPayments = payments || [];
+    const completedPayments = allPayments.filter((p: any) => p.status === 'COMPLETED');
+    const pendingPayments = allPayments.filter((p: any) => p.status === 'PENDING');
+    const monthlyRevenue = completedPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+    const pendingAmount = pendingPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+
+    // Active bookings
+    const { count: activeBookings } = await supabase
+      .from('bookings')
+      .select('*', { count: 'exact', head: true })
+      .in('pg_id', pgIds)
+      .in('status', ['ACTIVE', 'CONFIRMED']);
 
     // Revenue trend (last 6 months)
     const now = new Date();
     const revenueTrend: { month: string; revenue: number }[] = [];
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     for (let i = 5; i >= 0; i--) {
       const monthStart = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 1);
-      const monthPayments = completedPayments.filter(p => {
-        if (!p.paidDate) return false;
-        const paidDate = new Date(p.paidDate);
+      const monthPayments = completedPayments.filter((p: any) => {
+        if (!p.paid_date) return false;
+        const paidDate = new Date(p.paid_date);
         return paidDate >= monthStart && paidDate < monthEnd;
       });
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
       revenueTrend.push({
         month: monthNames[monthStart.getMonth()],
-        revenue: monthPayments.reduce((sum, p) => sum + p.amount, 0),
+        revenue: monthPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0),
       });
     }
 
     // Gender distribution
-    const malePGs = await db.pG.count({ where: { ownerId, gender: 'MALE' } });
-    const femalePGs = await db.pG.count({ where: { ownerId, gender: 'FEMALE' } });
-    const unisexPGs = await db.pG.count({ where: { ownerId, gender: 'UNISEX' } });
+    const { count: malePGs } = await supabase.from('pgs').select('*', { count: 'exact', head: true }).eq('owner_id', ownerId).eq('gender', 'MALE');
+    const { count: femalePGs } = await supabase.from('pgs').select('*', { count: 'exact', head: true }).eq('owner_id', ownerId).eq('gender', 'FEMALE');
+    const { count: unisexPGs } = await supabase.from('pgs').select('*', { count: 'exact', head: true }).eq('owner_id', ownerId).eq('gender', 'UNISEX');
 
-    // Complaints summary
-    const openComplaints = await db.complaint.count({ 
-      where: { pgId: { in: pgIds }, status: { in: ['OPEN', 'IN_PROGRESS'] } }
-    });
+    // Open complaints
+    const { count: openComplaints } = await supabase
+      .from('complaints')
+      .select('*', { count: 'exact', head: true })
+      .in('pg_id', pgIds)
+      .in('status', ['OPEN', 'IN_PROGRESS']);
 
     return NextResponse.json({
       totalPGs,
-      totalRooms,
-      totalBeds,
-      occupiedBeds,
+      totalRooms: totalRooms || 0,
+      totalBeds: totalBedsNum,
+      occupiedBeds: occupiedBedsNum,
       availableBeds,
       occupancyRate,
       monthlyRevenue,
       pendingPayments: pendingPayments.length,
       pendingAmount,
-      totalTenants,
-      activeBookings,
+      totalTenants: occupiedBedsNum,
+      activeBookings: activeBookings || 0,
       revenueTrend,
-      genderDistribution: { male: malePGs, female: femalePGs, unisex: unisexPGs },
-      openComplaints,
+      genderDistribution: { male: malePGs || 0, female: femalePGs || 0, unisex: unisexPGs || 0 },
+      openComplaints: openComplaints || 0,
     });
   } catch (error) {
     console.error('GET /api/analytics error:', error);

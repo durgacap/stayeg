@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET(
@@ -8,34 +8,34 @@ export async function GET(
   try {
     const { id } = await params;
 
-    const pg = await db.pG.findUnique({
-      where: { id },
-      include: {
-        owner: {
-          select: { id: true, name: true, phone: true, avatar: true, email: true },
-        },
-        rooms: {
-          include: {
-            beds: {
-              orderBy: { bedNumber: 'asc' },
-            },
-          },
-          orderBy: [{ floor: 'asc' }, { roomCode: 'asc' }],
-        },
-      },
-    });
+    const { data: pg, error } = await supabase
+      .from('pgs')
+      .select('*, owner:users(id,name,phone,avatar,email), rooms(*, beds(*))')
+      .eq('id', id)
+      .single();
 
-    if (!pg) {
+    if (error || !pg) {
       return NextResponse.json({ error: 'PG not found' }, { status: 404 });
     }
+
+    // Sort rooms by floor then room_code, and beds by bed_number
+    const sortedRooms = (pg.rooms || [])
+      .sort((a: any, b: any) => {
+        if (a.floor !== b.floor) return a.floor - b.floor;
+        return (a.room_code || '').localeCompare(b.room_code || '');
+      })
+      .map((room: any) => ({
+        ...room,
+        beds: (room.beds || []).sort((a: any, b: any) => a.bed_number - b.bed_number),
+      }));
 
     const formatted = {
       ...pg,
       images: pg.images ? pg.images.split(',').filter(Boolean) : [],
       amenities: pg.amenities ? pg.amenities.split(',').filter(Boolean) : [],
-      rooms: pg.rooms?.map((room) => ({
+      rooms: sortedRooms.map((room: any) => ({
         ...room,
-        beds: room.beds?.map((bed) => ({
+        beds: room.beds.map((bed: any) => ({
           ...bed,
           price: bed.price ?? pg.price,
         })),
