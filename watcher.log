@@ -1,0 +1,180 @@
+[watcher] Port 3000 free, starting server...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+▲ Next.js 16.1.3 (Turbopack)
+- Local:         http://localhost:3000
+- Network:       http://21.0.7.192:3000
+- Environments: .env
+
+✓ Starting...
+✓ Ready in 1005ms
+○ Compiling / ...
+[watcher] Port 3000 free, starting server...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
+[watcher] Server exited, restarting in 2s...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+ GET / 200 in 9.3s (compile: 8.7s, render: 660ms)
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
+[watcher] Server exited, restarting in 2s...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+[watcher] Port 3000 free, starting server...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
+[watcher] Server exited, restarting in 2s...
+[?25h
+[watcher] Server exited, restarting in 2s...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
+[watcher] Server exited, restarting in 2s...
+[?25h
+[watcher] Server exited, restarting in 2s...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+[watcher] Port 3000 free, starting server...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
+[watcher] Server exited, restarting in 2s...
+[?25h
+[watcher] Server exited, restarting in 2s...
+[?25h
+[watcher] Server exited, restarting in 2s...
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+[watcher] Starting dev server...
+$ next dev -p 3000 2>&1 | tee dev.log
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+⨯ Failed to start server
+Error: listen EADDRINUSE: address already in use :::3000
+    at <unknown> (Error: listen EADDRINUSE: address already in use :::3000)
+    at new Promise (<anonymous>) {
+  code: 'EADDRINUSE',
+  errno: -98,
+  syscall: 'listen',
+  address: '::',
+  port: 3000
+}
+[?25h
+[watcher] Server exited, restarting in 2s...
+ GET / 200 in 190ms (compile: 6ms, render: 184ms)
