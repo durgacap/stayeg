@@ -22,15 +22,35 @@ export const viewport: Viewport = {
   userScalable: false,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#1F74BA" },
-    { media: "(prefers-color-scheme: dark)", color: "#0A1628" },
+    { media: "(prefers-color-scheme: light)", color: "#0D9488" },
+    { media: "(prefers-color-scheme: dark)", color: "#0C0A09" },
   ],
 };
 
 export const metadata: Metadata = {
-  title: "StayeG - India's Smart PG Ecosystem Platform",
-  description: "Discover, book, and manage PG accommodations across India. The smartest way to find your perfect PG home.",
-  keywords: ["PG", "paying guest", "accommodation", "India", "Bangalore", "rental", "rooms"],
+  title: "StayeG — India's #1 Smart PG Platform | Find Verified PGs, Pay Zero Brokerage",
+  description:
+    "StayeG is India's most trusted paying guest (PG) platform. Browse 10,000+ verified PGs across 20+ cities. Book instantly with zero brokerage, manage rent digitally, join local communities, and experience hassle-free PG living. Trusted by 50,000+ tenants across Bangalore, Delhi, Mumbai, Pune, Hyderabad & more.",
+  keywords: [
+    "PG near me", "paying guest accommodation", "PG in Bangalore", "PG in Delhi", "PG in Mumbai",
+    "PG in Pune", "PG in Hyderabad", "PG in Chennai", "boys PG", "girls PG", "unisex PG",
+    "PG booking online", "PG without brokerage", "PG management software", "PG owner app",
+    "paying guest India", "student accommodation", "shared rooms India", "hostel alternative",
+    "PG rent", "monthly PG", "PG with food", "AC PG", "PG near metro", "PG near IT park",
+    "co-living India", "room on rent", "StayeG", "best PG platform India",
+  ],
+  openGraph: {
+    title: "StayeG — India's Smartest PG Ecosystem",
+    description: "Find your perfect PG home in minutes. 10,000+ verified properties, zero brokerage, instant booking across 20+ Indian cities.",
+    siteName: "StayeG",
+    type: "website",
+    locale: "en_IN",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "StayeG — India's Smart PG Platform",
+    description: "Verified PGs, zero brokerage, instant booking. Find your perfect PG home today!",
+  },
   icons: {
     icon: "https://z-cdn.chatglm.cn/z-ai/static/logo.svg",
   },

@@ -440,7 +440,7 @@ export default function HeroSection() {
       <section className="py-16 md:py-24 bg-background overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection>
-            <div className="relative rounded-3xl bg-gradient-to-br from-[#222831] via-[#393E46] to-[#222831] overflow-hidden p-8 md:p-12 lg:p-16">
+            <div className="relative rounded-3xl bg-gradient-to-br from-[#292524] via-[#44403C] to-[#292524] overflow-hidden p-8 md:p-12 lg:p-16">
               {/* Background decorative */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-brand-teal/10 rounded-full blur-3xl" />
               <div className="absolute bottom-0 left-0 w-72 h-72 bg-brand-sage/10 rounded-full blur-3xl" />

@@ -1,8 +1,15 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import {
+  staggerContainer,
+  staggerItem,
+  shimmer,
+  tapBounce,
+  hoverLift,
+} from '@/lib/animations';
 import {
   Star,
   MapPin,
@@ -28,7 +35,7 @@ import {
 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { useAppStore } from '@/store/use-app-store';
 import { PG_IMAGES } from '@/lib/constants';
 import type { PG } from '@/lib/types';
@@ -89,6 +96,15 @@ interface PGCardProps {
 export default function PGCard({ pg, index = 0 }: PGCardProps) {
   const { setSelectedPG, setCurrentView } = useAppStore();
   const [currentImage, setCurrentImage] = useState(0);
+  const cardRef = useRef<HTMLDivElement>(null);
+
+  // Parallax image effect based on mouse position over the card
+  const mouseX = useMotionValue(0.5);
+  const mouseY = useMotionValue(0.5);
+  const springX = useSpring(mouseX, { stiffness: 200, damping: 20 });
+  const springY = useSpring(mouseY, { stiffness: 200, damping: 20 });
+  const imageX = useTransform(springX, [0, 1], [8, -8]);
+  const imageY = useTransform(springY, [0, 1], [8, -8]);
 
   const images = useMemo(() => {
     if (!pg?.images) return PG_IMAGES;
@@ -144,24 +160,56 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
     setCurrentView('PG_DETAIL');
   };
 
+  const handleCardMouseMove = (e: React.MouseEvent) => {
+    if (!cardRef.current) return;
+    const rect = cardRef.current.getBoundingClientRect();
+    mouseX.set((e.clientX - rect.left) / rect.width);
+    mouseY.set((e.clientY - rect.top) / rect.height);
+  };
+
+  const handleCardMouseLeave = () => {
+    mouseX.set(0.5);
+    mouseY.set(0.5);
+  };
+
   return (
     <motion.div
+      ref={cardRef}
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
-      whileHover={{ y: -4 }}
+      whileHover={hoverLift}
+      onMouseMove={handleCardMouseMove}
+      onMouseLeave={handleCardMouseLeave}
       className="group"
     >
-      <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl">
-        {/* Image Carousel */}
+      <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl relative">
+        {/* Shine / shimmer sweep on hover */}
+        <motion.div
+          className="absolute inset-0 z-20 pointer-events-none"
+          variants={shimmer}
+          initial="initial"
+          whileHover="animate"
+          style={{
+            background:
+              'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.15) 45%, rgba(255,255,255,0.25) 50%, rgba(255,255,255,0.15) 55%, transparent 60%)',
+          }}
+        />
+
+        {/* Image Carousel with parallax */}
         <div className="relative aspect-[4/3] overflow-hidden rounded-t-2xl">
-          <Image
-            src={images[currentImage]}
-            alt={pg.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-          />
+          <motion.div
+            className="absolute inset-0"
+            style={{ x: imageX, y: imageY, scale: 1.05 }}
+          >
+            <Image
+              src={images[currentImage]}
+              alt={pg.name}
+              fill
+              className="object-cover transition-transform duration-500 group-hover:scale-105"
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            />
+          </motion.div>
 
           {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
@@ -220,20 +268,29 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
             </Badge>
           </div>
 
-          {/* Price tag */}
-          <div className="absolute bottom-3 right-3">
+          {/* Price tag — staggered entrance */}
+          <motion.div
+            className="absolute bottom-3 right-3"
+            variants={staggerItem}
+            custom={0}
+          >
             <div className="bg-white/95 backdrop-blur-sm rounded-xl px-3 py-1.5 shadow-sm">
               <span className="text-lg font-bold text-foreground">
                 ₹{Math.round(pg.price).toLocaleString('en-IN')}
               </span>
               <span className="text-xs text-muted-foreground">/mo</span>
             </div>
-          </div>
+          </motion.div>
         </div>
 
-        <CardContent className="p-4 space-y-3">
+        <motion.div
+          className="p-4 space-y-3"
+          variants={staggerContainer}
+          initial="hidden"
+          animate="visible"
+        >
           {/* Name & Rating */}
-          <div className="flex items-start justify-between gap-2">
+          <motion.div className="flex items-start justify-between gap-2" variants={staggerItem}>
             <div className="min-w-0 flex-1">
               <h3 className="font-semibold text-foreground text-base truncate">
                 {pg.name}
@@ -248,11 +305,11 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
               <span className="font-semibold text-sm text-foreground">{pg.rating.toFixed(1)}</span>
               <span className="text-xs text-muted-foreground">({pg.totalReviews})</span>
             </div>
-          </div>
+          </motion.div>
 
-          {/* Amenities */}
+          {/* Amenities — staggered entrance */}
           {visibleAmenities.length > 0 && (
-            <div className="flex flex-wrap gap-1.5">
+            <motion.div className="flex flex-wrap gap-1.5" variants={staggerItem}>
               {visibleAmenities.map((amenity) => {
                 const Icon = AMENITY_ICONS[amenity];
                 return (
@@ -270,11 +327,11 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
                   +{remainingAmenities} more
                 </span>
               )}
-            </div>
+            </motion.div>
           )}
 
-          {/* Available Beds & Book Button */}
-          <div className="flex items-center justify-between pt-1">
+          {/* Available Beds & Book Button — staggered entrance */}
+          <motion.div className="flex items-center justify-between pt-1" variants={staggerItem}>
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
               <BedDouble className="size-4 text-green-600" />
               <span>
@@ -285,17 +342,19 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
                 )}
               </span>
             </div>
-            <Button
-              onClick={handleBookNow}
-              disabled={availableBeds === 0}
-              size="sm"
-              className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white rounded-lg shadow-sm"
-            >
-              Book Now
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+            <motion.div whileTap={tapBounce}>
+              <Button
+                onClick={handleBookNow}
+                disabled={availableBeds === 0}
+                size="sm"
+                className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white rounded-lg shadow-sm"
+              >
+                Book Now
+              </Button>
+            </motion.div>
+          </motion.div>
+        </motion.div>
+        </Card>
     </motion.div>
   );
 }

@@ -1,8 +1,11 @@
 'use client';
 
 import { Building2, MapPin, Phone, Mail, Heart, Instagram, Twitter, Facebook, Linkedin } from 'lucide-react';
+import { motion, useInView } from 'framer-motion';
+import { useRef } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import { slideUp, hoverScale, tapScale, gradientShift } from '@/lib/animations';
 
 const footerSections = [
   {
@@ -43,6 +46,8 @@ const footerSections = [
 
 export default function SiteFooter() {
   const { setCurrentView } = useAppStore();
+  const footerRef = useRef<HTMLElement>(null);
+  const isInView = useInView(footerRef, { once: true, margin: '-80px' });
 
   const handleLinkClick = (view: string) => {
     setCurrentView(view as any);
@@ -50,8 +55,25 @@ export default function SiteFooter() {
   };
 
   return (
-    <footer className="bg-gradient-to-b from-[#0D1B2A] to-[#0A1628] text-gray-400 mt-auto pb-safe">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
+    <motion.footer
+      ref={footerRef}
+      initial="hidden"
+      animate={isInView ? 'visible' : 'hidden'}
+      variants={slideUp}
+      className="bg-gradient-to-b from-[#1C1917] to-[#0C0A09] text-gray-400 mt-auto pb-safe relative overflow-hidden"
+    >
+      {/* Subtle animated gradient accent line at top */}
+      <motion.div
+        className="absolute top-0 left-0 right-0 h-[2px]"
+        variants={gradientShift}
+        animate="animate"
+        style={{
+          backgroundSize: '200% 100%',
+          background:
+            'linear-gradient(90deg, transparent, var(--brand-teal), var(--brand-deep), var(--brand-teal), transparent)',
+        }}
+      />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14 relative z-10">
         {/* Top Section */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           {/* Brand */}
@@ -117,16 +139,18 @@ export default function SiteFooter() {
           </p>
           <div className="flex items-center gap-3">
             {[Instagram, Twitter, Facebook, Linkedin].map((Icon, i) => (
-              <button
+              <motion.button
                 key={i}
+                whileHover={hoverScale}
+                whileTap={tapScale}
                 className="size-9 rounded-lg bg-white/10 hover:bg-brand-teal flex items-center justify-center transition-colors group"
               >
-                <Icon className="size-4 text-gray-500 group-hover:text-white" />
-              </button>
+                <Icon className="size-4 text-gray-500 group-hover:text-white transition-colors" />
+              </motion.button>
             ))}
           </div>
         </div>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

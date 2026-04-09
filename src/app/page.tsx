@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import { pageTransition, loadingShimmer } from '@/lib/animations';
 import {
   Home, Search, BookOpen, CalendarDays, CreditCard, MessageSquare,
   MapPin, User, Menu, Bell, Building2, LayoutDashboard, BedDouble,
@@ -43,6 +44,8 @@ import PricingPage from '@/components/stayease/pricing/pricing-page';
 import TermsPage from '@/components/stayease/policy/terms-page';
 import PrivacyPage from '@/components/stayease/policy/privacy-page';
 import SafeUsePage from '@/components/stayease/policy/safe-use-page';
+import OwnerGuide from '@/components/stayease/owner/owner-guide';
+import CursorFollower from '@/components/ui/cursor-follower';
 
 // Navigation items
 const PUBLIC_NAV = [
@@ -363,11 +366,22 @@ function MainContent() {
       <AnimatePresence mode="wait">
         <motion.div
           key={currentView + currentRole}
-          initial={{ opacity: 0, y: 8 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: -8 }}
-          transition={{ duration: 0.2 }}
+          variants={pageTransition}
+          initial="initial"
+          animate="animate"
+          exit="exit"
         >
+          {/* Subtle shimmer overlay during view transitions */}
+          <motion.div
+            className="pointer-events-none fixed inset-0 z-50"
+            variants={loadingShimmer}
+            animate="animate"
+            style={{
+              background:
+                'linear-gradient(90deg, transparent 0%, var(--brand-teal) 50%, transparent 100%)',
+              opacity: 0.03,
+            }}
+          />
           {renderView()}
         </motion.div>
       </AnimatePresence>
@@ -383,6 +397,22 @@ function MainContent() {
 export default function StayeGApp() {
   const { currentView, currentRole, isLoggedIn } = useAppStore();
   const [dbReady, setDbReady] = useState<boolean | null>(null);
+  const [showOwnerGuide, setShowOwnerGuide] = useState(false);
+
+  // Show owner guide when owner first reaches dashboard
+  useEffect(() => {
+    if (isLoggedIn && currentRole === 'OWNER' && currentView === 'OWNER_DASHBOARD') {
+      const hasSeenGuide = localStorage.getItem('stayeg_owner_guide_seen');
+      if (!hasSeenGuide) {
+        localStorage.setItem('stayeg_owner_guide_seen', '1');
+        // Use setTimeout to avoid setting state during render
+        const timer = setTimeout(() => setShowOwnerGuide(true), 100);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isLoggedIn, currentRole, currentView]);
+
+  const handleGuideClose = () => setShowOwnerGuide(false);
 
   const mobileNav = currentRole === 'OWNER' ? OWNER_MOBILE_NAV : TENANT_MOBILE_NAV;
   const hideMobileNav = (HIDE_MOBILE_NAV_VIEWS as readonly string[]).includes(currentView);
@@ -413,6 +443,8 @@ export default function StayeGApp() {
       </main>
       {showFooter && <SiteFooter />}
       {!hideMobileNav && <MobileNav items={mobileNav} />}
+      <CursorFollower />
+      <OwnerGuide open={showOwnerGuide} onClose={handleGuideClose} />
     </div>
   );
 }

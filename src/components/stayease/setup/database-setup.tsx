@@ -131,7 +131,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
 
         {/* Header */}
         <div className="text-center space-y-2">
-          <div className="mx-auto w-14 h-14 bg-gradient-to-br from-[#1F74BA] to-[#F09120] rounded-2xl flex items-center justify-center shadow-lg">
+          <div className="mx-auto w-14 h-14 bg-gradient-to-br from-brand-deep to-brand-teal rounded-2xl flex items-center justify-center shadow-lg">
             <Database className="w-7 h-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">Quick Database Setup</h1>
@@ -153,7 +153,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
               <div key={s.num} className="flex items-center">
                 <div className="flex flex-col items-center">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold transition-all duration-300 ${
-                    isActive && !isNow ? 'bg-green-500 text-white' : isNow ? 'bg-[#1F74BA] text-white ring-4 ring-[#1F74BA]/20' : 'bg-muted text-muted-foreground'
+                    isActive && !isNow ? 'bg-green-500 text-white' : isNow ? 'bg-brand-deep text-white ring-4 ring-brand-deep/20' : 'bg-muted text-muted-foreground'
                   }`}>
                     {isActive && !isNow ? <CheckCircle2 className="w-5 h-5" /> : s.num}
                   </div>
@@ -167,10 +167,10 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
 
         {/* Step 1: Copy SQL */}
         <motion.div animate={currentStep === 1 ? { scale: [1, 1.02, 1] } : {}} transition={{ duration: 2, repeat: Infinity }}>
-          <Card className={`overflow-hidden transition-all duration-300 ${currentStep === 1 ? 'ring-2 ring-[#1F74BA] shadow-lg' : currentStep < 1 ? 'opacity-40' : ''}`}>
+          <Card className={`overflow-hidden transition-all duration-300 ${currentStep === 1 ? 'ring-2 ring-brand-deep shadow-lg' : currentStep < 1 ? 'opacity-40' : ''}`}>
             <CardContent className="p-5 space-y-3">
               <div className="flex items-center gap-2">
-                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${currentStep > 1 ? 'bg-green-500 text-white' : 'bg-[#1F74BA] text-white'}`}>
+                <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${currentStep > 1 ? 'bg-green-500 text-white' : 'bg-brand-deep text-white'}`}>
                   {currentStep > 1 ? <CheckCircle2 className="w-4 h-4" /> : '1'}
                 </div>
                 <div>
@@ -180,7 +180,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
               </div>
               <Button
                 onClick={handleCopy}
-                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-[#1F74BA] to-[#1F74BA]/80 hover:from-[#1F74BA]/90 hover:to-[#1F74BA]/70 text-white"
+                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-brand-deep to-brand-deep/80 hover:from-brand-deep/90 hover:to-brand-deep/70 text-white"
                 size="lg"
               >
                 {copied ? (
@@ -200,10 +200,10 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
         </motion.div>
 
         {/* Step 2: Paste & Run */}
-        <Card className={`overflow-hidden transition-all duration-300 ${currentStep === 2 ? 'ring-2 ring-[#1F74BA] shadow-lg' : currentStep < 2 ? 'opacity-40' : ''}`}>
+        <Card className={`overflow-hidden transition-all duration-300 ${currentStep === 2 ? 'ring-2 ring-brand-deep shadow-lg' : currentStep < 2 ? 'opacity-40' : ''}`}>
           <CardContent className="p-5 space-y-3">
             <div className="flex items-center gap-2">
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${currentStep > 2 ? 'bg-green-500 text-white' : 'bg-[#1F74BA] text-white'}`}>
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${currentStep > 2 ? 'bg-green-500 text-white' : 'bg-brand-deep text-white'}`}>
                 {currentStep > 2 ? <CheckCircle2 className="w-4 h-4" /> : '2'}
               </div>
               <div>
@@ -215,7 +215,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
             <Button
               onClick={handleOpenSupabase}
               variant="outline"
-              className="w-full h-12 text-base font-semibold border-[#F09120]/50 text-[#F09120] hover:bg-[#F09120]/10"
+              className="w-full h-12 text-base font-semibold border-brand-teal/50 text-brand-teal hover:bg-brand-teal/10"
               size="lg"
             >
               <ExternalLink className="w-5 h-5 mr-2" />
@@ -240,7 +240,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
         <Card className={`overflow-hidden transition-all duration-300 ${currentStep >= 2 ? '' : 'opacity-40'}`}>
           <CardContent className="p-5 space-y-3">
             <div className="flex items-center gap-2">
-              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${currentStep > 3 ? 'bg-green-500 text-white' : 'bg-[#1F74BA] text-white'}`}>
+              <div className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold ${currentStep > 3 ? 'bg-green-500 text-white' : 'bg-brand-deep text-white'}`}>
                 {currentStep > 3 ? <CheckCircle2 className="w-4 h-4" /> : '3'}
               </div>
               <div>
