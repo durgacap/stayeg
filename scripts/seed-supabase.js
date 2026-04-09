@@ -8,6 +8,7 @@
  * Usage: node scripts/seed-supabase.js
  */
 
+// eslint-disable-next-line @typescript-eslint/no-require-imports
 const { createClient } = require('@supabase/supabase-js');
 
 const SUPABASE_URL = 'https://sbwmecxkbfijanwwuvvt.supabase.co';

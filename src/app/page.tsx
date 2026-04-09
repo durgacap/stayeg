@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import {
   Home, Search, BookOpen, CalendarDays, CreditCard, MessageSquare,
@@ -8,6 +8,7 @@ import {
   Users, Wallet, Wrench, HardHat, Shield, AlertTriangle, LogIn, LogOut,
   UsersRound, ChevronRight, IndianRupee,
 } from 'lucide-react';
+import DatabaseSetup from '@/components/stayease/setup/database-setup';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -381,11 +382,28 @@ function MainContent() {
 
 export default function StayeGApp() {
   const { currentView, currentRole, isLoggedIn } = useAppStore();
+  const [dbReady, setDbReady] = useState<boolean | null>(null);
 
   const mobileNav = currentRole === 'OWNER' ? OWNER_MOBILE_NAV : TENANT_MOBILE_NAV;
   const hideMobileNav = (HIDE_MOBILE_NAV_VIEWS as readonly string[]).includes(currentView);
   const FOOTER_VIEWS = ['LANDING', 'PG_LISTING', 'PRICING', 'COMMUNITY', 'TERMS', 'PRIVACY', 'SAFE_USE'] as const;
   const showFooter = (FOOTER_VIEWS as readonly string[]).includes(currentView);
+
+  const handleDbReady = () => {
+    setDbReady(true);
+  };
+
+  // Show setup page while checking or if not ready
+  if (dbReady === null || dbReady === false) {
+    return (
+      <div className="min-h-screen flex flex-col bg-background pb-safe">
+        <TopHeader />
+        <main className="flex-1 pb-20 md:pb-0">
+          <DatabaseSetup onReady={handleDbReady} />
+        </main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-background pb-safe">
