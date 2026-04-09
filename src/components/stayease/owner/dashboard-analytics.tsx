@@ -15,7 +15,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/store/use-app-store';
 
-const COLORS = ['#00ADB5', '#393E46', '#22c55e'];
+const COLORS = ['#1F74BA', '#F09120', '#F7E200'];
 
 const OWNER_ID = 'owner-rajesh';
 
@@ -254,7 +254,7 @@ export default function OwnerDashboard() {
                       <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                       <YAxis tick={{ fontSize: 12 }} tickFormatter={(v) => `₹${(v / 1000).toFixed(0)}k`} />
                       <Tooltip formatter={(value: number) => [`₹${value.toLocaleString('en-IN')}`, 'Revenue']} />
-                      <Bar dataKey="revenue" fill="#00ADB5" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="revenue" fill="#1F74BA" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

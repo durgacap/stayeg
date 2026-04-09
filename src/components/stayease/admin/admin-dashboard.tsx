@@ -307,7 +307,7 @@ export default function AdminDashboard() {
                 <div className="bg-muted rounded-lg p-3">
                   <p className="text-xs text-muted-foreground">Rating</p>
                   <div className="flex items-center gap-1 mt-1">
-                    <Star className="size-4 fill-amber-400 text-amber-400" />
+                    <Star className="size-4 fill-brand-sage text-brand-sage" />
                     <span className="font-semibold">{detailPG.rating}</span>
                     <span className="text-xs text-muted-foreground">({detailPG.totalReviews} reviews)</span>
                   </div>

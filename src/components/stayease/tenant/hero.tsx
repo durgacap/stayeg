@@ -856,12 +856,12 @@ function TestimonialCard({ testimonial: { name, role, avatar, quote, rating } }:
   return (
     <Card className="border border-border shadow-md hover:shadow-lg transition-shadow bg-card">
       <CardContent className="p-6">
-        {/* Stars - keep amber for ratings */}
+        {/* Stars - brand-sage for ratings */}
         <div className="flex gap-0.5 mb-4">
           {Array.from({ length: 5 }).map((_, i) => (
             <Star
               key={i}
-              className={`size-4 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`}
+              className={`size-4 ${i < rating ? 'text-brand-sage fill-brand-sage' : 'text-gray-200'}`}
             />
           ))}
         </div>

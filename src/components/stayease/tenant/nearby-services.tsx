@@ -278,8 +278,8 @@ export default function NearbyServices() {
                         <MapPin className="size-3.5 text-muted-foreground" />
                         {place.distance}
                       </div>
-                      <div className="flex items-center gap-1 text-xs text-amber-600">
-                        <Star className="size-3 fill-amber-400 text-amber-400" />
+                      <div className="flex items-center gap-1 text-xs text-brand-sage">
+                        <Star className="size-3 fill-brand-sage text-brand-sage" />
                         {place.rating}
                       </div>
                     </div>

@@ -243,8 +243,8 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
                 <span className="truncate">{pg.address}</span>
               </div>
             </div>
-            <div className="flex items-center gap-1 bg-amber-50 px-2 py-1 rounded-lg shrink-0">
-              <Star className="size-4 text-amber-500 fill-amber-500" />
+            <div className="flex items-center gap-1 bg-brand-sage-light px-2 py-1 rounded-lg shrink-0">
+              <Star className="size-4 text-brand-sage fill-brand-sage" />
               <span className="font-semibold text-sm text-foreground">{pg.rating.toFixed(1)}</span>
               <span className="text-xs text-muted-foreground">({pg.totalReviews})</span>
             </div>

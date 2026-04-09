@@ -58,7 +58,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const PRIORITY_COLORS: Record<string, string> = {
   LOW: 'bg-blue-100 text-blue-700',
-  MEDIUM: 'bg-brand-sage-light text-amber-500',
+  MEDIUM: 'bg-brand-sage-light text-brand-sage',
   HIGH: 'bg-brand-teal/15 text-brand-teal',
   URGENT: 'bg-red-100 text-red-700',
 };
@@ -274,7 +274,7 @@ export default function ComplaintSection() {
           <div className="grid grid-cols-3 gap-3 mb-6">
             {[
               { label: 'Open', count: stats.open, color: 'text-red-500', bg: 'bg-red-50' },
-              { label: 'In Progress', count: stats.inProgress, color: 'text-amber-500', bg: 'bg-brand-sage-light' },
+              { label: 'In Progress', count: stats.inProgress, color: 'text-brand-sage', bg: 'bg-brand-sage-light' },
               { label: 'Resolved', count: stats.resolved, color: 'text-green-500', bg: 'bg-green-50' },
             ].map((stat) => (
               <motion.div
