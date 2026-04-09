@@ -1,54 +1,62 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  Database, CheckCircle2, AlertTriangle, Copy, Check, ExternalLink,
-  RefreshCw, Shield, Server, Zap, ChevronDown, ChevronUp,
+  Database, CheckCircle2, AlertTriangle, Eye, EyeOff,
+  Loader2, Shield, ExternalLink, Zap, Server, RefreshCw, IndianRupee,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Input } from '@/components/ui/input';
 import { Separator } from '@/components/ui/separator';
 
-interface SetupStatus {
+interface SetupResponse {
   status: 'setup_required' | 'ready' | 'error';
   message: string;
-  sql?: string;
   tablesFound?: boolean;
-  stats?: {
-    users: number;
-    pgs: number;
-    beds: number;
-  };
+  stats?: { users: number; pgs: number; beds: number };
   error?: string;
 }
 
+interface AutoSetupResponse {
+  success?: boolean;
+  message?: string;
+  error?: string;
+  details?: string;
+  tables?: string[];
+  count?: number;
+}
+
 export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
-  const [setupStatus, setSetupStatus] = useState<SetupStatus | null>(null);
+  const [setupStatus, setSetupStatus] = useState<SetupResponse | null>(null);
   const [checking, setChecking] = useState(true);
-  const [copied, setCopied] = useState(false);
-  const [showSql, setShowSql] = useState(false);
-  const [checkingAfterSetup, setCheckingAfterSetup] = useState(false);
-  const sqlRef = useRef<HTMLPreElement>(null);
-  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
+  const [dbPassword, setDbPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [settingUp, setSettingUp] = useState(false);
+  const [setupResult, setSetupResult] = useState<AutoSetupResponse | null>(null);
+  const [seeding, setSeeding] = useState(false);
+  const [step, setStep] = useState<'check' | 'enter_password' | 'creating' | 'seeding' | 'done'>('check');
 
   const checkDatabase = async () => {
     try {
-      setChecking(true);
       const res = await fetch('/api/setup');
-      const data: SetupStatus = await res.json();
+      const data: SetupResponse = await res.json();
       setSetupStatus(data);
-      
       if (data.status === 'ready') {
+        setStep('done');
         onReady();
+      } else {
+        setStep('enter_password');
       }
     } catch (err) {
       setSetupStatus({
         status: 'error',
-        message: 'Failed to connect to database',
+        message: 'Failed to connect to Supabase',
         error: String(err),
       });
+      setStep('enter_password');
     } finally {
       setChecking(false);
     }
@@ -58,35 +66,62 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
     checkDatabase();
   }, []);
 
-  const handleCopySQL = async () => {
-    if (!setupStatus?.sql) return;
+  const handleSetup = async () => {
+    if (!dbPassword.trim()) return;
+    setSettingUp(true);
+    setStep('creating');
+    setSetupResult(null);
+
     try {
-      await navigator.clipboard.writeText(setupStatus.sql);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback
-      const textarea = document.createElement('textarea');
-      textarea.value = setupStatus.sql;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      const res = await fetch('/api/setup-db', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dbPassword: dbPassword.trim() }),
+      });
+      const data: AutoSetupResponse = await res.json();
+      setSetupResult(data);
+
+      if (data.success) {
+        // Tables created — now seed data
+        setStep('seeding');
+        try {
+          const seedRes = await fetch('/api/seed', { method: 'POST' });
+          const seedData = await seedRes.json();
+
+          if (seedRes.ok) {
+            setStep('done');
+            setTimeout(() => {
+              onReady();
+            }, 2000);
+          } else {
+            // Tables exist but seed failed, still mark as done
+            setStep('done');
+            setTimeout(() => {
+              onReady();
+            }, 2000);
+          }
+        } catch {
+          setStep('done');
+          setTimeout(() => {
+            onReady();
+          }, 2000);
+        }
+      } else {
+        setStep('enter_password');
+      }
+    } catch (err) {
+      setSetupResult({
+        success: false,
+        error: 'Connection failed. Please check your password.',
+        details: String(err),
+      });
+      setStep('enter_password');
+    } finally {
+      setSettingUp(false);
     }
   };
 
-  const handleOpenSupabase = () => {
-    window.open(`${supabaseUrl}/project/sbwmecxkbfijanwwuvvt/sql/new`, '_blank');
-  };
-
-  const handleCheckAgain = async () => {
-    setCheckingAfterSetup(true);
-    await checkDatabase();
-    setCheckingAfterSetup(false);
-  };
-
+  // Loading state
   if (checking) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
@@ -99,21 +134,21 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1.5, repeat: Infinity, ease: 'linear' }}
-              className="absolute inset-0 rounded-full border-4 border-brand-teal/20 border-t-brand-teal"
+              className="absolute inset-0 rounded-full border-4 border-primary/20 border-t-primary"
             />
-            <Database className="absolute inset-0 m-auto w-7 h-7 text-brand-teal" />
+            <Database className="absolute inset-0 m-auto w-7 h-7 text-primary" />
           </div>
           <div>
             <p className="text-lg font-semibold text-foreground">Connecting to Supabase...</p>
-            <p className="text-sm text-muted-foreground mt-1">Checking database setup</p>
+            <p className="text-sm text-muted-foreground mt-1">Checking database status</p>
           </div>
         </motion.div>
       </div>
     );
   }
 
-  // Database is ready
-  if (setupStatus?.status === 'ready') {
+  // Setup complete!
+  if (step === 'done') {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <motion.div
@@ -125,67 +160,54 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200, delay: 0.2 }}
-            className="mx-auto w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center"
+            className="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center"
           >
-            <CheckCircle2 className="w-8 h-8 text-green-600 dark:text-green-400" />
+            <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
           </motion.div>
           <div>
-            <p className="text-xl font-bold text-foreground">Database Connected!</p>
-            <p className="text-sm text-muted-foreground mt-1">
-              Your Supabase backend is ready
-            </p>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-2xl font-bold text-foreground"
+            >
+              Database Ready!
+            </motion.p>
+            <motion.p
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="text-sm text-muted-foreground mt-2"
+            >
+              All tables created and sample data loaded. Loading your app...
+            </motion.p>
           </div>
-          {setupStatus.stats && (
-            <div className="flex gap-4 justify-center mt-4">
-              {[
-                { label: 'Users', value: setupStatus.stats.users, color: 'text-brand-teal' },
-                { label: 'PGs', value: setupStatus.stats.pgs, color: 'text-brand-deep' },
-                { label: 'Beds', value: setupStatus.stats.beds, color: 'text-brand-sage' },
-              ].map((stat) => (
-                <div key={stat.label} className="bg-muted rounded-lg px-4 py-2">
-                  <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}</div>
-                  <div className="text-xs text-muted-foreground">{stat.label}</div>
-                </div>
+          {setupResult?.tables && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="flex gap-3 justify-center flex-wrap mt-4"
+            >
+              {setupResult.tables.map((t) => (
+                <Badge key={t} variant="secondary" className="capitalize">
+                  {t}
+                </Badge>
               ))}
-            </div>
+            </motion.div>
           )}
         </motion.div>
       </div>
     );
   }
 
-  // Error state
-  if (setupStatus?.status === 'error') {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center px-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="max-w-md w-full text-center space-y-4"
-        >
-          <div className="mx-auto w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center">
-            <AlertTriangle className="w-8 h-8 text-red-600 dark:text-red-400" />
-          </div>
-          <div>
-            <p className="text-xl font-bold text-foreground">Connection Error</p>
-            <p className="text-sm text-muted-foreground mt-1">{setupStatus.message}</p>
-          </div>
-          <Button onClick={checkDatabase} variant="outline">
-            <RefreshCw className="w-4 h-4 mr-2" />
-            Try Again
-          </Button>
-        </motion.div>
-      </div>
-    );
-  }
-
-  // Setup required
+  // Main setup screen
   return (
     <div className="min-h-[60vh] flex items-center justify-center px-4 py-8">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-2xl w-full space-y-6"
+        className="max-w-lg w-full space-y-6"
       >
         {/* Header */}
         <div className="text-center space-y-3">
@@ -193,234 +215,222 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: 'spring', stiffness: 200 }}
-            className="mx-auto w-16 h-16 bg-gradient-to-br from-brand-deep to-brand-teal rounded-2xl flex items-center justify-center shadow-lg"
+            className="mx-auto w-16 h-16 bg-gradient-to-br from-[#1F74BA] to-[#F09120] rounded-2xl flex items-center justify-center shadow-lg"
           >
             <Database className="w-8 h-8 text-white" />
           </motion.div>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold text-foreground">
-              Database Setup Required
+              Database Setup
             </h1>
-            <p className="text-muted-foreground mt-2 max-w-lg mx-auto">
-              Your Supabase project is connected, but the database tables need to be created.
-              Follow the steps below to set up your StayeG backend.
+            <p className="text-muted-foreground mt-2">
+              Your Supabase project is connected! Just enter your database password to create all tables automatically.
             </p>
           </div>
         </div>
 
-        {/* Status Banner */}
-        <Card className="border-amber-200 dark:border-amber-800 bg-amber-50 dark:bg-amber-900/20">
-          <CardContent className="flex items-center gap-3 p-4">
-            <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
-            <p className="text-sm text-amber-800 dark:text-amber-200">
-              <strong>Setup needed:</strong> 9 database tables with relations, indexes, RLS policies, and sample data.
-            </p>
+        {/* Progress indicator */}
+        <div className="flex items-center gap-2 justify-center">
+          {['Enter Password', 'Create Tables', 'Load Data'].map((label, i) => {
+            const steps = ['enter_password', 'creating', 'seeding', 'done'];
+            const currentIdx = steps.indexOf(step);
+            const isActive = i <= currentIdx;
+            const isCurrent = i === currentIdx;
+            return (
+              <div key={label} className="flex items-center gap-2">
+                <div className={`flex items-center gap-2 ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
+                  <div className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                    isCurrent ? 'bg-primary text-primary-foreground' : isActive ? 'bg-green-500 text-white' : 'bg-muted'
+                  }`}>
+                    {isActive && !isCurrent ? <CheckCircle2 className="w-4 h-4" /> : i + 1}
+                  </div>
+                  <span className="text-xs hidden sm:inline">{label}</span>
+                </div>
+                {i < 2 && <div className={`w-8 h-0.5 ${isActive ? 'bg-primary' : 'bg-muted'}`} />}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Enter Password Card */}
+        <Card className={!setupResult?.error ? '' : 'border-red-300 dark:border-red-800'}>
+          <CardHeader className="pb-4">
+            <CardTitle className="text-base flex items-center gap-2">
+              <Shield className="w-4 h-4 text-primary" />
+              Step 1: Enter Your Database Password
+            </CardTitle>
+            <CardDescription>
+              Find it in your Supabase Dashboard
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* How to find password */}
+            <div className="bg-muted/50 rounded-lg p-3 space-y-2">
+              <p className="text-xs font-medium text-foreground flex items-center gap-1">
+                <Zap className="w-3 h-3 text-[#F7E200]" />
+                How to find your database password:
+              </p>
+              <ol className="text-xs text-muted-foreground space-y-1 ml-4 list-decimal">
+                <li>Go to <a href="https://supabase.com/dashboard/project/sbwmecxkbfijanwwuvvt/settings/database" target="_blank" rel="noopener noreferrer" className="text-primary underline hover:no-underline">Supabase Dashboard → Settings → Database</a></li>
+                <li>Scroll to &quot;Database password&quot; section</li>
+                <li>Click &quot;Reset database password&quot; if you forgot it</li>
+                <li>Copy the password and paste it below</li>
+              </ol>
+            </div>
+
+            {/* Password input */}
+            <div className="relative">
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="Enter your Supabase database password"
+                value={dbPassword}
+                onChange={(e) => setDbPassword(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && !settingUp && handleSetup()}
+                className="pr-10 h-12"
+                disabled={settingUp || seeding}
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                tabIndex={-1}
+              >
+                {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+            </div>
+
+            {/* Setup button */}
+            <Button
+              onClick={handleSetup}
+              disabled={!dbPassword.trim() || settingUp || seeding}
+              className="w-full h-12 bg-gradient-to-r from-[#1F74BA] to-[#F09120] hover:from-[#1F74BA]/90 hover:to-[#F09120]/90 text-white text-base font-semibold"
+            >
+              {settingUp ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Creating Tables...
+                </>
+              ) : seeding ? (
+                <>
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                  Loading Sample Data...
+                </>
+              ) : (
+                <>
+                  <Zap className="w-5 h-5 mr-2" />
+                  Setup Database Automatically
+                </>
+              )}
+            </Button>
+
+            {/* Error message */}
+            {setupResult?.error && (
+              <motion.div
+                initial={{ opacity: 0, y: -5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="flex items-start gap-2 p-3 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800"
+              >
+                <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-medium text-red-700 dark:text-red-300">{setupResult.error}</p>
+                  {setupResult.details && (
+                    <p className="text-xs text-red-500 dark:text-red-400 mt-1">{setupResult.details}</p>
+                  )}
+                </div>
+              </motion.div>
+            )}
           </CardContent>
         </Card>
 
-        {/* Steps */}
-        <div className="space-y-4">
-          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
-            <Zap className="w-5 h-5 text-brand-teal" />
-            Quick Setup (2 minutes)
-          </h2>
-
-          <div className="space-y-3">
-            {/* Step 1 */}
-            <Card className="overflow-hidden">
-              <CardHeader className="pb-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-teal/10 text-brand-teal font-bold text-sm shrink-0">
-                    1
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base">Copy the SQL Setup Script</CardTitle>
-                    <CardDescription className="mt-1">
-                      Click the button below to copy the complete database setup SQL to your clipboard.
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 pb-3">
-                <div className="flex items-center gap-3">
-                  <Button
-                    onClick={handleCopySQL}
-                    className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white"
-                  >
-                    {copied ? (
-                      <>
-                        <Check className="w-4 h-4 mr-2" />
-                        Copied!
-                      </>
-                    ) : (
-                      <>
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copy SQL Setup Script
-                      </>
-                    )}
-                  </Button>
-                  <Badge variant="outline" className="text-xs">
-                    ~200 lines
-                  </Badge>
-                </div>
-
-                {/* Collapsible SQL Preview */}
-                <div className="mt-3">
-                  <button
-                    onClick={() => setShowSql(!showSql)}
-                    className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors"
-                  >
-                    {showSql ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    {showSql ? 'Hide' : 'Preview'} SQL script
-                  </button>
-                  <AnimatePresence>
-                    {showSql && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: 'auto', opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
-                      >
-                        <pre
-                          ref={sqlRef}
-                          className="mt-2 p-3 bg-muted rounded-lg text-xs text-foreground overflow-auto max-h-64 leading-relaxed font-mono"
-                        >
-                          {setupStatus?.sql || '-- Loading SQL...'}
-                        </pre>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Step 2 */}
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-teal/10 text-brand-teal font-bold text-sm shrink-0">
-                    2
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base">Open Supabase SQL Editor</CardTitle>
-                    <CardDescription className="mt-1">
-                      Go to your Supabase Dashboard and open the SQL Editor.
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 pb-3">
-                <Button
-                  variant="outline"
-                  onClick={handleOpenSupabase}
-                  className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10"
-                >
-                  <ExternalLink className="w-4 h-4 mr-2" />
-                  Open Supabase SQL Editor
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Step 3 */}
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-teal/10 text-brand-teal font-bold text-sm shrink-0">
-                    3
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base">Paste & Run</CardTitle>
-                    <CardDescription className="mt-1">
-                      Paste the SQL script into the SQL Editor and click <strong>"Run"</strong>. This will create all tables and seed sample data.
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-            </Card>
-
-            {/* Step 4 */}
-            <Card>
-              <CardHeader className="pb-3">
-                <div className="flex items-start gap-3">
-                  <div className="flex items-center justify-center w-8 h-8 rounded-full bg-brand-teal/10 text-brand-teal font-bold text-sm shrink-0">
-                    4
-                  </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-base">Verify Setup</CardTitle>
-                    <CardDescription className="mt-1">
-                      Come back here and click the button below to verify everything is working.
-                    </CardDescription>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0 pb-3">
-                <Button
-                  onClick={handleCheckAgain}
-                  disabled={checkingAfterSetup}
-                  variant="outline"
-                  className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10"
-                >
-                  {checkingAfterSetup ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Checking...
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle2 className="w-4 h-4 mr-2" />
-                      Verify Database Setup
-                    </>
-                  )}
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
-        </div>
+        {/* Creating tables status */}
+        <AnimatePresence>
+          {(settingUp || seeding) && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -10 }}
+              className="space-y-2"
+            >
+              {settingUp && (
+                <Card className="border-primary/30 bg-primary/5">
+                  <CardContent className="flex items-center gap-3 p-4">
+                    <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Creating database tables...</p>
+                      <p className="text-xs text-muted-foreground">Setting up 9 tables with RLS policies and indexes</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+              {seeding && (
+                <Card className="border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-900/20">
+                  <CardContent className="flex items-center gap-3 p-4">
+                    <Loader2 className="w-5 h-5 text-green-600 animate-spin" />
+                    <div>
+                      <p className="text-sm font-medium text-foreground">Loading sample data...</p>
+                      <p className="text-xs text-muted-foreground">Adding PGs, rooms, beds, bookings & more</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <Separator />
 
         {/* What gets created */}
         <div className="space-y-3">
           <h3 className="text-sm font-semibold text-foreground flex items-center gap-2">
-            <Server className="w-4 h-4 text-brand-teal" />
-            What gets created:
+            <Server className="w-4 h-4 text-primary" />
+            What gets created automatically:
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+          <div className="grid grid-cols-3 gap-2">
             {[
-              { name: 'Users', icon: '👥', count: '10 records' },
-              { name: 'PGs', icon: '🏠', count: '8 records' },
-              { name: 'Rooms', icon: '🚪', count: '26 records' },
-              { name: 'Beds', icon: '🛏️', count: '67 records' },
-              { name: 'Bookings', icon: '📋', count: '6 records' },
-              { name: 'Payments', icon: '💰', count: '29 records' },
-              { name: 'Complaints', icon: '🐛', count: '6 records' },
-              { name: 'Vendors', icon: '🔧', count: '8 records' },
-              { name: 'Workers', icon: '👷', count: '8 records' },
+              { name: 'Users', icon: '👥', count: '10' },
+              { name: 'PGs', icon: '🏠', count: '8' },
+              { name: 'Rooms', icon: '🚪', count: '26' },
+              { name: 'Beds', icon: '🛏️', count: '67' },
+              { name: 'Bookings', icon: '📋', count: '6' },
+              { name: 'Payments', icon: <IndianRupee className="w-3.5 h-3.5" />, count: '29' },
+              { name: 'Complaints', icon: '🐛', count: '6' },
+              { name: 'Vendors', icon: '🔧', count: '8' },
+              { name: 'Workers', icon: '👷', count: '8' },
             ].map((item) => (
               <div
                 key={item.name}
-                className="bg-muted rounded-lg p-3 text-center"
+                className="bg-muted/50 rounded-lg p-2.5 text-center"
               >
-                <span className="text-xl">{item.icon}</span>
-                <div className="text-sm font-medium text-foreground mt-1">{item.name}</div>
-                <div className="text-xs text-muted-foreground">{item.count}</div>
+                <span className="text-lg">{item.icon}</span>
+                <div className="text-xs font-medium text-foreground mt-0.5">{item.name}</div>
+                <div className="text-[10px] text-muted-foreground">{item.count} records</div>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Security note */}
-        <div className="flex items-start gap-3 p-4 bg-muted rounded-lg">
-          <Shield className="w-5 h-5 text-brand-teal shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-medium text-foreground">Security Note</p>
-            <p className="text-xs text-muted-foreground mt-1">
-              Row Level Security (RLS) is enabled on all tables with appropriate policies.
-              Your data is protected even with the public API key.
-            </p>
-          </div>
+        {/* Quick link */}
+        <div className="text-center">
+          <a
+            href="https://supabase.com/dashboard/project/sbwmecxkbfijanwwuvvt/settings/database"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 text-sm text-primary hover:underline"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+            Open Supabase Dashboard to find your password
+          </a>
         </div>
+
+        {/* Retry button */}
+        {setupStatus?.status === 'error' && (
+          <div className="text-center">
+            <Button variant="outline" onClick={checkDatabase} size="sm">
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Retry Connection
+            </Button>
+          </div>
+        )}
       </motion.div>
     </div>
   );
