@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import { pageTransition, loadingShimmer } from '@/lib/animations';
+import { pageTransition } from '@/lib/animations';
 import {
   Home, Search, BookOpen, CalendarDays, CreditCard, MessageSquare,
   MapPin, User, Menu, Bell, Building2, LayoutDashboard, BedDouble,
@@ -371,17 +371,6 @@ function MainContent() {
           animate="animate"
           exit="exit"
         >
-          {/* Subtle shimmer overlay during view transitions */}
-          <motion.div
-            className="pointer-events-none fixed inset-0 z-50"
-            variants={loadingShimmer}
-            animate="animate"
-            style={{
-              background:
-                'linear-gradient(90deg, transparent 0%, var(--brand-teal) 50%, transparent 100%)',
-              opacity: 0.03,
-            }}
-          />
           {renderView()}
         </motion.div>
       </AnimatePresence>

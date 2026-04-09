@@ -1032,3 +1032,38 @@ Stage Summary:
 - Owner guide component with 6-step animated walkthrough
 - Professional SEO metadata with India-specific keywords
 - All functionality verified working end-to-end
+---
+Task ID: 7
+Agent: Main Agent
+Task: Fix blinking animations and update light mode color palette to bright highlight colors
+
+Work Log:
+- Removed loadingShimmer overlay from page.tsx that caused constant pulsing on every view transition
+- Removed 3x animate-pulse from hero.tsx decorative background blobs (made static)
+- Removed animate-ping from hero.tsx badge dot (was constantly blinking)
+- Removed gradientShift animation from site-footer.tsx accent line (replaced with static gradient)
+- Updated light mode color palette in globals.css:
+  - Background: warm white #FAFAF9 → pure white #FFFFFF
+  - Primary: deep teal #0D9488 → bright emerald green #059669
+  - Brand-deep: #0D9488 → emerald-700 #047857
+  - Brand-teal: coral #F97066 → vivid rose #F43F5E
+  - Brand-sage: amber #D97706 → golden amber #F59E0B
+  - Brand-lime: medium teal #62... → bright emerald #10B981
+  - Muted bg: stone-100 → zinc-100 (#F4F4F5)
+  - Muted text: stone-500 → zinc-500 (#71717A)
+  - Borders: stone-200 → zinc-200 (#E4E4E7)
+  - Dark mode updated to match (zinc base, bright emerald/rose/amber pop)
+  - Eye comfort mode updated with emerald/peach/gold tones
+- Updated theme-toggle.tsx to use text-primary for light mode icon
+- Kept standard loading skeletons (animate-pulse) as they are proper UX patterns
+- Kept PG card shimmer (hover-only, user-initiated)
+- Kept AI assistant green dot (typing indicator)
+- Kept profile clock animation (KYC pending indicator)
+
+Stage Summary:
+- 4 files edited: page.tsx, hero.tsx, site-footer.tsx, globals.css, theme-toggle.tsx
+- All continuous blinking/flashing animations removed
+- Light mode now uses bright, vivid colors: Emerald Green / Rose Pink / Golden Amber
+- Dark mode preserved with matching vibrant accents
+- Dev server compiles cleanly, lint passes, 200 response confirmed
+

@@ -153,11 +153,11 @@ export default function HeroSection() {
           <div className="absolute inset-0 bg-gradient-to-b from-brand-deep/80 via-brand-teal/60 to-brand-deep/90" />
         </div>
 
-        {/* Animated decorative elements */}
+        {/* Decorative elements (static, no blinking) */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-brand-teal/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-          <div className="absolute top-1/3 left-1/4 w-48 h-48 bg-brand-teal/15 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
+          <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-brand-teal/20 rounded-full blur-3xl" />
+          <div className="absolute top-1/3 left-1/4 w-48 h-48 bg-brand-teal/15 rounded-full blur-2xl" />
           {/* Grid pattern */}
           <div className="absolute inset-0 opacity-[0.03]" style={{
             backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
@@ -175,7 +175,6 @@ export default function HeroSection() {
           >
             <span className="inline-flex items-center gap-2 px-4 py-1.5 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm font-medium border border-white/30">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-white" />
               </span>
               India&apos;s Most Trusted PG Platform
@@ -722,7 +721,7 @@ export default function HeroSection() {
       {/* 9. CTA SECTION        */}
       {/* ===================== */}
       <section className="py-16 md:py-24 bg-gradient-to-br from-brand-deep via-brand-teal to-brand-sage relative overflow-hidden">
-        {/* Decorative */}
+        {/* Decorative (static) */}
         <div className="absolute inset-0 pointer-events-none">
           <div className="absolute -top-20 -left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-brand-teal/20 rounded-full blur-3xl" />

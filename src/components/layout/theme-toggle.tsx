@@ -68,7 +68,7 @@ export function ThemeToggle() {
   };
 
   const colorMap: Record<ThemeMode, string> = {
-    light: 'text-brand-deep',
+    light: 'text-primary',
     dark: 'text-brand-teal',
     'eye-comfort': 'text-amber-500',
   };
@@ -85,7 +85,7 @@ export function ThemeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-44">
         {([
-          { mode: 'light' as ThemeMode, icon: Sun, desc: 'Clean & bright', color: 'text-brand-deep' },
+          { mode: 'light' as ThemeMode, icon: Sun, desc: 'Clean & bright', color: 'text-primary' },
           { mode: 'dark' as ThemeMode, icon: Moon, desc: 'Navy dark mode', color: 'text-brand-teal' },
           { mode: 'eye-comfort' as ThemeMode, icon: Eye, desc: 'Warm, low blue-light', color: 'text-amber-500' },
         ]).map(({ mode, icon: ItemIcon, desc, color }) => (

@@ -5,7 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
-import { slideUp, hoverScale, tapScale, gradientShift } from '@/lib/animations';
+import { slideUp, hoverScale, tapScale } from '@/lib/animations';
 
 const footerSections = [
   {
@@ -62,13 +62,10 @@ export default function SiteFooter() {
       variants={slideUp}
       className="bg-gradient-to-b from-[#1C1917] to-[#0C0A09] text-gray-400 mt-auto pb-safe relative overflow-hidden"
     >
-      {/* Subtle animated gradient accent line at top */}
-      <motion.div
+      {/* Static gradient accent line at top */}
+      <div
         className="absolute top-0 left-0 right-0 h-[2px]"
-        variants={gradientShift}
-        animate="animate"
         style={{
-          backgroundSize: '200% 100%',
           background:
             'linear-gradient(90deg, transparent, var(--brand-teal), var(--brand-deep), var(--brand-teal), transparent)',
         }}
