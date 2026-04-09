@@ -50,37 +50,37 @@ export default function SiteFooter() {
   };
 
   return (
-    <footer className="bg-[#222831] text-gray-400 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
+    <footer className="bg-gradient-to-b from-[#0D1B2A] to-[#0A1628] text-gray-400 mt-auto pb-safe">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-14">
         {/* Top Section */}
         <div className="grid grid-cols-2 md:grid-cols-6 gap-8">
           {/* Brand */}
           <div className="col-span-2">
             <div className="flex items-center gap-2.5 mb-4">
-              <div className="size-9 bg-[#00ADB5] rounded-xl flex items-center justify-center">
+              <div className="size-9 bg-gradient-to-br from-brand-deep to-brand-teal rounded-xl flex items-center justify-center">
                 <Building2 className="size-5 text-white" />
               </div>
               <span className="text-xl font-bold text-white">
-                Stay<span className="text-[#00ADB5]">eG</span>
+                Stay<span className="text-brand-teal">eG</span>
               </span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed mb-4 max-w-xs">
               India&apos;s smartest PG ecosystem platform. Find verified PGs, manage properties from your phone, join communities, and never feel alone in a new city.
             </p>
-            <p className="text-xs text-[#00ADB5] font-semibold mb-6">
+            <p className="text-xs text-brand-teal font-semibold mb-6">
               100% Free for Tenants &bull; First 1000 PG Owners Get 1 Year Free!
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Phone className="size-4 text-[#00ADB5]" />
+                <Phone className="size-4 text-brand-deep" />
                 <span>+91 1800-123-STAY (Toll Free)</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Mail className="size-4 text-[#00ADB5]" />
+                <Mail className="size-4 text-brand-deep" />
                 <span>hello@stayeg.in</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <MapPin className="size-4 text-[#00ADB5]" />
+                <MapPin className="size-4 text-brand-deep" />
                 <span>Bangalore, India</span>
               </div>
             </div>
@@ -95,7 +95,7 @@ export default function SiteFooter() {
                   <li key={link.label}>
                     <button
                       onClick={() => handleLinkClick(link.view)}
-                      className="text-sm text-gray-500 hover:text-[#00ADB5] transition-colors"
+                      className="text-sm text-gray-500 hover:text-brand-teal transition-colors"
                     >
                       {link.label}
                     </button>
@@ -106,7 +106,7 @@ export default function SiteFooter() {
           ))}
         </div>
 
-        <Separator className="my-8 bg-[#393E46]" />
+        <Separator className="my-8 bg-white/10" />
 
         {/* Bottom Section */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -119,7 +119,7 @@ export default function SiteFooter() {
             {[Instagram, Twitter, Facebook, Linkedin].map((Icon, i) => (
               <button
                 key={i}
-                className="size-9 rounded-lg bg-[#393E46] hover:bg-[#00ADB5] flex items-center justify-center transition-colors group"
+                className="size-9 rounded-lg bg-white/10 hover:bg-brand-teal flex items-center justify-center transition-colors group"
               >
                 <Icon className="size-4 text-gray-500 group-hover:text-white" />
               </button>
