@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
-import { PRICING_PLANS, AVAILABLE_COUPONS, BADGE_BORDER } from '@/lib/constants';
+import { PRICING_PLANS, AVAILABLE_COUPONS, BADGE_BORDER, BADGE } from '@/lib/constants';
 
 const FAQ_ITEMS = [
   {

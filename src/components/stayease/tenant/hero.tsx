@@ -132,7 +132,7 @@ export default function HeroSection() {
   };
 
   const handleCityClick = (city: string) => {
-    setSearchFilters(prev => ({ ...prev, city }));
+    setSearchFilters({ ...searchFilters, city });
     setLocalCity(city);
     handleSearch();
   };

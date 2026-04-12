@@ -70,7 +70,8 @@ function FilterContent({
     priceRange: number[];
     amenities: string[];
   };
-  setFilters: React.Dispatch<React.SetStateAction<typeof filters>>;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  setFilters: React.Dispatch<React.SetStateAction<any>>;
   onClose?: () => void;
 }) {
   return (
@@ -259,7 +260,7 @@ export default function PGListing() {
             <div className="hidden sm:block">
               <Select
                 value={filters.sortBy}
-                onValueChange={(v) => setFilters((p) => ({ ...p, sortBy: v }))}
+                onValueChange={(v) => setFilters((p) => ({ ...p, sortBy: v as typeof p.sortBy }))}
               >
                 <SelectTrigger className="w-[160px]">
                   <ArrowUpDown className="size-4 mr-1" />

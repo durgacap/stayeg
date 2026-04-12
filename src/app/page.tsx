@@ -94,7 +94,7 @@ const OWNER_MOBILE_NAV = [
 const HIDE_HEADER_VIEWS = ['LOGIN', 'SIGNUP'] as const;
 const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'PROFILE'] as const;
 
-function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV }) {
+function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV | typeof OWNER_MOBILE_NAV }) {
   const { currentView, setCurrentView } = useAppStore();
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border md:hidden">

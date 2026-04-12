@@ -224,7 +224,7 @@ export default function RentManagement() {
                   {filteredPayments.map((p: { id: string; user?: { name: string }; pg?: { name: string }; amount: number; type: string; status: string; dueDate?: string; paidDate?: string; method?: string }, idx: number) => (
                     <TableRow key={p.id} className="hover:bg-muted">
                       <TableCell className="font-medium text-sm">{p.user?.name || 'Unknown'}</TableCell>
-                      <TableCell className="text-sm text-muted-foreground">{p.pg?.name || pgNameMap[p.pgId] || 'PG'}</TableCell>
+                      <TableCell className="text-sm text-muted-foreground">{p.pg?.name || 'PG'}</TableCell>
                       <TableCell className="font-semibold">₹{(p.amount || 0).toLocaleString('en-IN')}</TableCell>
                       <TableCell><Badge variant="outline" className="text-xs">{p.type}</Badge></TableCell>
                       <TableCell><Badge className={`${statusColor(p.status)} text-xs`}>{STATUSES.PAYMENT[p.status as keyof typeof STATUSES.PAYMENT]?.label || p.status}</Badge></TableCell>

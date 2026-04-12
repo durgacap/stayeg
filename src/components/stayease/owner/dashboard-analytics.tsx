@@ -229,7 +229,7 @@ export default function OwnerDashboard() {
                 <p className="font-semibold text-red-800">{openComplaints} Open Complaints</p>
                 <p className="text-sm text-red-600">Requires your attention. Click to view details.</p>
               </div>
-              <Badge className={`${BADGE.red} hover:opacity-80`}>{openComplaints}</Badge>
+              <Badge className="bg-red-500 text-white hover:opacity-80">{openComplaints}</Badge>
             </CardContent>
           </Card>
         </motion.div>

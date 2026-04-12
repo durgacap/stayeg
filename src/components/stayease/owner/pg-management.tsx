@@ -112,8 +112,9 @@ export default function PGManagement() {
 
   const toggleAmenity = (amenityId: string) => {
     setForm(prev => {
-      const list = Array.isArray(prev.amenities) ? prev.amenities : 
-        typeof prev.amenities === 'string' ? prev.amenities.split(',').filter(Boolean) : [];
+      const raw = prev.amenities as unknown;
+      const list = Array.isArray(raw) ? raw : 
+        typeof raw === 'string' ? (raw as string).split(',').filter(Boolean) : [];
       return {
         ...prev,
         amenities: list.includes(amenityId)
@@ -134,7 +135,7 @@ export default function PGManagement() {
       securityDeposit: String(pg.securityDeposit),
       description: pg.description || '',
       amenities: typeof pg.amenities === 'string' ? pg.amenities.split(',').filter(Boolean) : pg.amenities || [],
-      images: typeof pg.images === 'string' ? pg.images : (pg.images || []).join(','),
+      images: typeof pg.images === 'string' ? pg.images : String((pg.images || [])).split(',').join(','),
     });
     setEditOpen(true);
   };
@@ -229,8 +230,9 @@ export default function PGManagement() {
                     <label key={amenity.id} className="flex items-center gap-2 text-sm cursor-pointer p-1.5 rounded-lg hover:bg-muted">
                       <Checkbox
                         checked={(() => {
-                          const list = Array.isArray(form.amenities) ? form.amenities :
-                            typeof form.amenities === 'string' ? form.amenities.split(',').filter(Boolean) : [];
+                          const raw = form.amenities as unknown;
+                          const list = Array.isArray(raw) ? raw :
+                            typeof raw === 'string' ? (raw as string).split(',').filter(Boolean) : [];
                           return list.includes(amenity.id);
                         })()}
                         onCheckedChange={() => toggleAmenity(amenity.id)}
@@ -445,8 +447,9 @@ export default function PGManagement() {
                 {AMENITIES_LIST.map(amenity => (
                   <label key={amenity.id} className="flex items-center gap-2 text-sm cursor-pointer p-1.5 rounded-lg hover:bg-muted">
                     <Checkbox checked={(() => {
-                      const list = Array.isArray(form.amenities) ? form.amenities :
-                        typeof form.amenities === 'string' ? form.amenities.split(',').filter(Boolean) : [];
+                      const raw = form.amenities as unknown;
+                      const list = Array.isArray(raw) ? raw :
+                        typeof raw === 'string' ? (raw as string).split(',').filter(Boolean) : [];
                       return list.includes(amenity.id);
                     })()} onCheckedChange={() => toggleAmenity(amenity.id)} />
                     <span className="text-foreground">{amenity.label}</span>
