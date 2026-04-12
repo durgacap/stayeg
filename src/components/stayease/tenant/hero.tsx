@@ -180,7 +180,7 @@ export default function HeroSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="max-w-2xl mx-auto mb-5"
           >
-            <div className="bg-card rounded-xl border border-border shadow-sm p-1.5">
+            <div className="bg-card rounded-xl border border-gold/30 shadow-gold-sm p-1.5 focus-within:ring-1 ring-gold">
               <div className="flex flex-col sm:flex-row gap-1.5">
                 {/* City */}
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/60 min-w-0 sm:min-w-[140px]">
@@ -281,7 +281,7 @@ export default function HeroSection() {
               { step: '03', icon: Building2, title: 'Move In', desc: 'Complete KYC, pay securely, and move in stress-free.' },
             ].map((item, idx) => (
               <FadeInSection key={item.step} delay={idx * 0.1}>
-                <Card className="border border-border shadow-sm hover:shadow-md transition-shadow group bg-card">
+                <Card className="border border-gold/20 shadow-gold-sm hover:shadow-gold transition-shadow group bg-card">
                   <CardContent className="p-5 md:p-6">
                     <div className="size-11 rounded-xl bg-primary flex items-center justify-center mb-4">
                       <item.icon className="size-5 text-white" />
@@ -319,7 +319,7 @@ export default function HeroSection() {
               { icon: Headphones, title: '24/7 Support', desc: 'Our team is available round the clock via chat, call, or email.', color: 'bg-rose-50 text-rose-600' },
             ].map((item, idx) => (
               <FadeInSection key={item.title} delay={idx * 0.05}>
-                <Card className="border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all bg-card">
+                <Card className="border border-gold/20 shadow-gold-sm hover:shadow-gold hover:-translate-y-0.5 transition-all bg-card">
                   <CardContent className="p-5">
                     <div className={`size-10 rounded-lg ${item.color} flex items-center justify-center mb-3`}>
                       <item.icon className="size-5" />
@@ -446,7 +446,7 @@ export default function HeroSection() {
                   <Button
                     onClick={() => setCurrentView('SIGNUP')}
                     variant="outline"
-                    className="border-primary/30 text-primary hover:bg-primary/5 rounded-lg px-5 h-9 text-sm"
+                    className="border-primary/30 text-primary hover:bg-primary/5 rounded-lg px-5 h-9 text-sm shadow-gold"
                   >
                     Register as Vendor
                     <ArrowRight className="size-3.5 ml-1.5" />
@@ -663,7 +663,7 @@ function TestimonialCard({ testimonial: { name, role, avatar, quote, rating } }:
   testimonial: typeof testimonials[0];
 }) {
   return (
-    <Card className="border border-border shadow-sm bg-card">
+    <Card className="border border-gold/20 shadow-gold-sm bg-card">
       <CardContent className="p-5">
         <div className="flex gap-0.5 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (

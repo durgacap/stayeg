@@ -292,7 +292,7 @@ export default function PGDetail() {
                 </div>
 
                 {/* Price Section */}
-                <div className="bg-brand-teal/10 rounded-2xl p-5 min-w-[200px] text-center lg:text-right">
+                <div className="bg-brand-teal/10 rounded-2xl p-5 min-w-[200px] text-center lg:text-right border border-gold/20 shadow-gold-sm">
                   <div className="text-sm text-muted-foreground mb-1">Starting from</div>
                   <div className="flex items-baseline justify-center lg:justify-end gap-1">
                     <IndianRupee className="size-5 text-brand-teal" />

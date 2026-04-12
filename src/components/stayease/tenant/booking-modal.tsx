@@ -384,7 +384,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-2xl max-h-[92vh] overflow-y-auto">
+      <DialogContent className="sm:max-w-2xl max-h-[92vh] overflow-y-auto border border-gold/30 shadow-gold-md">
         {/* Success State */}
         {step === 4 && (
           <div className="py-8 text-center relative">

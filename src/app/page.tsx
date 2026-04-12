@@ -97,7 +97,7 @@ const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY',
 function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV | typeof OWNER_MOBILE_NAV }) {
   const { currentView, setCurrentView } = useAppStore();
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-gold/20 shadow-gold-sm md:hidden">
       <div className="flex items-center justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {items.map((item) => {
           const isActive = currentView === item.view;
@@ -141,8 +141,8 @@ function TopHeader() {
     <header
       className={`sticky top-0 z-40 transition-all duration-300 ${
         isLanding
-          ? 'bg-background border-b border-border'
-          : 'bg-background border-b border-border'
+          ? 'bg-background border-b border-gold/20'
+          : 'bg-background border-b border-gold/20'
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2.5 flex items-center justify-between">

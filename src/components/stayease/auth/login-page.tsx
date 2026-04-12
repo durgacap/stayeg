@@ -172,7 +172,7 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Main Card */}
-        <Card className="shadow-xl shadow-brand-teal/10 border-0 bg-card">
+        <Card className="shadow-xl shadow-brand-teal/10 border border-gold/30 shadow-gold-md bg-card">
           <CardContent className="p-6">
             <AnimatePresence mode="wait">
               {!showOTP ? (

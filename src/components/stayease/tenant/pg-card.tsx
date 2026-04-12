@@ -183,7 +183,7 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
       onMouseLeave={handleCardMouseLeave}
       className="group"
     >
-      <Card className="overflow-hidden border-0 shadow-md hover:shadow-xl transition-shadow duration-300 rounded-2xl relative">
+      <Card className="overflow-hidden border border-gold/20 shadow-gold-sm hover:shadow-gold transition-shadow duration-300 rounded-2xl relative">
         {/* Shine / shimmer sweep on hover */}
         <motion.div
           className="absolute inset-0 z-20 pointer-events-none"

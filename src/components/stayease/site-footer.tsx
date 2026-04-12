@@ -60,7 +60,7 @@ export default function SiteFooter() {
       initial="hidden"
       animate={isInView ? 'visible' : 'hidden'}
       variants={slideUp}
-      className="bg-gradient-to-b from-[#1E293B] to-[#0F172A] text-gray-400 mt-auto pb-safe relative overflow-hidden"
+      className="bg-gradient-to-b from-[#1E293B] to-[#0F172A] text-gray-400 mt-auto pb-safe relative overflow-hidden border-t border-gold/30 shadow-gold"
     >
       {/* Static gradient accent line at top */}
       <div

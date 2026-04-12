@@ -1302,3 +1302,46 @@ Stage Summary:
 - 0 crashes, 0 blur effects, 0 compilation errors
 - Dark mode, light mode, and eye-comfort mode all render correctly
 - Clean professional teal color palette throughout
+
+---
+Task ID: 2
+Agent: Golden Borders Agent
+Task: Add subtle golden borders and shadows to base shadcn/ui components
+
+Work Log:
+- **card.tsx**: Added `border border-gold/30 shadow-gold-sm` to Card component default className — gives all cards a very subtle golden border glow
+- **input.tsx**: Changed focus ring from `focus-visible:border-ring focus-visible:ring-ring/50` to `focus-visible:border-gold/50 focus-visible:ring-gold` — inputs get a warm golden focus ring
+- **button.tsx**: Added `border border-gold/30 shadow-gold-sm` to default variant only — primary buttons get a subtle golden edge; outline/ghost/link/secondary/destructive variants untouched
+- **badge.tsx**: Changed default variant from `border-transparent` to `border border-gold/20` — primary badges get an ultra-subtle golden border
+- **dialog.tsx**: Added `border-gold/30 shadow-gold-md` to DialogContent — modals get a refined golden frame
+
+Stage Summary:
+- 5 base UI component files modified with golden accent styles
+- 0 logic, state, props, or structural changes — className additions only
+- All golden effects use low-opacity variants (/20, /30) and custom utility classes (shadow-gold-sm, shadow-gold-md, ring-gold)
+- Design intent: barely noticeable elegant premium feel, not flashy
+- Dev server returns 200 — clean compilation
+
+---
+Task ID: 3
+Agent: Golden Borders for Page Components
+Task: Add SUBTLE golden borders and shadows to key page-level components
+
+Work Log:
+- **page.tsx**: TopHeader `border-b border-border` → `border-b border-gold/20` (golden bottom border on sticky header); MobileNav `border-t border-border` → `border-t border-gold/20 shadow-gold-sm` (golden top border + subtle glow on mobile nav)
+- **hero.tsx**: Search bar container `border border-border shadow-sm` → `border border-gold/30 shadow-gold-sm focus-within:ring-1 ring-gold` (golden border + golden focus ring); Vendor "Register as Vendor" button added `shadow-gold`; "How It Works" step cards `border border-border shadow-sm hover:shadow-md` → `border border-gold/20 shadow-gold-sm hover:shadow-gold`; "Why Choose" cards `border border-border shadow-sm hover:shadow-md` → `border border-gold/20 shadow-gold-sm hover:shadow-gold`; TestimonialCard `border border-border shadow-sm` → `border border-gold/20 shadow-gold-sm`
+- **site-footer.tsx**: Footer added `border-t border-gold/30 shadow-gold` (golden top border + subtle golden shadow)
+- **login-page.tsx**: Main Card `border-0` → `border border-gold/30 shadow-gold-md` (golden border + medium golden shadow)
+- **signup-page.tsx**: Main Card `border-0` → `border border-gold/30 shadow-gold-md` (golden border + medium golden shadow)
+- **pg-card.tsx**: Card `border-0 shadow-md hover:shadow-xl` → `border border-gold/20 shadow-gold-sm hover:shadow-gold` (elegant golden hover transition)
+- **booking-modal.tsx**: DialogContent added `border border-gold/30 shadow-gold-md` (golden border + medium golden shadow)
+- **pg-detail.tsx**: Price section added `border border-gold/20 shadow-gold-sm` (subtle golden frame)
+
+Stage Summary:
+- 8 files modified with golden accent styles
+- 0 logic, state, props, or structural changes — className additions only
+- All golden effects use low-opacity variants (/20, /30) for subtlety
+- Hover states transition from shadow-gold-sm to shadow-gold for elegant feedback
+- Status badges (green, red, amber), gender badges (blue, pink), and star ratings (amber) untouched
+- Dev server returns 200 — clean compilation
+- Lint clean (only pre-existing watcher.js and pg-listing.tsx warnings)

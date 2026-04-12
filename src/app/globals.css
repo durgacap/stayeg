@@ -51,16 +51,22 @@
   --color-brand-teal-light: var(--brand-teal-light);
   --color-brand-sage-light: var(--brand-sage-light);
   --color-brand-lime-dark: var(--brand-lime-dark);
+
+  /* Gold accent tokens */
+  --color-gold: var(--gold);
+  --color-gold-light: var(--gold-light);
+  --color-gold-dark: var(--gold-dark);
 }
 
 /* ================================================================
-   STAYEG — CLEAN PROFESSIONAL DESIGN SYSTEM
-   
-   LIGHT: Pure white + teal accent — like Airbnb, clean & trusted
-   DARK:  Soft charcoal + bright teal — easy on eyes
-   EYE:   Warm stone + muted teal — cozy nighttime
-   
-   PRIMARY:    Teal-600 #0D9488  — Trust, growth, home
+   STAYEG — BLUE + GOLD PREMIUM DESIGN SYSTEM
+
+   LIGHT: White + blue accent + golden borders — premium, trusted
+   DARK:  Soft charcoal + bright blue + golden glow — elegant
+   EYE:   Warm stone + muted blue + warm gold — cozy nighttime
+
+   PRIMARY:    Blue-600 #2563EB  — Trust, professional, premium
+   GOLD:       #C9A84C           — Premium borders, subtle glow
    SUCCESS:    Green-500 #22C55E
    ERROR:      Red-500   #EF4444
    WARNING:    Amber-500 #F59E0B
@@ -75,25 +81,25 @@
   --popover: #FFFFFF;
   --popover-foreground: #111827;
 
-  --primary: #0D9488;
+  --primary: #2563EB;
   --primary-foreground: #FFFFFF;
 
-  --secondary: #F0FDFA;
+  --secondary: #EFF6FF;
   --secondary-foreground: #111827;
 
   --muted: #F9FAFB;
   --muted-foreground: #6B7280;
 
-  --accent: #F0FDFA;
+  --accent: #EFF6FF;
   --accent-foreground: #111827;
 
   --destructive: #EF4444;
 
   --border: #E5E7EB;
   --input: #E5E7EB;
-  --ring: #0D9488;
+  --ring: #2563EB;
 
-  --chart-1: #0D9488;
+  --chart-1: #2563EB;
   --chart-2: #F59E0B;
   --chart-3: #6366F1;
   --chart-4: #22C55E;
@@ -101,21 +107,26 @@
 
   --sidebar: #FFFFFF;
   --sidebar-foreground: #111827;
-  --sidebar-primary: #0D9488;
+  --sidebar-primary: #2563EB;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F0FDFA;
+  --sidebar-accent: #EFF6FF;
   --sidebar-accent-foreground: #111827;
   --sidebar-border: #E5E7EB;
-  --sidebar-ring: #0D9488;
+  --sidebar-ring: #2563EB;
 
-  --brand-deep: #0F766E;
-  --brand-teal: #0D9488;
+  --brand-deep: #1E40AF;
+  --brand-teal: #2563EB;
   --brand-sage: #F59E0B;
   --brand-lime: #22C55E;
-  --brand-deep-light: #F0FDFA;
-  --brand-teal-light: #CCFBF1;
+  --brand-deep-light: #EFF6FF;
+  --brand-teal-light: #BFDBFE;
   --brand-sage-light: #FFFBEB;
   --brand-lime-dark: #16A34A;
+
+  /* Gold accent */
+  --gold: #C9A84C;
+  --gold-light: #FBF5E6;
+  --gold-dark: #A68B3C;
 }
 
 /* ================================================================
@@ -129,7 +140,7 @@
   --popover: #1F2937;
   --popover-foreground: #F9FAFB;
 
-  --primary: #2DD4BF;
+  --primary: #60A5FA;
   --primary-foreground: #111827;
 
   --secondary: #1E293B;
@@ -145,9 +156,9 @@
 
   --border: #374151;
   --input: #374151;
-  --ring: #2DD4BF;
+  --ring: #60A5FA;
 
-  --chart-1: #2DD4BF;
+  --chart-1: #60A5FA;
   --chart-2: #FBBF24;
   --chart-3: #818CF8;
   --chart-4: #4ADE80;
@@ -155,21 +166,26 @@
 
   --sidebar: #111827;
   --sidebar-foreground: #F9FAFB;
-  --sidebar-primary: #2DD4BF;
+  --sidebar-primary: #60A5FA;
   --sidebar-primary-foreground: #111827;
   --sidebar-accent: #1E293B;
   --sidebar-accent-foreground: #F9FAFB;
   --sidebar-border: #374151;
-  --sidebar-ring: #2DD4BF;
+  --sidebar-ring: #60A5FA;
 
-  --brand-deep: #1E293B;
-  --brand-teal: #2DD4BF;
+  --brand-deep: #1E3A5F;
+  --brand-teal: #60A5FA;
   --brand-sage: #FBBF24;
   --brand-lime: #4ADE80;
-  --brand-deep-light: #134E4A;
-  --brand-teal-light: #0F766E;
+  --brand-deep-light: #1E293B;
+  --brand-teal-light: #1E40AF;
   --brand-sage-light: #451A03;
   --brand-lime-dark: #16A34A;
+
+  /* Gold accent — muted for dark mode */
+  --gold: #D4AF5A;
+  --gold-light: #2A2518;
+  --gold-dark: #A68B3C;
 }
 
 /* ================================================================
@@ -183,7 +199,7 @@
   --popover: #292524;
   --popover-foreground: #F5F5F4;
 
-  --primary: #5EEAD4;
+  --primary: #93C5FD;
   --primary-foreground: #1C1917;
 
   --secondary: #292524;
@@ -199,9 +215,9 @@
 
   --border: #44403C;
   --input: #44403C;
-  --ring: #5EEAD4;
+  --ring: #93C5FD;
 
-  --chart-1: #5EEAD4;
+  --chart-1: #93C5FD;
   --chart-2: #FDE68A;
   --chart-3: #C4B5FD;
   --chart-4: #86EFAC;
@@ -209,21 +225,26 @@
 
   --sidebar: #1C1917;
   --sidebar-foreground: #F5F5F4;
-  --sidebar-primary: #5EEAD4;
+  --sidebar-primary: #93C5FD;
   --sidebar-primary-foreground: #1C1917;
   --sidebar-accent: #292524;
   --sidebar-accent-foreground: #F5F5F4;
   --sidebar-border: #44403C;
-  --sidebar-ring: #5EEAD4;
+  --sidebar-ring: #93C5FD;
 
   --brand-deep: #292524;
-  --brand-teal: #5EEAD4;
+  --brand-teal: #93C5FD;
   --brand-sage: #FDE68A;
   --brand-lime: #86EFAC;
   --brand-deep-light: #292524;
-  --brand-teal-light: #134E4A;
+  --brand-teal-light: #1E3A5F;
   --brand-sage-light: #3D3528;
   --brand-lime-dark: #16A34A;
+
+  /* Gold accent — warm for eye comfort */
+  --gold: #D4B06A;
+  --gold-light: #2E2820;
+  --gold-dark: #A68B3C;
 }
 
 .eye-comfort img,
@@ -234,6 +255,9 @@
   filter: none;
 }
 
+/* ================================================================
+   GOLDEN BORDER & SHADOW UTILITIES — Premium elegant style
+   ================================================================ */
 @layer base {
   * {
     @apply border-border outline-ring/50;
@@ -243,6 +267,39 @@
   }
 }
 
+/* Golden border utilities */
+@utility border-gold {
+  border-color: var(--gold);
+}
+@utility border-gold/20 {
+  border-color: color-mix(in srgb, var(--gold) 20%, transparent);
+}
+@utility border-gold/30 {
+  border-color: color-mix(in srgb, var(--gold) 30%, transparent);
+}
+@utility border-gold/50 {
+  border-color: color-mix(in srgb, var(--gold) 50%, transparent);
+}
+
+/* Golden shadow utilities — very subtle */
+@utility shadow-gold {
+  box-shadow: 0 1px 3px 0 color-mix(in srgb, var(--gold) 8%, transparent),
+              0 1px 2px -1px color-mix(in srgb, var(--gold) 6%, transparent);
+}
+@utility shadow-gold-sm {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--gold) 15%, transparent);
+}
+@utility shadow-gold-md {
+  box-shadow: 0 2px 8px 0 color-mix(in srgb, var(--gold) 10%, transparent),
+              0 1px 3px 0 color-mix(in srgb, var(--gold) 6%, transparent);
+}
+
+/* Golden ring for focused inputs */
+@utility ring-gold {
+  --tw-ring-color: color-mix(in srgb, var(--gold) 40%, transparent);
+}
+
+/* Safe area utilities */
 @utility pt-safe {
   padding-top: env(safe-area-inset-top);
 }
