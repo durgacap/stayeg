@@ -318,10 +318,10 @@ export default function ProfilePage() {
       {/* Profile Header */}
       <div className="bg-gradient-to-br from-brand-deep via-brand-sage to-brand-teal relative overflow-hidden">
         {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute top-0 left-1/4 w-64 h-64 bg-foreground/5 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-foreground/5 rounded-full blur-3xl" />
-        </div>
+        <div className="absolute inset-0 opacity-[0.04]" style={{
+          backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+          backgroundSize: '30px 30px'
+        }} />
 
         <div className="relative max-w-4xl mx-auto px-4 pt-8 pb-16">
           <motion.div

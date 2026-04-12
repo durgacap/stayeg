@@ -1105,3 +1105,33 @@ Stage Summary:
 - Security: SQL injection vulnerability patched
 - Config: TypeScript errors no longer hidden, strict mode enabled
 - Server: Running stable, HTTP 200, zero compile errors
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Complete color palette overhaul — remove blue, add premium violet palette + remove all blur effects
+
+Work Log:
+- Analyzed user complaints: (1) blue colors not attractive, (2) dark/eye-comfort modes look poor, (3) hero "PG Home" text still appears blurry
+- Completely rewrote globals.css with new Premium Violet Color System:
+  - LIGHT: Warm zinc neutrals (#FAFAFA bg, #18181B text) + Violet-600 (#7C3AED) primary
+  - DARK: Rich zinc-950 (#09090B bg, #FAFAFA text) + Violet-400 (#A78BFA) primary — proper contrast
+  - EYE COMFORT: Warm stone base (#1C1917 bg, #F5F5F4 text) + soft Violet-300 (#C4B5FD) primary
+  - Brand tokens: brand-deep=Violet-700, brand-teal=Violet-600, brand-sage=Amber-500, brand-lime=Green-500
+  - All charts, sidebar, popover, card colors updated for all 3 modes
+- Removed ALL decorative blur-3xl/blur-2xl circles from hero.tsx (3 locations: hero section, For Owners, CTA)
+- Replaced blur circles with clean subtle dot-grid patterns (opacity 0.03-0.04)
+- Changed hero "PG Home" text from faded gradient (via-brand-lime/80 transparent) to solid brand-lime color
+- Fixed For Owners section: replaced hardcoded slate colors (#1E293B/#334155) with violet theme (brand-deep/#2E1065)
+- Removed blur-3xl decorative circles from profile-page.tsx header
+- Kept functional backdrop-blur on navigation bars (standard glass-morphism, not decorative)
+- All changes compile cleanly, lint passes (only pre-existing watcher.js error)
+
+Stage Summary:
+- Complete color palette replacement: Blue → Premium Violet across all 3 theme modes
+- All decorative blur effects permanently removed from hero, CTA, For Owners, Profile sections
+- Dark mode now uses true zinc-950 base (no blue tint) with bright violet-400 accents
+- Eye comfort mode uses warm stone base with soft violet-300 accents
+- Hero "PG Home" text is now solid green (#22C55E) — no more gradient blur appearance
+- 4 files modified: globals.css, hero.tsx, profile-page.tsx, page.tsx (colors auto-applied via CSS vars)
+

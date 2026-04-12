@@ -153,13 +153,9 @@ export default function HeroSection() {
           <div className="absolute inset-0 bg-gradient-to-b from-brand-deep/80 via-brand-teal/60 to-brand-deep/90" />
         </div>
 
-        {/* Decorative elements (static, no blinking) */}
+        {/* Subtle grid pattern overlay */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-20 -right-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -left-20 w-96 h-96 bg-brand-teal/20 rounded-full blur-3xl" />
-          <div className="absolute top-1/3 left-1/4 w-48 h-48 bg-brand-teal/15 rounded-full blur-2xl" />
-          {/* Grid pattern */}
-          <div className="absolute inset-0 opacity-[0.03]" style={{
+          <div className="absolute inset-0 opacity-[0.04]" style={{
             backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
             backgroundSize: '40px 40px'
           }} />
@@ -190,7 +186,7 @@ export default function HeroSection() {
           >
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight text-white mb-6 leading-tight">
               Find Your Perfect{' '}
-              <span className="bg-gradient-to-r from-white via-brand-lime/80 to-white bg-clip-text text-transparent">
+              <span className="text-brand-lime font-extrabold">
                 PG Home
               </span>
             </h1>
@@ -439,10 +435,12 @@ export default function HeroSection() {
       <section className="py-16 md:py-24 bg-background overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection>
-            <div className="relative rounded-3xl bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#1E293B] overflow-hidden p-8 md:p-12 lg:p-16">
-              {/* Background decorative */}
-              <div className="absolute top-0 right-0 w-96 h-96 bg-brand-teal/10 rounded-full blur-3xl" />
-              <div className="absolute bottom-0 left-0 w-72 h-72 bg-brand-sage/10 rounded-full blur-3xl" />
+            <div className="relative rounded-3xl bg-gradient-to-br from-brand-deep via-[#2E1065] to-brand-deep overflow-hidden p-8 md:p-12 lg:p-16">
+              {/* Subtle pattern */}
+              <div className="absolute inset-0 opacity-[0.03]" style={{
+                backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
+                backgroundSize: '30px 30px'
+              }} />
 
               <div className="relative grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                 {/* Left - Content */}
@@ -721,11 +719,9 @@ export default function HeroSection() {
       {/* 9. CTA SECTION        */}
       {/* ===================== */}
       <section className="py-16 md:py-24 bg-gradient-to-br from-brand-deep via-brand-teal to-brand-sage relative overflow-hidden">
-        {/* Decorative (static) */}
+        {/* Subtle pattern overlay */}
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute -top-20 -left-20 w-72 h-72 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -right-20 w-96 h-96 bg-brand-teal/20 rounded-full blur-3xl" />
-          <div className="absolute inset-0 opacity-[0.03]" style={{
+          <div className="absolute inset-0 opacity-[0.04]" style={{
             backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
             backgroundSize: '40px 40px'
           }} />
