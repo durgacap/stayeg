@@ -302,8 +302,8 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
             </div>
             <div className="flex items-center gap-1 bg-brand-sage-light px-2 py-1 rounded-lg shrink-0">
               <Star className="size-4 text-brand-sage fill-brand-sage" />
-              <span className="font-semibold text-sm text-foreground">{pg.rating.toFixed(1)}</span>
-              <span className="text-xs text-muted-foreground">({pg.totalReviews})</span>
+              <span className="font-semibold text-sm text-foreground">{pg.rating?.toFixed(1) ?? 'N/A'}</span>
+              <span className="text-xs text-muted-foreground">({(pg.totalReviews ?? 0)})</span>
             </div>
           </motion.div>
 

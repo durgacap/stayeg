@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import {
@@ -192,11 +192,28 @@ export default function ProfilePage() {
   const [showCurrentPassword, setShowCurrentPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
 
-  // Notification preferences
-  const [emailNotifs, setEmailNotifs] = useState(true);
-  const [smsNotifs, setSmsNotifs] = useState(false);
-  const [bookingNotifs, setBookingNotifs] = useState(true);
-  const [promoNotifs, setPromoNotifs] = useState(false);
+  // Notification preferences (persisted to localStorage)
+  const [emailNotifs, setEmailNotifs] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('stayeg_notif_email') !== 'false';
+    return true;
+  });
+  const [smsNotifs, setSmsNotifs] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('stayeg_notif_sms') === 'true';
+    return false;
+  });
+  const [bookingNotifs, setBookingNotifs] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('stayeg_notif_booking') !== 'false';
+    return true;
+  });
+  const [promoNotifs, setPromoNotifs] = useState(() => {
+    if (typeof window !== 'undefined') return localStorage.getItem('stayeg_notif_promo') === 'true';
+    return false;
+  });
+
+  useEffect(() => { localStorage.setItem('stayeg_notif_email', String(emailNotifs)); }, [emailNotifs]);
+  useEffect(() => { localStorage.setItem('stayeg_notif_sms', String(smsNotifs)); }, [smsNotifs]);
+  useEffect(() => { localStorage.setItem('stayeg_notif_booking', String(bookingNotifs)); }, [bookingNotifs]);
+  useEffect(() => { localStorage.setItem('stayeg_notif_promo', String(promoNotifs)); }, [promoNotifs]);
 
   const kycStatus: KYCStatus = currentUser?.kycStatus || 'NOT_STARTED';
   const kycConfig = KYC_CONFIG[kycStatus];
@@ -294,10 +311,11 @@ export default function ProfilePage() {
       toast.error('Passwords do not match');
       return;
     }
+    // Demo mode — no actual password verification is performed
     setCurrentPassword('');
     setNewPassword('');
     setConfirmPassword('');
-    toast.success('Password changed successfully!');
+    toast.success('Password updated! (Demo mode — no actual verification)');
   }, [currentPassword, newPassword, confirmPassword]);
 
   const handleDeleteAccount = useCallback(() => {
@@ -309,7 +327,7 @@ export default function ProfilePage() {
 
   const formatStatValue = (value: number) => {
     if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
-    if (value >= 1000 && value !== 4.8) return value >= 10000 ? `₹${(value / 1000).toFixed(1)}K` : `₹${(value / 1000).toFixed(1)}K`;
+    if (value >= 1000) return `₹${(value / 1000).toFixed(1)}K`;
     return String(value);
   };
 

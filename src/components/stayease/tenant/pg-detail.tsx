@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo, useRef } from 'react';
+import { useState, useMemo, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
@@ -102,26 +102,22 @@ export default function PGDetail() {
   const { selectedPG, setCurrentView, setSelectedPG, setSelectedBed } = useAppStore();
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
 
-  const { data: pgs } = useQuery<PG[]>({
-    queryKey: ['pgs-list'],
+  const { data: pg } = useQuery<PG>({
+    queryKey: ['pg-detail', selectedPG?.id],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs`);
-      if (!res.ok) throw new Error('Failed to fetch PGs');
+      if (!selectedPG?.id) return null;
+      const res = await fetch(`/api/pgs/${selectedPG.id}`);
+      if (!res.ok) throw new Error('Failed to fetch PG');
       return res.json();
     },
+    enabled: !!selectedPG?.id,
   });
 
-  const pg = useMemo(() => {
-    if (!selectedPG?.id || !pgs) return selectedPG || null;
-    return pgs.find((p) => p.id === selectedPG.id) || selectedPG || null;
-  }, [selectedPG, pgs]);
-
   // Reset image index when PG changes
-  const prevPgIdRef = useRef(pg?.id);
-  if (prevPgIdRef.current !== pg?.id) {
-    prevPgIdRef.current = pg?.id;
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- Intentional reset when PG data changes
     setSelectedImageIndex(0);
-  }
+  }, [pg?.id]);
 
   const images = useMemo(() => {
     if (!pg) return PG_IMAGES;
@@ -281,7 +277,7 @@ export default function PGDetail() {
                   </div>
                   <div className="flex items-center gap-1 text-muted-foreground mb-3">
                     <MapPin className="size-4" />
-                    <span>{pgData?.address}, {pgData?.city}</span>
+                    <span>{pgData?.address}{pgData?.city ? `, ${pgData.city}` : ''}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-3">
                     <div className="flex items-center gap-1 bg-brand-sage-light px-3 py-1.5 rounded-lg">

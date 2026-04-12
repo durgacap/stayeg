@@ -59,10 +59,14 @@ export default function WorkerManagement() {
     enabled: !!ownerId,
   });
 
+  const { selectedPG } = useAppStore();
+  const [selectedPgId, setSelectedPgId] = useState(selectedPG?.id || 'all');
+
   const { data: workers, isLoading } = useQuery({
-    queryKey: ['workers'],
+    queryKey: ['workers', selectedPgId],
     queryFn: async () => {
-      const res = await fetch('/api/workers');
+      const pgParam = selectedPgId !== 'all' ? `?pgId=${selectedPgId}` : '';
+      const res = await fetch(`/api/workers${pgParam}`);
       if (!res.ok) throw new Error('Failed to fetch workers');
       return res.json();
     },
@@ -172,6 +176,21 @@ export default function WorkerManagement() {
         </Dialog>
       </div>
 
+      {/* PG Filter */}
+      <div className="flex items-center gap-3">
+        <div className="flex-1 max-w-xs">
+          <Select value={selectedPgId} onValueChange={setSelectedPgId}>
+            <SelectTrigger><SelectValue placeholder="All PGs" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All PGs</SelectItem>
+              {(pgs || []).map((pg: { id: string; name: string }) => (
+                <SelectItem key={pg.id} value={pg.id}>{pg.name}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
       {/* Role Filters */}
       <div className="flex items-center gap-2 flex-wrap">
         {['all', ...Object.keys(ROLE_COLORS)].map(role => (
@@ -254,7 +273,7 @@ export default function WorkerManagement() {
                       >
                         <Phone className="size-3.5" /> Call
                       </a>
-                      <Button variant="outline" size="sm" className="flex-1">
+                      <Button variant="outline" size="sm" className="flex-1" onClick={() => showToast('Edit feature coming soon!')}>
                         <Edit2 className="size-3.5 mr-1" /> Edit
                       </Button>
                     </div>

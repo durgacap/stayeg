@@ -394,7 +394,7 @@ export default function PGManagement() {
       )}
 
       {/* Edit Dialog */}
-      <Dialog open={editOpen} onOpenChange={setEditOpen}>
+      <Dialog open={editOpen} onOpenChange={(v) => { if (!v) setEditPG(null); setEditOpen(v); }}>
         <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Edit PG Property</DialogTitle>

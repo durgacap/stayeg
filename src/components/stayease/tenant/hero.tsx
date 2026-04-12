@@ -7,7 +7,7 @@ import {
   Shield, Banknote, Smartphone, UsersRound, Lock, Headphones,
   ArrowRight, CheckCircle2, Sparkles, Wifi, Snowflake,
   UtensilsCrossed, TrainFront, BedDouble, Quote,
-  ChevronLeft, ChevronDown,
+  ChevronLeft,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -133,7 +133,7 @@ export default function HeroSection() {
   };
 
   const handleCityClick = (city: string) => {
-    setSearchFilters({ city });
+    setSearchFilters(prev => ({ ...prev, city }));
     setLocalCity(city);
     handleSearch();
   };
@@ -290,7 +290,7 @@ export default function HeroSection() {
         {/* Bottom wave separator */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg viewBox="0 0 1440 60" fill="none" className="w-full h-auto block">
-            <path d="M0,60 L0,20 Q360,60 720,20 Q1080,-20 1440,20 L1440,60 Z" fill="white" />
+            <path d="M0,60 L0,20 Q360,60 720,20 Q1080,-20 1440,20 L1440,60 Z" fill="var(--background)" />
           </svg>
         </div>
       </section>

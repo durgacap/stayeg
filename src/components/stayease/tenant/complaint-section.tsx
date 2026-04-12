@@ -71,7 +71,7 @@ const TIMELINE_STEPS = [
 ];
 
 export default function ComplaintSection() {
-  const { currentUser } = useAppStore();
+  const { currentUser, showToast } = useAppStore();
   const queryClient = useQueryClient();
   const [showForm, setShowForm] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -105,28 +105,36 @@ export default function ComplaintSection() {
   const handleSubmit = async () => {
     if (!formData.title || !currentUser?.id) return;
 
-    // Use selectedPG id if available, otherwise use a placeholder
-    const pgId = useAppStore.getState().selectedPG?.id || currentUser?.id || 'unknown';
+    const selectedPG = useAppStore.getState().selectedPG;
+    if (!selectedPG?.id) {
+      showToast('Please select a PG first');
+      return;
+    }
 
     setIsSubmitting(true);
     try {
-      await fetch('/api/complaints', {
+      const res = await fetch('/api/complaints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           userId: currentUser.id,
-          pgId: pgId,
+          pgId: selectedPG.id,
           title: formData.title,
           description: formData.description,
           category: formData.category,
           priority: formData.priority,
         }),
       });
+      if (!res.ok) {
+        showToast('Failed to submit complaint. Please try again.');
+        return;
+      }
       queryClient.invalidateQueries({ queryKey: ['complaints'] });
       setFormData({ title: '', description: '', category: 'GENERAL', priority: 'MEDIUM' });
       setShowForm(false);
+      showToast('Complaint submitted successfully!');
     } catch {
-      // silently fail
+      showToast('Failed to submit complaint. Please try again.');
     } finally {
       setIsSubmitting(false);
     }

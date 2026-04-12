@@ -1,6 +1,5 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import {
   Check, Sparkles, Clock, Gift, Users, Shield, Zap,
   Headphones, ArrowLeft, Star, Tag, Phone, Mail, MessageSquare,
@@ -53,14 +52,6 @@ const FAQ_ITEMS = [
 
 export default function PricingPage() {
   const { setCurrentView, appliedCoupon, setAppliedCoupon, showToast } = useAppStore();
-  const [spotsLeft, setSpotsLeft] = useState(847);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSpotsLeft((prev) => Math.max(prev - Math.floor(Math.random() * 3), 100));
-    }, 15000);
-    return () => clearInterval(interval);
-  }, []);
 
   const handleApplyCoupon = (code: string) => {
     setAppliedCoupon(code);
@@ -118,7 +109,7 @@ export default function PricingPage() {
             </div>
             <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs shrink-0">
               <Clock className="size-3 mr-1" />
-              {spotsLeft} spots left
+              Limited Time Offer
             </Badge>
           </div>
         </div>

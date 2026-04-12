@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import pg from 'pg';
 
 const SUPABASE_PROJECT_ID = 'sbwmecxkbfijanwwuvvt';
@@ -33,8 +33,16 @@ async function tryConnect(connectionString: string): Promise<{ client: pg.PoolCl
   }
 }
 
-export async function POST(request: Request) {
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'stayeg-admin-2024';
+
+export async function POST(request: NextRequest) {
   try {
+    // CRITICAL: Validate admin secret before any destructive operations
+    const adminSecret = request.headers.get('x-admin-secret');
+    if (adminSecret !== ADMIN_SECRET) {
+      return NextResponse.json({ error: 'Forbidden: Invalid or missing admin secret' }, { status: 403 });
+    }
+
     const body = await request.json();
     const { dbPassword, connectionString: userConnStr } = body;
 

@@ -104,8 +104,11 @@ export default function RentManagement() {
   const methodIcon = (method?: string) => {
     switch (method) {
       case 'UPI': return <Wallet className="size-3.5" />;
-      case 'CARD': return <CreditCard className="size-3.5" />;
+      case 'CARD':
+      case 'CREDIT_CARD':
+      case 'DEBIT_CARD': return <CreditCard className="size-3.5" />;
       case 'NET_BANKING': return <Banknote className="size-3.5" />;
+      case 'WALLET': return <Wallet className="size-3.5" />;
       default: return <IndianRupee className="size-3.5" />;
     }
   };
@@ -268,7 +271,7 @@ export default function RentManagement() {
                     <SelectItem value="UPI">UPI</SelectItem>
                     <SelectItem value="CARD">Card</SelectItem>
                     <SelectItem value="NET_BANKING">Net Banking</SelectItem>
-                    <SelectItem value="CASH">Cash</SelectItem>
+                    <SelectItem value="WALLET">Wallet</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

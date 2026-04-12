@@ -444,7 +444,7 @@ export default function SignupPage() {
                       onClick={handleAvatarUpload}
                       className="relative group"
                     >
-                      <div className={`size-24 rounded-full flex items-center justify-center overflow-hidden border-3 transition-all ${
+                      <div className={`size-24 rounded-full flex items-center justify-center overflow-hidden border-[3px] transition-all ${
                         avatarPreview
                           ? 'border-brand-teal shadow-lg shadow-brand-teal/10'
                           : 'border-2 border-dashed border-border bg-muted group-hover:border-brand-teal'

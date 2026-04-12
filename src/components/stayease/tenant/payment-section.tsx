@@ -3,7 +3,7 @@
 import { useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { format, isAfter } from 'date-fns';
+import { format, isAfter, differenceInDays } from 'date-fns';
 import {
   IndianRupee,
   CreditCard,
@@ -583,7 +583,9 @@ export default function PaymentSection() {
                       {upcomingPayments.map((payment, index) => {
                         const statusConfig = STATUSES.PAYMENT[payment.status as keyof typeof STATUSES.PAYMENT];
                         const MethodIcon = PAYMENT_METHOD_ICONS[payment.method || ''] || CreditCard;
-                        const isDueSoon = payment.dueDate && isAfter(new Date(), new Date(payment.dueDate));
+                        const isOverdue = payment.dueDate && isAfter(new Date(), new Date(payment.dueDate));
+                        const diffDays = payment.dueDate ? differenceInDays(new Date(payment.dueDate), new Date()) : Infinity;
+                        const isDueSoon = diffDays >= 0 && diffDays <= 3;
 
                         return (
                           <motion.div
@@ -621,8 +623,8 @@ export default function PaymentSection() {
                                   ₹{Math.round(payment.amount).toLocaleString('en-IN')}
                                 </div>
                                 {payment.dueDate && (
-                                  <p className={`text-xs mt-0.5 ${isDueSoon ? 'text-red-500 font-medium' : 'text-muted-foreground'}`}>
-                                    Due: {format(new Date(payment.dueDate), 'dd MMM yyyy')}
+                                  <p className={`text-xs mt-0.5 ${isOverdue ? 'text-red-500 font-medium' : isDueSoon ? 'text-amber-600 font-medium' : 'text-muted-foreground'}`}>
+                                    {isOverdue ? 'Overdue' : isDueSoon ? 'Due Soon' : 'Due'}: {format(new Date(payment.dueDate), 'dd MMM yyyy')}
                                   </p>
                                 )}
                               </div>

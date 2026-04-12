@@ -17,20 +17,19 @@ import { useAppStore } from '@/store/use-app-store';
 
 const COLORS = ['#0D9488', '#F97066', '#D97706'];
 
-const OWNER_ID = 'owner-rajesh';
-
 export default function OwnerDashboard() {
   const { setCurrentView } = useAppStore();
   const { data: ownerUser } = useQuery({
     queryKey: ['owner-user'],
     queryFn: async () => {
       const res = await fetch('/api/auth?role=OWNER');
+      if (!res.ok) throw new Error('Failed to fetch owner');
       const users = await res.json();
       return users[0] || null;
     },
   });
 
-  const ownerId = ownerUser?.id || OWNER_ID;
+  const ownerId = ownerUser?.id;
 
   const { data: analytics, isLoading } = useQuery({
     queryKey: ['owner-analytics', ownerId],
@@ -46,7 +45,9 @@ export default function OwnerDashboard() {
   const { data: recentBookings } = useQuery({
     queryKey: ['owner-recent-bookings', ownerId],
     queryFn: async () => {
-      const pgs = await fetch(`/api/pgs?ownerId=${ownerId}`).then(r => r.json());
+      const pgsRes = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      if (!pgsRes.ok) throw new Error('Failed to fetch PGs');
+      const pgs = await pgsRes.json();
       const pgIds = pgs.map((p: { id: string }) => p.id);
       if (pgIds.length === 0) return [];
       const results = await Promise.all(
@@ -60,7 +61,9 @@ export default function OwnerDashboard() {
   const { data: complaints } = useQuery({
     queryKey: ['owner-complaints', ownerId],
     queryFn: async () => {
-      const pgs = await fetch(`/api/pgs?ownerId=${ownerId}`).then(r => r.json());
+      const pgsRes = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      if (!pgsRes.ok) throw new Error('Failed to fetch PGs');
+      const pgs = await pgsRes.json();
       const pgIds = pgs.map((p: { id: string }) => p.id);
       if (pgIds.length === 0) return [];
       const results = await Promise.all(

@@ -146,9 +146,9 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
 
   const monthRent = selectedBed?.price || selectedPG?.price || 0;
   const securityDeposit = selectedPG?.securityDeposit || Math.round(monthRent * 2);
-  const advanceAmount = selectedPG ? Math.round(selectedPG.price * 0.5) : 0;
+  const advanceAmount = Math.round((selectedPG?.price || 0) * 0.5);
   const totalBeforeDiscount = advanceAmount + securityDeposit;
-  const totalAmount = totalBeforeDiscount - couponDiscount;
+  const totalAmount = Math.max(0, totalBeforeDiscount - couponDiscount);
   const bookingId = `SEG${Date.now().toString(36).toUpperCase()}`;
 
   // Coupon validation
@@ -251,7 +251,6 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
   };
 
   // Step validation
-  const canProceedFromStep0 = uploadedImages.length >= 0; // Images are optional but encouraged
   const canProceedFromStep1 = () => {
     if (!formData.name || !formData.email || !formData.phone) {
       setError('Please fill in all required fields.');

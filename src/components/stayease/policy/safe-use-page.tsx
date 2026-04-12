@@ -330,7 +330,7 @@ export default function SafeUsePage() {
                     <Flag className="size-4 mr-2" />
                     Report an Issue
                   </Button>
-                  <Button variant="outline" className="text-sm">
+                  <Button variant="outline" className="text-sm" onClick={() => { setCurrentView('LANDING'); const { showToast } = useAppStore.getState(); showToast('Support feature coming soon!'); }}>
                     <MessageSquare className="size-4 mr-2" />
                     Contact Support
                   </Button>

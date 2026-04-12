@@ -190,7 +190,6 @@ function TopHeader() {
               {/* Logged-in: notifications, profile, logout */}
               <Button variant="ghost" size="icon" className="relative hidden sm:flex">
                 <Bell className="size-5 text-muted-foreground" />
-                <span className="absolute top-1.5 right-1.5 size-2 bg-brand-teal rounded-full" />
               </Button>
               <button onClick={() => setCurrentView('PROFILE')}>
                 <Avatar className="size-8 cursor-pointer">

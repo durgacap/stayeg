@@ -126,7 +126,7 @@ export default function ComplaintManagement() {
     switch (currentStatus) {
       case 'OPEN': return ['IN_PROGRESS', 'RESOLVED', 'CLOSED'];
       case 'IN_PROGRESS': return ['RESOLVED', 'CLOSED', 'OPEN'];
-      case 'RESOLVED': return ['CLOSED', 'OPEN'];
+      case 'RESOLVED': return ['CLOSED'];
       default: return [];
     }
   };

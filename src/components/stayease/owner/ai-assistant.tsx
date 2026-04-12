@@ -58,6 +58,14 @@ export default function AIAssistant() {
     }
   }, [isAIChatOpen]);
 
+  const ACTION_TO_VIEW: Record<string, string> = {
+    add_room: 'OWNER_ROOMS',
+    rent_status: 'OWNER_RENT',
+    view_complaints: 'OWNER_COMPLAINTS',
+    summary: 'OWNER_DASHBOARD',
+    manage_pgs: 'OWNER_PGS',
+  };
+
   const handleQuickAction = (action: string, label: string) => {
     const userMsg: Message = {
       id: `user-${Date.now()}`,
@@ -76,6 +84,10 @@ export default function AIAssistant() {
       };
       setMessages(prev => [...prev, aiMsg]);
     }, 800);
+
+    if (ACTION_TO_VIEW[action]) {
+      navigateTo(ACTION_TO_VIEW[action]);
+    }
   };
 
   const handleSend = () => {
@@ -165,6 +177,14 @@ export default function AIAssistant() {
               >
                 <X className="size-5" />
               </Button>
+            </div>
+
+            {/* Demo Badge */}
+            <div className="px-4 pt-3 shrink-0">
+              <div className="flex items-center justify-center gap-1.5 bg-amber-50 text-amber-700 rounded-lg px-3 py-1.5 text-xs font-medium border border-amber-200">
+                <Sparkles className="size-3" />
+                AI Assistant (Demo Mode — responses are for demonstration only)
+              </div>
             </div>
 
             {/* Messages */}

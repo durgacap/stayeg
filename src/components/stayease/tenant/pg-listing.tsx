@@ -349,21 +349,24 @@ export default function PGListing() {
                 Clear all
               </Button>
             )}
-            {filters.amenities.slice(0, 3).map((a) => (
-              <button
-                key={a}
-                onClick={() =>
-                  setFilters((p) => ({
-                    ...p,
-                    amenities: p.amenities.filter((x) => x !== a),
-                  }))
-                }
-                className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-teal/10 text-brand-teal rounded-full text-xs font-medium hover:bg-brand-teal/15 transition-colors"
-              >
-                {a}
-                <X className="size-3" />
-              </button>
-            ))}
+            {filters.amenities.slice(0, 3).map((a) => {
+              const amenityLabel = AMENITIES_LIST.find((am) => am.id === a)?.label || a;
+              return (
+                <button
+                  key={a}
+                  onClick={() =>
+                    setFilters((p) => ({
+                      ...p,
+                      amenities: p.amenities.filter((x) => x !== a),
+                    }))
+                  }
+                  className="inline-flex items-center gap-1 px-2 py-0.5 bg-brand-teal/10 text-brand-teal rounded-full text-xs font-medium hover:bg-brand-teal/15 transition-colors"
+                >
+                  {amenityLabel}
+                  <X className="size-3" />
+                </button>
+              );
+            })}
           </div>
         </div>
       </div>

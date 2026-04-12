@@ -103,17 +103,24 @@ function StepIcon({ icon: Icon, step }: { icon: React.ElementType; step: number 
 }
 
 function FloatingShape({ delay = 0 }: { delay?: number }) {
+  const [randomValues] = useState(() => ({
+    width: 60 + Math.random() * 80,
+    height: 60 + Math.random() * 80,
+    top: 10 + Math.random() * 60,
+    left: Math.random() * 80,
+  }));
+
   return (
     <motion.div
       animate={{ y: [0, -12, 0], rotate: [0, 5, -5, 0] }}
       transition={{ duration: 5, repeat: Infinity, delay, ease: 'easeInOut' }}
       className="absolute rounded-full opacity-20"
       style={{
-        width: 60 + Math.random() * 80,
-        height: 60 + Math.random() * 80,
+        width: randomValues.width,
+        height: randomValues.height,
         background: `linear-gradient(135deg, var(--color-brand-deep), var(--color-brand-teal))`,
-        top: `${10 + Math.random() * 60}%`,
-        left: `${Math.random() * 80}%`,
+        top: `${randomValues.top}%`,
+        left: `${randomValues.left}%`,
       }}
     />
   );

@@ -1,8 +1,15 @@
 import { supabase } from '@/lib/supabase';
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST() {
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'stayeg-admin-2024';
+
+export async function POST(request: NextRequest) {
   try {
+    // CRITICAL: Validate admin secret before seeding
+    const adminSecret = request.headers.get('x-admin-secret');
+    if (adminSecret !== ADMIN_SECRET) {
+      return NextResponse.json({ error: 'Forbidden: Invalid or missing admin secret' }, { status: 403 });
+    }
     // Clear existing data in reverse dependency order
     await supabase.from('payments').delete().neq('id', '00000000-0000-0000-0000-000000000000');
     await supabase.from('bookings').delete().neq('id', '00000000-0000-0000-0000-000000000000');

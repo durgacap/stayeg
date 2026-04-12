@@ -141,6 +141,7 @@ export default function SiteFooter() {
                 whileHover={hoverScale}
                 whileTap={tapScale}
                 className="size-9 rounded-lg bg-white/10 hover:bg-brand-teal flex items-center justify-center transition-colors group"
+                onClick={() => { const { showToast } = useAppStore.getState(); showToast('Coming soon!'); }}
               >
                 <Icon className="size-4 text-gray-500 group-hover:text-white transition-colors" />
               </motion.button>

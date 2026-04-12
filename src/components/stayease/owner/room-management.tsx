@@ -99,10 +99,13 @@ export default function RoomManagement() {
     },
   });
 
+  const [bedStatuses, setBedStatuses] = useState<Record<string, string>>({});
+
   const toggleBedStatus = (bedId: string, currentStatus: string) => {
     const statuses = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE'];
     const nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
     const nextStatus = statuses[nextIndex];
+    setBedStatuses(prev => ({ ...prev, [bedId]: nextStatus }));
     showToast(`Bed ${bedId.slice(-4)} set to ${nextStatus}`);
   };
 
@@ -318,17 +321,20 @@ export default function RoomManagement() {
                             className="overflow-hidden"
                           >
                             <div className="mt-3 grid grid-cols-3 gap-2">
-                              {beds.map((bed: { id: string; bedNumber: number; status: string }) => (
+                              {beds.map((bed: { id: string; bedNumber: number; status: string }) => {
+                                const effectiveStatus = bedStatuses[bed.id] || bed.status;
+                                return (
                                 <button
                                   key={bed.id}
-                                  onClick={() => toggleBedStatus(bed.id, bed.status)}
-                                  className={`p-3 rounded-xl border text-center transition-all hover:scale-105 ${bedStatusColor(bed.status)}`}
+                                  onClick={() => toggleBedStatus(bed.id, effectiveStatus)}
+                                  className={`p-3 rounded-xl border text-center transition-all hover:scale-105 ${bedStatusColor(effectiveStatus)}`}
                                 >
-                                  <div className={`size-3 rounded-full ${bedDotColor(bed.status)} mx-auto mb-1.5`} />
+                                  <div className={`size-3 rounded-full ${bedDotColor(effectiveStatus)} mx-auto mb-1.5`} />
                                   <div className="text-xs font-semibold">Bed #{bed.bedNumber}</div>
-                                  <div className="text-[10px] mt-0.5 opacity-75">{bed.status}</div>
+                                  <div className="text-[10px] mt-0.5 opacity-75">{effectiveStatus}</div>
                                 </button>
-                              ))}
+                                );
+                              })}
                             </div>
                             <p className="text-xs text-muted-foreground mt-2 text-center">Click a bed to cycle its status</p>
                           </motion.div>

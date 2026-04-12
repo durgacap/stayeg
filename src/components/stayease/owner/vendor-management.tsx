@@ -36,10 +36,21 @@ export default function VendorManagement() {
   const [filterType, setFilterType] = useState('all');
   const [form, setForm] = useState({ name: '', type: 'PLUMBER', phone: '', email: '', area: '' });
 
+  const { data: ownerUser } = useQuery({
+    queryKey: ['owner-user'],
+    queryFn: async () => {
+      const res = await fetch('/api/auth?role=OWNER');
+      const users = await res.json();
+      return users[0] || null;
+    },
+  });
+  const ownerCity = ownerUser?.city;
+
   const { data: vendors, isLoading } = useQuery({
     queryKey: ['vendors'],
     queryFn: async () => {
-      const res = await fetch('/api/vendors?city=Bangalore');
+      const cityParam = ownerCity ? `?city=${encodeURIComponent(ownerCity)}` : '';
+      const res = await fetch(`/api/vendors${cityParam}`);
       if (!res.ok) throw new Error('Failed to fetch vendors');
       return res.json();
     },
@@ -206,7 +217,7 @@ export default function VendorManagement() {
                         >
                           <Phone className="size-3.5" /> Call
                         </a>
-                        <Button variant="outline" size="sm" className="flex-1">
+                        <Button variant="outline" size="sm" className="flex-1" onClick={() => showToast('Assignment feature coming soon!')}>
                           <User className="size-3.5 mr-1" /> Assign
                         </Button>
                       </div>

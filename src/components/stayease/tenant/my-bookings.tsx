@@ -32,7 +32,7 @@ const TAB_CONFIG = [
 ];
 
 export default function MyBookings() {
-  const { currentUser, setCurrentView, setSelectedPG } = useAppStore();
+  const { currentUser, setCurrentView, setSelectedPG, showToast } = useAppStore();
   const queryClient = useQueryClient();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
@@ -69,9 +69,12 @@ export default function MyBookings() {
       });
       if (res.ok) {
         queryClient.invalidateQueries({ queryKey: ['bookings'] });
+        showToast('Booking cancelled successfully.');
+      } else {
+        showToast('Failed to cancel booking. Please try again.');
       }
     } catch {
-      // silently fail
+      showToast('Failed to cancel booking. Please try again.');
     } finally {
       setCancellingId(null);
     }
