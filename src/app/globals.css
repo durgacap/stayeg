@@ -42,7 +42,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* StayEg custom brand tokens */
+  /* StayEg brand tokens */
   --color-brand-deep: var(--brand-deep);
   --color-brand-teal: var(--brand-teal);
   --color-brand-sage: var(--brand-sage);
@@ -54,153 +54,126 @@
 }
 
 /* ================================================================
-   STAYEG PREMIUM COLOR SYSTEM — Violet Edition
-
-   LIGHT: Warm zinc neutrals + violet-600 primary
-   DARK:  Rich zinc-950 base + violet-400 primary
-   EYE:   Warm stone base + soft violet-300 primary
-
-   PRIMARY:    Violet — Premium, modern, distinctive
-   SUCCESS:    Green-500 — Available, confirmed
-   ERROR:      Red-500 — Failed, destructive
-   WARNING:    Amber-500 — Ratings, pending
+   STAYEG — CLEAN PROFESSIONAL DESIGN SYSTEM
+   
+   LIGHT: Pure white + teal accent — like Airbnb, clean & trusted
+   DARK:  Soft charcoal + bright teal — easy on eyes
+   EYE:   Warm stone + muted teal — cozy nighttime
+   
+   PRIMARY:    Teal-600 #0D9488  — Trust, growth, home
+   SUCCESS:    Green-500 #22C55E
+   ERROR:      Red-500   #EF4444
+   WARNING:    Amber-500 #F59E0B
    ================================================================ */
 :root {
-  --radius: 0.75rem;
+  --radius: 0.625rem;
 
-  /* Base — warm white canvas */
-  --background: #FAFAFA;
-  --foreground: #18181B;
+  --background: #FFFFFF;
+  --foreground: #111827;
   --card: #FFFFFF;
-  --card-foreground: #18181B;
+  --card-foreground: #111827;
   --popover: #FFFFFF;
-  --popover-foreground: #18181B;
+  --popover-foreground: #111827;
 
-  /* Primary = Violet-600 #7C3AED — premium & distinctive */
-  --primary: #7C3AED;
+  --primary: #0D9488;
   --primary-foreground: #FFFFFF;
 
-  /* Secondary = Soft violet bg */
-  --secondary: #F5F3FF;
-  --secondary-foreground: #18181B;
+  --secondary: #F0FDFA;
+  --secondary-foreground: #111827;
 
-  /* Muted */
-  --muted: #F4F4F5;
-  --muted-foreground: #71717A;
+  --muted: #F9FAFB;
+  --muted-foreground: #6B7280;
 
-  /* Accent */
-  --accent: #F5F3FF;
-  --accent-foreground: #18181B;
+  --accent: #F0FDFA;
+  --accent-foreground: #111827;
 
-  /* Destructive */
   --destructive: #EF4444;
 
-  /* Borders & inputs */
-  --border: #E4E4E7;
-  --input: #E4E4E7;
-  --ring: #7C3AED;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #0D9488;
 
-  /* Charts */
-  --chart-1: #7C3AED;
-  --chart-2: #EC4899;
-  --chart-3: #F59E0B;
+  --chart-1: #0D9488;
+  --chart-2: #F59E0B;
+  --chart-3: #6366F1;
   --chart-4: #22C55E;
   --chart-5: #EF4444;
 
-  /* Sidebar */
-  --sidebar: #FAFAFA;
-  --sidebar-foreground: #18181B;
-  --sidebar-primary: #7C3AED;
+  --sidebar: #FFFFFF;
+  --sidebar-foreground: #111827;
+  --sidebar-primary: #0D9488;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #F5F3FF;
-  --sidebar-accent-foreground: #18181B;
-  --sidebar-border: #E4E4E7;
-  --sidebar-ring: #7C3AED;
+  --sidebar-accent: #F0FDFA;
+  --sidebar-accent-foreground: #111827;
+  --sidebar-border: #E5E7EB;
+  --sidebar-ring: #0D9488;
 
-  /* Brand tokens — LIGHT MODE */
-  --brand-deep: #6D28D9;
-  --brand-teal: #7C3AED;
+  --brand-deep: #0F766E;
+  --brand-teal: #0D9488;
   --brand-sage: #F59E0B;
   --brand-lime: #22C55E;
-  --brand-deep-light: #F5F3FF;
-  --brand-teal-light: #EDE9FE;
+  --brand-deep-light: #F0FDFA;
+  --brand-teal-light: #CCFBF1;
   --brand-sage-light: #FFFBEB;
   --brand-lime-dark: #16A34A;
 }
 
 /* ================================================================
-   DARK MODE — Rich zinc base, vivid violet accents
-   
-   Background: #09090B (zinc-950) — true dark, no blue tint
-   Card:       #18181B (zinc-900) — visible elevation
-   Primary:    #A78BFA (violet-400) — bright on dark
+   DARK MODE — Soft charcoal, NOT pure black
    ================================================================ */
 .dark {
-  --background: #09090B;
-  --foreground: #FAFAFA;
-  --card: #18181B;
-  --card-foreground: #FAFAFA;
-  --popover: #18181B;
-  --popover-foreground: #FAFAFA;
+  --background: #111827;
+  --foreground: #F9FAFB;
+  --card: #1F2937;
+  --card-foreground: #F9FAFB;
+  --popover: #1F2937;
+  --popover-foreground: #F9FAFB;
 
-  /* Primary = Bright Violet-400 */
-  --primary: #A78BFA;
-  --primary-foreground: #09090B;
+  --primary: #2DD4BF;
+  --primary-foreground: #111827;
 
-  /* Secondary */
-  --secondary: #27272A;
-  --secondary-foreground: #FAFAFA;
+  --secondary: #1E293B;
+  --secondary-foreground: #F9FAFB;
 
-  /* Muted */
-  --muted: #27272A;
-  --muted-foreground: #A1A1AA;
+  --muted: #1F2937;
+  --muted-foreground: #9CA3AF;
 
-  /* Accent */
-  --accent: #27272A;
-  --accent-foreground: #FAFAFA;
+  --accent: #1E293B;
+  --accent-foreground: #F9FAFB;
 
-  /* Destructive */
   --destructive: #F87171;
 
-  /* Borders */
-  --border: #3F3F46;
-  --input: #3F3F46;
-  --ring: #A78BFA;
+  --border: #374151;
+  --input: #374151;
+  --ring: #2DD4BF;
 
-  /* Charts — bright on dark */
-  --chart-1: #A78BFA;
-  --chart-2: #F472B6;
-  --chart-3: #FBBF24;
+  --chart-1: #2DD4BF;
+  --chart-2: #FBBF24;
+  --chart-3: #818CF8;
   --chart-4: #4ADE80;
   --chart-5: #FB7185;
 
-  /* Sidebar */
-  --sidebar: #09090B;
-  --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: #A78BFA;
-  --sidebar-primary-foreground: #09090B;
-  --sidebar-accent: #27272A;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #3F3F46;
-  --sidebar-ring: #A78BFA;
+  --sidebar: #111827;
+  --sidebar-foreground: #F9FAFB;
+  --sidebar-primary: #2DD4BF;
+  --sidebar-primary-foreground: #111827;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #F9FAFB;
+  --sidebar-border: #374151;
+  --sidebar-ring: #2DD4BF;
 
-  /* Brand tokens — DARK MODE */
-  --brand-deep: #27272A;
-  --brand-teal: #A78BFA;
+  --brand-deep: #1E293B;
+  --brand-teal: #2DD4BF;
   --brand-sage: #FBBF24;
   --brand-lime: #4ADE80;
-  --brand-deep-light: #1E1B4B;
-  --brand-teal-light: #2E1065;
+  --brand-deep-light: #134E4A;
+  --brand-teal-light: #0F766E;
   --brand-sage-light: #451A03;
   --brand-lime-dark: #16A34A;
 }
 
 /* ================================================================
-   EYE COMFORT MODE — Warm stone base, soft violet, cozy feel
-   
-   Background: #1C1917 (stone-900) — warm dark
-   Card:       #292524 (stone-800) — warm elevation
-   Primary:    #C4B5FD (violet-300) — soft, easy on eyes
+   EYE COMFORT — Warm stone tones
    ================================================================ */
 .eye-comfort {
   --background: #1C1917;
@@ -210,64 +183,53 @@
   --popover: #292524;
   --popover-foreground: #F5F5F4;
 
-  /* Primary = Soft Violet-300 */
-  --primary: #C4B5FD;
+  --primary: #5EEAD4;
   --primary-foreground: #1C1917;
 
-  /* Secondary */
   --secondary: #292524;
   --secondary-foreground: #F5F5F4;
 
-  /* Muted — warm and visible */
   --muted: #292524;
   --muted-foreground: #A8A29E;
 
-  /* Accent */
   --accent: #292524;
   --accent-foreground: #F5F5F4;
 
-  /* Destructive */
   --destructive: #FCA5A5;
 
-  /* Borders — warm */
   --border: #44403C;
   --input: #44403C;
-  --ring: #C4B5FD;
+  --ring: #5EEAD4;
 
-  /* Charts — warm tones */
-  --chart-1: #C4B5FD;
-  --chart-2: #FDBA74;
-  --chart-3: #FDE68A;
+  --chart-1: #5EEAD4;
+  --chart-2: #FDE68A;
+  --chart-3: #C4B5FD;
   --chart-4: #86EFAC;
   --chart-5: #D4C5A9;
 
-  /* Sidebar */
   --sidebar: #1C1917;
   --sidebar-foreground: #F5F5F4;
-  --sidebar-primary: #C4B5FD;
+  --sidebar-primary: #5EEAD4;
   --sidebar-primary-foreground: #1C1917;
   --sidebar-accent: #292524;
   --sidebar-accent-foreground: #F5F5F4;
   --sidebar-border: #44403C;
-  --sidebar-ring: #C4B5FD;
+  --sidebar-ring: #5EEAD4;
 
-  /* Brand tokens — EYE COMFORT */
   --brand-deep: #292524;
-  --brand-teal: #C4B5FD;
+  --brand-teal: #5EEAD4;
   --brand-sage: #FDE68A;
   --brand-lime: #86EFAC;
   --brand-deep-light: #292524;
-  --brand-teal-light: #1E1B4B;
+  --brand-teal-light: #134E4A;
   --brand-sage-light: #3D3528;
   --brand-lime-dark: #16A34A;
 }
 
-/* Eye comfort warm tint overlay for images and media */
 .eye-comfort img,
 .eye-comfort video {
-  filter: sepia(0.08) saturate(0.88) brightness(0.92);
+  filter: sepia(0.06) saturate(0.9) brightness(0.94);
 }
-
 .eye-comfort body {
   filter: none;
 }
@@ -281,7 +243,6 @@
   }
 }
 
-/* Mobile safe area utilities for notch/status bar */
 @utility pt-safe {
   padding-top: env(safe-area-inset-top);
 }
@@ -293,7 +254,6 @@
   padding-bottom: env(safe-area-inset-bottom);
 }
 
-/* Smooth theme transitions */
 html {
   transition: color-scheme 0.3s ease;
 }

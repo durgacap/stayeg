@@ -139,13 +139,13 @@ function TopHeader() {
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 pt-safe ${
+      className={`sticky top-0 z-40 transition-all duration-300 ${
         isLanding
-          ? 'bg-background/80 backdrop-blur-lg border-b border-border'
-          : 'bg-background/95 backdrop-blur-md border-b border-border'
+          ? 'bg-background border-b border-border'
+          : 'bg-background border-b border-border'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 pt-[env(safe-area-inset-top)] py-2 pb-3 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 pt-3 pb-2.5 flex items-center justify-between">
         {/* Logo */}
         <button
           onClick={() => setCurrentView('LANDING')}

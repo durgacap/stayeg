@@ -1200,3 +1200,40 @@ Stage Summary:
 - Professional violet color palette already applied (from previous session)
 - Remaining items: RLS policies (requires Supabase dashboard), real payment integration, real file upload
 
+
+---
+Task ID: 9
+Agent: Main Agent
+Task: Complete visual overhaul — clean colors, fix header, fix text sizes, remove blur
+
+Work Log:
+- Replaced ENTIRE color system from violet to clean teal (#0D9488) palette
+- LIGHT MODE: Pure white (#FFFFFF) bg, dark text (#111827), teal primary (#0D9488)
+- DARK MODE: Soft charcoal (#111827) bg, light text (#F9FAFB), bright teal (#2DD4BF) primary
+- EYE COMFORT: Warm stone (#1C1917) bg, muted teal (#5EEAD4) primary
+- Completely rewrote hero.tsx:
+  - Clean WHITE background (no heavy gradients)
+  - "PG Home" text in solid teal (NO blur, NO gradient)
+  - Smaller, mobile-friendly text sizes (3xl mobile vs previous 5xl)
+  - Clean search bar with border (no gradient buttons)
+  - Smaller section headings (2xl/3xl/4xl instead of 3xl/4xl/5xl)
+  - Consistent card sizes with proper padding
+  - Removed ALL blur effects, ALL backdrop-blur, ALL heavy gradients
+  - Flat CTA section with solid teal background
+  - Smaller stat cards, badges, and text throughout
+- Fixed mobile header:
+  - Removed backdrop-blur from header (was causing glass effect issues)
+  - Changed to solid white background (no transparency)
+  - Added proper pt-3 padding (was using env(safe-area-inset-top) which is 0 on mobile browsers)
+  - Reduced header padding for cleaner look
+- Updated themeColor meta to match new teal (#0D9488)
+- All 3 theme modes (light/dark/eye-comfort) now look clean and professional
+
+Stage Summary:
+- Complete visual redesign with clean, professional teal-based palette
+- Hero is now clean white with proper typography hierarchy
+- Mobile header has proper spacing from browser chrome
+- ALL blur/glass effects removed
+- Text sizes reduced and standardized for mobile readability
+- App compiles cleanly, returns HTTP 200
+
