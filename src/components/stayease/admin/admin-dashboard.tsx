@@ -21,7 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAppStore } from '@/store/use-app-store';
-import { STATUSES } from '@/lib/constants';
+import { STATUSES, CARD_BG, BADGE, TEXT_COLOR } from '@/lib/constants';
 
 export default function AdminDashboard() {
   const { showToast } = useAppStore();
@@ -108,9 +108,9 @@ export default function AdminDashboard() {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
           { label: 'Total PGs', value: pgs.length, icon: Building2, color: 'bg-brand-teal/10 text-brand-teal', iconColor: 'bg-brand-teal/15' },
-          { label: 'Pending Review', value: pendingCount, icon: AlertTriangle, color: 'bg-yellow-50 text-yellow-700', iconColor: 'bg-yellow-100' },
-          { label: 'Total Users', value: totalUsers, icon: Users, color: 'bg-green-50 text-green-700', iconColor: 'bg-green-100' },
-          { label: 'PG Owners', value: ownerCount, icon: Shield, color: 'bg-purple-50 text-purple-700', iconColor: 'bg-purple-100' },
+          { label: 'Pending Review', value: pendingCount, icon: AlertTriangle, color: `${CARD_BG.yellow} ${TEXT_COLOR.yellow}`, iconColor: BADGE.yellow },
+          { label: 'Total Users', value: totalUsers, icon: Users, color: `${CARD_BG.green} ${TEXT_COLOR.green}`, iconColor: BADGE.green },
+          { label: 'PG Owners', value: ownerCount, icon: Shield, color: `${CARD_BG.purple} ${TEXT_COLOR.purple}`, iconColor: BADGE.purple },
         ].map((stat, idx) => (
           <motion.div key={stat.label} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.1 }}>
             <Card className="hover:shadow-md transition-shadow">
@@ -143,9 +143,9 @@ export default function AdminDashboard() {
               <p className="text-2xl font-bold text-foreground">{ownerCount}</p>
               <p className="text-sm text-brand-teal">PG Owners</p>
             </div>
-            <div className="bg-green-50 rounded-xl p-4 text-center">
+            <div className={`${CARD_BG.green} rounded-xl p-4 text-center`}>
               <p className="text-2xl font-bold text-foreground">{tenantCount}</p>
-              <p className="text-sm text-green-600">Tenants</p>
+              <p className={`text-sm ${TEXT_COLOR.greenLight}`}>Tenants</p>
             </div>
             <div className="bg-muted rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-foreground">{users.filter((u: { role: string }) => u.role === 'ADMIN').length}</p>

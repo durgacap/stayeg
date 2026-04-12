@@ -59,7 +59,7 @@ import {
 } from '@/components/ui/select';
 
 import { useAppStore } from '@/store/use-app-store';
-import { STATUSES, AVAILABLE_COUPONS } from '@/lib/constants';
+import { STATUSES, AVAILABLE_COUPONS, BADGE } from '@/lib/constants';
 import type { Payment, PaymentMethod } from '@/lib/types';
 
 const PAYMENT_METHOD_ICONS: Record<string, React.ElementType> = {
@@ -610,7 +610,7 @@ export default function PaymentSection() {
                                       {statusConfig?.label || payment.status}
                                     </Badge>
                                     {payment.couponCode && (
-                                      <Badge className="text-xs bg-green-100 text-green-700 hover:bg-green-100">
+                                      <Badge className={`text-xs ${BADGE.green}`}>
                                         <Tag className="size-3 mr-1" />
                                         {payment.couponCode}
                                       </Badge>
@@ -797,7 +797,7 @@ export default function PaymentSection() {
                                       {coupon.code}
                                     </span>
                                     {isApplied && (
-                                      <Badge className="text-[10px] bg-green-100 text-green-700 hover:bg-green-100 px-1.5">
+                                      <Badge className={`text-[10px] ${BADGE.green} px-1.5`}>
                                         Applied
                                       </Badge>
                                     )}

@@ -18,19 +18,20 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { useAppStore } from '@/store/use-app-store';
+import { BADGE, BADGE_BORDER } from '@/lib/constants';
 
 const ROLE_COLORS: Record<string, string> = {
-  SECURITY: 'bg-red-100 text-red-700',
-  CLEANER: 'bg-green-100 text-green-700',
-  COOK: 'bg-brand-sage/15 text-brand-sage',
-  MANAGER: 'bg-purple-100 text-purple-700',
-  MAINTENANCE: 'bg-blue-100 text-blue-700',
+  SECURITY: BADGE.red,
+  CLEANER: BADGE.green,
+  COOK: BADGE.amber,
+  MANAGER: BADGE.purple,
+  MAINTENANCE: BADGE.blue,
 };
 
 const SHIFT_COLORS: Record<string, string> = {
   MORNING: 'bg-brand-teal/15 text-brand-teal',
-  EVENING: 'bg-indigo-100 text-indigo-700',
-  NIGHT: 'bg-gray-800 text-gray-100',
+  EVENING: BADGE.indigo,
+  NIGHT: BADGE.night,
 };
 
 export default function WorkerManagement() {
@@ -269,7 +270,7 @@ export default function WorkerManagement() {
                     <div className="mt-3 flex gap-2">
                       <a
                         href={`tel:${worker.phone}`}
-                        className="flex-1 flex items-center justify-center gap-1.5 bg-green-50 text-green-700 hover:bg-green-100 py-2 rounded-lg text-sm font-medium transition-colors"
+                        className={`flex-1 flex items-center justify-center gap-1.5 ${BADGE_BORDER.green} hover:opacity-80 py-2 rounded-lg text-sm font-medium transition-colors`}
                       >
                         <Phone className="size-3.5" /> Call
                       </a>

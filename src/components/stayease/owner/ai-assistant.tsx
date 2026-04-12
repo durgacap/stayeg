@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/store/use-app-store';
+import { BADGE_BORDER } from '@/lib/constants';
 
 interface Message {
   id: string;
@@ -181,7 +182,7 @@ export default function AIAssistant() {
 
             {/* Demo Badge */}
             <div className="px-4 pt-3 shrink-0">
-              <div className="flex items-center justify-center gap-1.5 bg-amber-50 text-amber-700 rounded-lg px-3 py-1.5 text-xs font-medium border border-amber-200">
+              <div className={`flex items-center justify-center gap-1.5 ${BADGE_BORDER.amber} rounded-lg px-3 py-1.5 text-xs font-medium`}>
                 <Sparkles className="size-3" />
                 AI Assistant (Demo Mode — responses are for demonstration only)
               </div>

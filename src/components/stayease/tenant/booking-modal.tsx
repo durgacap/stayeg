@@ -58,7 +58,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useAppStore } from '@/store/use-app-store';
-import { AVAILABLE_COUPONS } from '@/lib/constants';
+import { AVAILABLE_COUPONS, BADGE } from '@/lib/constants';
 import type { PaymentMethod } from '@/lib/types';
 
 interface BookingModalProps {
@@ -450,7 +450,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                   Check-in: {checkInDate ? format(checkInDate, 'dd MMM yyyy') : 'N/A'}
                 </p>
                 {appliedCoupon && (
-                  <Badge className="mt-2 bg-green-100 text-green-700 hover:bg-green-100">
+                  <Badge className={`mt-2 ${BADGE.green} hover:opacity-80`}>
                     <Tag className="size-3 mr-1" />
                     Coupon {appliedCoupon} saved ₹{couponDiscount.toLocaleString('en-IN')}
                   </Badge>

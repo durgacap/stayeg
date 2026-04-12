@@ -17,7 +17,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAppStore } from '@/store/use-app-store';
-import { STATUSES } from '@/lib/constants';
+import { STATUSES, BADGE, TEXT_COLOR } from '@/lib/constants';
 
 export default function RentManagement() {
   const { showToast } = useAppStore();
@@ -126,10 +126,10 @@ export default function RentManagement() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="bg-green-100 p-2.5 rounded-xl"><IndianRupee className="size-5 text-green-600" /></div>
+                <div className={`${BADGE.green} p-2.5 rounded-xl`}><IndianRupee className="size-5" /></div>
                 <div>
                   <p className="text-sm text-muted-foreground">Total Collected</p>
-                  <p className="text-xl font-bold text-green-700">₹{totalCollected.toLocaleString('en-IN')}</p>
+                  <p className={`text-xl font-bold ${TEXT_COLOR.green}`}>₹{totalCollected.toLocaleString('en-IN')}</p>
                 </div>
               </div>
             </CardContent>
@@ -139,10 +139,10 @@ export default function RentManagement() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="bg-yellow-100 p-2.5 rounded-xl"><CalendarDays className="size-5 text-yellow-600" /></div>
+                <div className={`${BADGE.yellow} p-2.5 rounded-xl`}><CalendarDays className="size-5" /></div>
                 <div>
                   <p className="text-sm text-muted-foreground">Pending Amount</p>
-                  <p className="text-xl font-bold text-yellow-700">₹{totalPending.toLocaleString('en-IN')}</p>
+                  <p className={`text-xl font-bold ${TEXT_COLOR.yellow}`}>₹{totalPending.toLocaleString('en-IN')}</p>
                 </div>
               </div>
             </CardContent>
@@ -152,10 +152,10 @@ export default function RentManagement() {
           <Card>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
-                <div className="bg-red-100 p-2.5 rounded-xl"><CreditCard className="size-5 text-red-600" /></div>
+                <div className={`${BADGE.red} p-2.5 rounded-xl`}><CreditCard className="size-5" /></div>
                 <div>
                   <p className="text-sm text-muted-foreground">Pending Payments</p>
-                  <p className="text-xl font-bold text-red-700">{pendingPayments.length}</p>
+                  <p className={`text-xl font-bold ${TEXT_COLOR.red}`}>{pendingPayments.length}</p>
                 </div>
               </div>
             </CardContent>
@@ -261,7 +261,7 @@ export default function RentManagement() {
             <div className="space-y-4 pt-2">
               <div className="bg-muted rounded-xl p-4 text-center">
                 <p className="text-sm text-muted-foreground">Amount</p>
-                <p className="text-3xl font-bold text-green-700">₹{selectedPayment.amount.toLocaleString('en-IN')}</p>
+                <p className={`text-3xl font-bold ${TEXT_COLOR.green}`}>₹{selectedPayment.amount.toLocaleString('en-IN')}</p>
               </div>
               <div className="space-y-2">
                 <Label>Payment Method</Label>

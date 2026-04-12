@@ -14,6 +14,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/store/use-app-store';
+import { CARD_BG, TEXT_COLOR } from '@/lib/constants';
 
 const COLORS = ['#0D9488', '#F97066', '#D97706'];
 
@@ -90,24 +91,24 @@ export default function OwnerDashboard() {
         value: analytics.totalBeds,
         icon: BedDouble,
         color: 'from-blue-500 to-cyan-500',
-        bgColor: 'bg-blue-50',
-        textColor: 'text-blue-700',
+        bgColor: CARD_BG.blue,
+        textColor: TEXT_COLOR.blue,
       },
       {
         title: 'Occupancy Rate',
         value: `${analytics.occupancyRate}%`,
         icon: TrendingUp,
         color: 'from-green-500 to-emerald-500',
-        bgColor: 'bg-green-50',
-        textColor: 'text-green-700',
+        bgColor: CARD_BG.green,
+        textColor: TEXT_COLOR.green,
       },
       {
         title: 'Monthly Revenue',
         value: `₹${(analytics.monthlyRevenue || 0).toLocaleString('en-IN')}`,
         icon: IndianRupee,
         color: 'from-purple-500 to-violet-500',
-        bgColor: 'bg-purple-50',
-        textColor: 'text-purple-700',
+        bgColor: CARD_BG.purple,
+        textColor: TEXT_COLOR.purple,
       },
     ];
   }, [analytics]);
@@ -228,7 +229,7 @@ export default function OwnerDashboard() {
                 <p className="font-semibold text-red-800">{openComplaints} Open Complaints</p>
                 <p className="text-sm text-red-600">Requires your attention. Click to view details.</p>
               </div>
-              <Badge className="bg-red-100 text-red-700 hover:bg-red-200">{openComplaints}</Badge>
+              <Badge className={`${BADGE.red} hover:opacity-80`}>{openComplaints}</Badge>
             </CardContent>
           </Card>
         </motion.div>
@@ -329,33 +330,33 @@ export default function OwnerDashboard() {
               <CardTitle className="text-base font-semibold">Quick Stats</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="flex items-center justify-between p-3 bg-blue-50 rounded-xl">
+              <div className={`flex items-center justify-between p-3 ${CARD_BG.blue} rounded-xl`}>
                 <div className="flex items-center gap-3">
-                  <BedDouble className="size-4 text-blue-600" />
+                  <BedDouble className={`size-4 ${TEXT_COLOR.blue}`} />
                   <span className="text-sm text-foreground">Available Beds</span>
                 </div>
-                <span className="font-semibold text-blue-700">{(analytics?.totalBeds ?? 0) - (analytics?.occupiedBeds ?? 0)}</span>
+                <span className={`font-semibold ${TEXT_COLOR.blue}`}>{(analytics?.totalBeds ?? 0) - (analytics?.occupiedBeds ?? 0)}</span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-green-50 rounded-xl">
+              <div className={`flex items-center justify-between p-3 ${CARD_BG.green} rounded-xl`}>
                 <div className="flex items-center gap-3">
-                  <Users className="size-4 text-green-600" />
+                  <Users className={`size-4 ${TEXT_COLOR.green}`} />
                   <span className="text-sm text-foreground">Active Tenants</span>
                 </div>
-                <span className="font-semibold text-green-700">{analytics?.totalTenants || 0}</span>
+                <span className={`font-semibold ${TEXT_COLOR.green}`}>{analytics?.totalTenants || 0}</span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-yellow-50 rounded-xl">
+              <div className={`flex items-center justify-between p-3 ${CARD_BG.yellow} rounded-xl`}>
                 <div className="flex items-center gap-3">
-                  <CreditCard className="size-4 text-yellow-600" />
+                  <CreditCard className={`size-4 ${TEXT_COLOR.yellow}`} />
                   <span className="text-sm text-foreground">Pending Payments</span>
                 </div>
-                <span className="font-semibold text-yellow-700">{analytics?.pendingPayments || 0}</span>
+                <span className={`font-semibold ${TEXT_COLOR.yellow}`}>{analytics?.pendingPayments || 0}</span>
               </div>
-              <div className="flex items-center justify-between p-3 bg-purple-50 rounded-xl">
+              <div className={`flex items-center justify-between p-3 ${CARD_BG.purple} rounded-xl`}>
                 <div className="flex items-center gap-3">
-                  <CalendarDays className="size-4 text-purple-600" />
+                  <CalendarDays className={`size-4 ${TEXT_COLOR.purple}`} />
                   <span className="text-sm text-foreground">Active Bookings</span>
                 </div>
-                <span className="font-semibold text-purple-700">{analytics?.activeBookings || 0}</span>
+                <span className={`font-semibold ${TEXT_COLOR.purple}`}>{analytics?.activeBookings || 0}</span>
               </div>
             </CardContent>
           </Card>

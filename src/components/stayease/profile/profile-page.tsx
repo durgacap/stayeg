@@ -62,7 +62,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAppStore } from '@/store/use-app-store';
-import { CITIES } from '@/lib/constants';
+import { CITIES, BADGE } from '@/lib/constants';
 import type { KYCStatus, UserRole } from '@/lib/types';
 
 const GENDER_OPTIONS = [
@@ -80,10 +80,10 @@ const ROLE_LABELS: Record<UserRole, string> = {
 };
 
 const ROLE_COLORS: Record<UserRole, string> = {
-  TENANT: 'bg-blue-100 text-blue-700',
+  TENANT: BADGE.blue,
   OWNER: 'bg-brand-sage/15 text-brand-sage',
   VENDOR: 'bg-brand-lime/15 text-brand-lime-dark',
-  ADMIN: 'bg-purple-100 text-purple-700',
+  ADMIN: BADGE.purple,
 };
 
 const KYC_CONFIG: Record<KYCStatus, {

@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
-import { PRICING_PLANS, AVAILABLE_COUPONS } from '@/lib/constants';
+import { PRICING_PLANS, AVAILABLE_COUPONS, BADGE_BORDER } from '@/lib/constants';
 
 const FAQ_ITEMS = [
   {
@@ -302,7 +302,7 @@ export default function PricingPage() {
       <section className="py-12">
         <div className="max-w-5xl mx-auto px-4">
           <div className="text-center mb-8">
-            <Badge className="bg-purple-100 text-purple-700 border-purple-200 mb-3">
+            <Badge className={`${BADGE_BORDER.purple} mb-3`}>
               <Tag className="size-3 mr-1" />
               Available Coupons
             </Badge>
@@ -325,12 +325,12 @@ export default function PricingPage() {
                             {coupon.code}
                           </code>
                           {coupon.discountPercent > 0 && (
-                            <Badge className="bg-green-100 text-green-700 border-0 text-xs">
+                            <Badge className={`${BADGE.green} border-0 text-xs`}>
                               {coupon.discountPercent}% OFF
                             </Badge>
                           )}
                           {coupon.discountPercent === 0 && (coupon as any).flatDiscount && (
-                            <Badge className="bg-green-100 text-green-700 border-0 text-xs">
+                            <Badge className={`${BADGE.green} border-0 text-xs`}>
                               ₹{(coupon as any).flatDiscount} OFF
                             </Badge>
                           )}

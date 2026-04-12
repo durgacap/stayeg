@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import type { PG, Booking } from '@/lib/types';
+import { BADGE, TEXT_COLOR } from '@/lib/constants';
 
 export default function TenantManagement() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -154,7 +155,7 @@ export default function TenantManagement() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 flex-wrap">
                         <h3 className="font-semibold text-foreground">{booking.user?.name || 'Unknown'}</h3>
-                        <Badge className="bg-green-100 text-green-700">{booking.status}</Badge>
+                        <Badge className={BADGE.green}>{booking.status}</Badge>
                       </div>
                       <div className="flex items-center gap-4 mt-1 text-sm text-muted-foreground flex-wrap">
                         {booking.user?.email && (
@@ -235,11 +236,11 @@ export default function TenantManagement() {
                 </div>
                 <div>
                   <span className="text-muted-foreground">Booking Status</span>
-                  <Badge className="bg-green-100 text-green-700 mt-0.5">{selectedTenant.status}</Badge>
+                  <Badge className={`${BADGE.green} mt-0.5`}>{selectedTenant.status}</Badge>
                 </div>
                 <div>
                   <span className="text-muted-foreground">Advance Paid</span>
-                  <p className="font-semibold text-green-700">₹{selectedTenant.advancePaid?.toLocaleString('en-IN')}</p>
+                  <p className={`font-semibold ${TEXT_COLOR.green}`}>₹{selectedTenant.advancePaid?.toLocaleString('en-IN')}</p>
                 </div>
               </div>
             </CardContent>

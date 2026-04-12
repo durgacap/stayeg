@@ -37,7 +37,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAppStore } from '@/store/use-app-store';
-import { STATUSES } from '@/lib/constants';
+import { STATUSES, BADGE } from '@/lib/constants';
 import type { Complaint } from '@/lib/types';
 
 const CATEGORY_ICONS: Record<string, React.ElementType> = {
@@ -57,10 +57,10 @@ const CATEGORY_LABELS: Record<string, string> = {
 };
 
 const PRIORITY_COLORS: Record<string, string> = {
-  LOW: 'bg-blue-100 text-blue-700',
+  LOW: BADGE.blue,
   MEDIUM: 'bg-brand-sage-light text-brand-sage',
   HIGH: 'bg-brand-teal/15 text-brand-teal',
-  URGENT: 'bg-red-100 text-red-700',
+  URGENT: BADGE.red,
 };
 
 const TIMELINE_STEPS = [

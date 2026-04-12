@@ -21,7 +21,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
-import { AMENITIES_LIST, STATUSES } from '@/lib/constants';
+import { AMENITIES_LIST, STATUSES, BADGE } from '@/lib/constants';
 import type { PG } from '@/lib/types';
 
 export default function PGManagement() {
@@ -146,9 +146,9 @@ export default function PGManagement() {
 
   const genderBadgeColor = (g: string) => {
     switch (g) {
-      case 'MALE': return 'bg-blue-100 text-blue-700';
-      case 'FEMALE': return 'bg-pink-100 text-pink-700';
-      default: return 'bg-purple-100 text-purple-700';
+      case 'MALE': return BADGE.blue;
+      case 'FEMALE': return BADGE.pink;
+      default: return BADGE.purple;
     }
   };
 

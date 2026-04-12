@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useAppStore } from '@/store/use-app-store';
+import { BADGE } from '@/lib/constants';
 
 const PRIVACY_SECTIONS = [
   {
@@ -278,7 +279,7 @@ export default function PrivacyPage() {
           </button>
 
           <div className="flex items-center gap-3 mb-2">
-            <div className="size-10 rounded-xl bg-blue-100 flex items-center justify-center">
+            <div className={`size-10 rounded-xl ${BADGE.blue} flex items-center justify-center`}>
               <Shield className="size-5 text-blue-600" />
             </div>
             <div>

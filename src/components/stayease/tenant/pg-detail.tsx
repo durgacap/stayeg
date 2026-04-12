@@ -52,7 +52,7 @@ import {
 } from '@/components/ui/table';
 import { useAppStore } from '@/store/use-app-store';
 import { PG_IMAGES } from '@/lib/constants';
-import { STATUSES } from '@/lib/constants';
+import { STATUSES, BADGE_BORDER } from '@/lib/constants';
 import type { PG, Bed } from '@/lib/types';
 
 const AMENITY_ICONS: Record<string, React.ElementType> = {
@@ -180,7 +180,7 @@ export default function PGDetail() {
           </Button>
           <div className="flex items-center gap-2">
             {pgData?.isVerified && (
-              <Badge className="bg-green-100 text-green-700 border-green-200 gap-1">
+              <Badge className={`${BADGE_BORDER.green} gap-1`}>
                 <ShieldCheck className="size-3" />
                 Verified Property
               </Badge>

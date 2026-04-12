@@ -29,13 +29,6 @@ export function ThemeToggle() {
     );
   }
 
-  const cycleTheme = () => {
-    const order: ThemeMode[] = ['light', 'dark', 'eye-comfort'];
-    const current = (theme === 'eye-comfort' ? 'eye-comfort' : theme || 'light') as ThemeMode;
-    const next = order[(order.indexOf(current) + 1) % order.length];
-    applyTheme(next);
-  };
-
   const applyTheme = (mode: ThemeMode) => {
     const html = document.documentElement;
 

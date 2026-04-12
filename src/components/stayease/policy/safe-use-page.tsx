@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import { CARD_BG, BADGE, BADGE_BORDER, TEXT_COLOR } from '@/lib/constants';
 
 const TENANT_TIPS = [
   {
@@ -139,17 +140,17 @@ const GENERAL_TIPS = [
 ];
 
 const EMERGENCY_CONTACTS = [
-  { name: 'Police', number: '100', icon: Siren, color: 'text-red-600 bg-red-50' },
-  { name: 'Fire Emergency', number: '101', icon: FireExtinguisher, color: 'text-orange-600 bg-orange-50' },
-  { name: 'Ambulance', number: '108', icon: Heart, color: 'text-pink-600 bg-pink-50' },
-  { name: 'Women Helpline', number: '1091', icon: Phone, color: 'text-purple-600 bg-purple-50' },
+  { name: 'Police', number: '100', icon: Siren, color: BADGE.red },
+  { name: 'Fire Emergency', number: '101', icon: FireExtinguisher, color: BADGE.orange },
+  { name: 'Ambulance', number: '108', icon: Heart, color: BADGE.pink },
+  { name: 'Women Helpline', number: '1091', icon: Phone, color: BADGE.purple },
   { name: 'StayEg Support', number: '+91 80-XXXX-XXXX', icon: MessageSquare, color: 'text-brand-teal bg-brand-teal/10' },
 ];
 
 const levelConfig = {
-  critical: { bg: 'bg-red-50 border-red-200', badge: 'bg-red-500 text-white', label: 'Critical' },
-  high: { bg: 'bg-amber-50 border-amber-200', badge: 'bg-amber-500 text-white', label: 'Important' },
-  medium: { bg: 'bg-blue-50 border-blue-200', badge: 'bg-blue-500 text-white', label: 'Recommended' },
+  critical: { bg: `${CARD_BG.red} border-red-200 dark:border-red-800`, badge: 'bg-red-500 text-white', label: 'Critical' },
+  high: { bg: `${CARD_BG.amber} border-amber-200 dark:border-amber-800`, badge: 'bg-amber-500 text-white', label: 'Important' },
+  medium: { bg: `${CARD_BG.blue} border-blue-200 dark:border-blue-800`, badge: 'bg-blue-500 text-white', label: 'Recommended' },
 };
 
 function TipCard({ tip }: { tip: typeof TENANT_TIPS[0] }) {
@@ -160,11 +161,9 @@ function TipCard({ tip }: { tip: typeof TENANT_TIPS[0] }) {
     <div className={`rounded-xl border p-4 ${config.bg} transition-all hover:shadow-sm`}>
       <div className="flex items-start gap-3">
         <div className={`size-9 rounded-lg flex items-center justify-center shrink-0 ${
-          tip.level === 'critical' ? 'bg-red-100' : tip.level === 'high' ? 'bg-amber-100' : 'bg-blue-100'
+          tip.level === 'critical' ? BADGE.red : tip.level === 'high' ? BADGE.amber : BADGE.blue
         }`}>
-          <Icon className={`size-4.5 ${
-            tip.level === 'critical' ? 'text-red-600' : tip.level === 'high' ? 'text-amber-600' : 'text-blue-600'
-          }`} />
+          <Icon className="size-4.5" />
         </div>
         <div className="space-y-1 flex-1 min-w-0">
           <div className="flex items-center gap-2">
@@ -195,8 +194,8 @@ export default function SafeUsePage() {
           </button>
 
           <div className="flex items-center gap-3 mb-2">
-            <div className="size-10 rounded-xl bg-green-100 flex items-center justify-center">
-              <Shield className="size-5 text-green-600" />
+            <div className={`size-10 rounded-xl ${BADGE.green} flex items-center justify-center`}>
+              <Shield className="size-5" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Safe Use Guidelines</h1>
@@ -208,9 +207,9 @@ export default function SafeUsePage() {
 
       <div className="max-w-5xl mx-auto px-4 py-8 space-y-10">
         {/* Emergency Banner */}
-        <Alert className="border-red-200 bg-red-50">
-          <Siren className="size-4 text-red-600" />
-          <AlertTitle className="text-red-800 font-semibold">Emergency Contacts</AlertTitle>
+        <Alert className={`${BADGE_BORDER.red} ${CARD_BG.red}`}>
+          <Siren className="size-4" />
+          <AlertTitle className={`${TEXT_COLOR.red} font-semibold`}>Emergency Contacts</AlertTitle>
           <AlertDescription>
             <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mt-3">
               {EMERGENCY_CONTACTS.map((contact) => {
@@ -230,11 +229,11 @@ export default function SafeUsePage() {
         {/* For Tenants */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <div className="size-8 rounded-lg bg-blue-100 flex items-center justify-center">
-              <Users className="size-4 text-blue-600" />
+            <div className={`size-8 rounded-lg ${BADGE.blue} flex items-center justify-center`}>
+              <Users className="size-4" />
             </div>
             <h2 className="text-xl font-bold text-foreground">For Tenants</h2>
-            <Badge className="bg-blue-100 text-blue-700 border-0 text-xs ml-1">Finding & Staying Safe</Badge>
+            <Badge className={`${BADGE.blue} border-0 text-xs ml-1`}>Finding & Staying Safe</Badge>
           </div>
           <p className="text-sm text-muted-foreground mb-4">
             Follow these guidelines to ensure a safe and smooth PG experience.
@@ -293,11 +292,11 @@ export default function SafeUsePage() {
         {/* General Safety */}
         <section>
           <div className="flex items-center gap-2 mb-4">
-            <div className="size-8 rounded-lg bg-green-100 flex items-center justify-center">
-              <Shield className="size-4 text-green-600" />
+            <div className={`size-8 rounded-lg ${BADGE.green} flex items-center justify-center`}>
+              <Shield className="size-4" />
             </div>
             <h2 className="text-xl font-bold text-foreground">General Safety</h2>
-            <Badge className="bg-green-100 text-green-700 border-0 text-xs ml-1">Everyone</Badge>
+            <Badge className={`${BADGE.green} border-0 text-xs ml-1`}>Everyone</Badge>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {GENERAL_TIPS.map((tip) => (

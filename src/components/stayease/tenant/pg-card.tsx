@@ -37,7 +37,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { useAppStore } from '@/store/use-app-store';
-import { PG_IMAGES } from '@/lib/constants';
+import { PG_IMAGES, BADGE_BORDER } from '@/lib/constants';
 import type { PG } from '@/lib/types';
 
 const AMENITY_ICONS: Record<string, React.ElementType> = {
@@ -77,9 +77,9 @@ const AMENITY_LABELS: Record<string, string> = {
 };
 
 const GENDER_COLORS: Record<string, string> = {
-  MALE: 'bg-blue-100 text-blue-700 border-blue-200',
-  FEMALE: 'bg-pink-100 text-pink-700 border-pink-200',
-  UNISEX: 'bg-purple-100 text-purple-700 border-purple-200',
+  MALE: BADGE_BORDER.blue,
+  FEMALE: BADGE_BORDER.pink,
+  UNISEX: BADGE_BORDER.purple,
 };
 
 const GENDER_LABELS: Record<string, string> = {

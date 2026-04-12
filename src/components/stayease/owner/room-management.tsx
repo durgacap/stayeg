@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import { BADGE, BADGE_BORDER } from '@/lib/constants';
 
 export default function RoomManagement() {
   const { showToast, selectedPG } = useAppStore();
@@ -111,9 +112,9 @@ export default function RoomManagement() {
 
   const bedStatusColor = (status: string) => {
     switch (status) {
-      case 'AVAILABLE': return 'bg-green-100 text-green-700 border-green-200';
-      case 'OCCUPIED': return 'bg-red-100 text-red-700 border-red-200';
-      case 'MAINTENANCE': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
+      case 'AVAILABLE': return BADGE_BORDER.green;
+      case 'OCCUPIED': return BADGE_BORDER.red;
+      case 'MAINTENANCE': return BADGE_BORDER.yellow;
       default: return 'bg-muted text-foreground';
     }
   };
@@ -129,9 +130,9 @@ export default function RoomManagement() {
 
   const getRoomTypeBadge = (type: string) => {
     const colors: Record<string, string> = {
-      SINGLE: 'bg-indigo-100 text-indigo-700',
-      DOUBLE: 'bg-blue-100 text-blue-700',
-      TRIPLE: 'bg-cyan-100 text-cyan-700',
+      SINGLE: BADGE.indigo,
+      DOUBLE: BADGE.blue,
+      TRIPLE: BADGE.cyan,
       DORMITORY: 'bg-muted text-foreground',
     };
     return colors[type] || 'bg-muted text-foreground';

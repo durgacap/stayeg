@@ -21,13 +21,13 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
-import { STATUSES } from '@/lib/constants';
+import { STATUSES, BADGE, BADGE_BORDER, CARD_BG, TEXT_COLOR } from '@/lib/constants';
 
 const PRIORITY_CONFIG: Record<string, { color: string; bg: string; icon: string }> = {
-  URGENT: { color: 'text-red-700', bg: 'bg-red-100', icon: '🔴' },
+  URGENT: { color: TEXT_COLOR.red, bg: BADGE.red, icon: '🔴' },
   HIGH: { color: 'text-brand-teal', bg: 'bg-brand-teal/15', icon: '🟠' },
-  MEDIUM: { color: 'text-yellow-700', bg: 'bg-yellow-100', icon: '🟡' },
-  LOW: { color: 'text-green-700', bg: 'bg-green-100', icon: '🟢' },
+  MEDIUM: { color: TEXT_COLOR.yellow, bg: BADGE.yellow, icon: '🟡' },
+  LOW: { color: TEXT_COLOR.green, bg: BADGE.green, icon: '🟢' },
 };
 
 const CATEGORIES = ['MAINTENANCE', 'CLEANLINESS', 'NOISE', 'SAFETY', 'GENERAL'];
@@ -264,9 +264,9 @@ export default function ComplaintManagement() {
                               <p className="text-sm text-muted-foreground mb-3">{c.description}</p>
                             )}
                             {c.resolution && (
-                              <div className="bg-green-50 border border-green-200 rounded-lg p-3 mb-3">
-                                <p className="text-sm font-medium text-green-800">Resolution:</p>
-                                <p className="text-sm text-green-700 mt-1">{c.resolution}</p>
+                              <div className={`${CARD_BG.green} border border-green-200 dark:border-green-800 rounded-lg p-3 mb-3`}>
+                                <p className={`text-sm font-medium ${TEXT_COLOR.green}`}>Resolution:</p>
+                                <p className={`text-sm ${TEXT_COLOR.green} mt-1`}>{c.resolution}</p>
                               </div>
                             )}
                             {nextActions.length > 0 && (

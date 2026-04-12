@@ -18,14 +18,15 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { useAppStore } from '@/store/use-app-store';
+import { BADGE, BADGE_BORDER } from '@/lib/constants';
 
 const VENDOR_TYPES = [
-  { value: 'PLUMBER', label: 'Plumber', color: 'bg-blue-100 text-blue-700' },
-  { value: 'ELECTRICIAN', label: 'Electrician', color: 'bg-yellow-100 text-yellow-700' },
-  { value: 'CLEANER', label: 'Cleaner', color: 'bg-green-100 text-green-700' },
-  { value: 'PAINTER', label: 'Painter', color: 'bg-purple-100 text-purple-700' },
-  { value: 'CARPENTER', label: 'Carpenter', color: 'bg-brand-sage/15 text-brand-sage' },
-  { value: 'WIFI', label: 'WiFi Service', color: 'bg-cyan-100 text-cyan-700' },
+  { value: 'PLUMBER', label: 'Plumber', color: BADGE.blue },
+  { value: 'ELECTRICIAN', label: 'Electrician', color: BADGE.yellow },
+  { value: 'CLEANER', label: 'Cleaner', color: BADGE.green },
+  { value: 'PAINTER', label: 'Painter', color: BADGE.purple },
+  { value: 'CARPENTER', label: 'Carpenter', color: BADGE.amber },
+  { value: 'WIFI', label: 'WiFi Service', color: BADGE.cyan },
   { value: 'GENERAL', label: 'General', color: 'bg-muted text-foreground' },
 ];
 
@@ -213,7 +214,7 @@ export default function VendorManagement() {
                       <div className="mt-4 flex gap-2">
                         <a
                           href={`tel:${vendor.phone}`}
-                          className="flex-1 flex items-center justify-center gap-1.5 bg-green-50 text-green-700 hover:bg-green-100 py-2 rounded-lg text-sm font-medium transition-colors"
+                          className={`flex-1 flex items-center justify-center gap-1.5 ${BADGE_BORDER.green} hover:opacity-80 py-2 rounded-lg text-sm font-medium transition-colors`}
                         >
                           <Phone className="size-3.5" /> Call
                         </a>
