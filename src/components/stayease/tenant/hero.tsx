@@ -306,7 +306,7 @@ export default function HeroSection() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
             badge="Simple & Quick"
-            title="How StayeG"
+            title="How StayEg"
             highlight="Works"
             description="Find and book your perfect PG in just 3 simple steps. No hassle, no broker fees."
           />
@@ -372,8 +372,8 @@ export default function HeroSection() {
       <section className="py-16 md:py-24 bg-gradient-to-b from-background to-brand-teal-light">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <SectionHeading
-            badge="Why StayeG"
-            title="The StayeG"
+            badge="Why StayEg"
+            title="The StayEg"
             highlight="Advantage"
             description="Everything you need for a perfect PG living experience, all in one platform."
           />
@@ -439,7 +439,7 @@ export default function HeroSection() {
       <section className="py-16 md:py-24 bg-background overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <FadeInSection>
-            <div className="relative rounded-3xl bg-gradient-to-br from-[#292524] via-[#44403C] to-[#292524] overflow-hidden p-8 md:p-12 lg:p-16">
+            <div className="relative rounded-3xl bg-gradient-to-br from-[#1E293B] via-[#334155] to-[#1E293B] overflow-hidden p-8 md:p-12 lg:p-16">
               {/* Background decorative */}
               <div className="absolute top-0 right-0 w-96 h-96 bg-brand-teal/10 rounded-full blur-3xl" />
               <div className="absolute bottom-0 left-0 w-72 h-72 bg-brand-sage/10 rounded-full blur-3xl" />
@@ -653,7 +653,7 @@ export default function HeroSection() {
             badge="Testimonials"
             title="What Our Users"
             highlight="Say"
-            description="Real stories from real people who found their perfect PG home with StayeG."
+            description="Real stories from real people who found their perfect PG home with StayEg."
           />
 
           <FadeInSection>
@@ -780,7 +780,7 @@ export default function HeroSection() {
             badge="Our Presence"
             title="Cities We're"
             highlight="In"
-            description="StayeG is available across India's top cities. Click on your city to find PGs near you."
+            description="StayEg is available across India's top cities. Click on your city to find PGs near you."
           />
 
           <FadeInSection>
@@ -830,21 +830,21 @@ const testimonials = [
     name: 'Priya Sharma',
     role: 'Software Engineer, Bangalore',
     avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Priya',
-    quote: 'StayeG made my move to Bangalore so easy! Found a verified PG near my office in just 2 days. The community feature helped me find amazing roommates.',
+    quote: 'StayEg made my move to Bangalore so easy! Found a verified PG near my office in just 2 days. The community feature helped me find amazing roommates.',
     rating: 5,
   },
   {
     name: 'Arjun Patel',
     role: 'MBA Student, Delhi',
     avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Arjun',
-    quote: 'Zero brokerage was a game-changer for me. As a student, every rupee counts. The PG I found through StayeG is clean, affordable, and near my college.',
+    quote: 'Zero brokerage was a game-changer for me. As a student, every rupee counts. The PG I found through StayEg is clean, affordable, and near my college.',
     rating: 5,
   },
   {
     name: 'Meera Krishnan',
     role: 'Content Writer, Pune',
     avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Meera',
-    quote: 'I was nervous about moving to a new city alone. But the StayeG community connected me with so many people. Now I have friends and a lovely PG home!',
+    quote: 'I was nervous about moving to a new city alone. But the StayEg community connected me with so many people. Now I have friends and a lovely PG home!',
     rating: 4,
   },
 ];

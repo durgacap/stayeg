@@ -60,7 +60,7 @@ export default function SiteFooter() {
       initial="hidden"
       animate={isInView ? 'visible' : 'hidden'}
       variants={slideUp}
-      className="bg-gradient-to-b from-[#1C1917] to-[#0C0A09] text-gray-400 mt-auto pb-safe relative overflow-hidden"
+      className="bg-gradient-to-b from-[#1E293B] to-[#0F172A] text-gray-400 mt-auto pb-safe relative overflow-hidden"
     >
       {/* Static gradient accent line at top */}
       <div
@@ -80,7 +80,7 @@ export default function SiteFooter() {
                 <Building2 className="size-5 text-white" />
               </div>
               <span className="text-xl font-bold text-white">
-                Stay<span className="text-brand-teal">eG</span>
+                Stay<span className="text-brand-teal">Eg</span>
               </span>
             </div>
             <p className="text-sm text-gray-500 leading-relaxed mb-4 max-w-xs">
@@ -130,7 +130,7 @@ export default function SiteFooter() {
         {/* Bottom Section */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-gray-600 flex items-center gap-1">
-            &copy; {new Date().getFullYear()} StayeG. Made with
+            &copy; {new Date().getFullYear()} StayEg. Made with
             <Heart className="size-3.5 text-red-500 fill-red-500" />
             in India
           </p>

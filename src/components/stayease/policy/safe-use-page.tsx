@@ -16,7 +16,7 @@ const TENANT_TIPS = [
   {
     icon: Eye,
     title: 'Verify the Property',
-    description: 'Always visit the PG in person before making any payment. Check that the property matches the listing photos and descriptions on StayeG.',
+    description: 'Always visit the PG in person before making any payment. Check that the property matches the listing photos and descriptions on StayEg.',
     level: 'critical' as const,
   },
   {
@@ -34,7 +34,7 @@ const TENANT_TIPS = [
   {
     icon: CreditCard,
     title: 'Payment Safety',
-    description: 'Always make payments through StayeG\'s secure payment system. Never transfer money directly to personal bank accounts or UPI IDs before verifying.',
+    description: 'Always make payments through StayEg\'s secure payment system. Never transfer money directly to personal bank accounts or UPI IDs before verifying.',
     level: 'critical' as const,
   },
   {
@@ -46,7 +46,7 @@ const TENANT_TIPS = [
   {
     icon: MessageSquare,
     title: 'Keep Communication on Platform',
-    description: 'Keep all conversations and agreements within StayeG for record. This helps in case of any disputes or issues that need resolution.',
+    description: 'Keep all conversations and agreements within StayEg for record. This helps in case of any disputes or issues that need resolution.',
     level: 'medium' as const,
   },
 ];
@@ -55,7 +55,7 @@ const OWNER_TIPS = [
   {
     icon: ShieldCheck,
     title: 'Tenant Verification (KYC)',
-    description: 'Always verify tenant identity using Aadhaar/PAN through StayeG\'s KYC system. Collect emergency contact information and keep records.',
+    description: 'Always verify tenant identity using Aadhaar/PAN through StayEg\'s KYC system. Collect emergency contact information and keep records.',
     level: 'critical' as const,
   },
   {
@@ -94,7 +94,7 @@ const VENDOR_TIPS = [
   {
     icon: ShieldCheck,
     title: 'Identity Verification',
-    description: 'Complete your vendor verification on StayeG. Upload valid ID proof, certifications, and work samples to build trust with PG owners.',
+    description: 'Complete your vendor verification on StayEg. Upload valid ID proof, certifications, and work samples to build trust with PG owners.',
     level: 'critical' as const,
   },
   {
@@ -121,13 +121,13 @@ const GENERAL_TIPS = [
   {
     icon: Flag,
     title: 'Report Suspicious Activity',
-    description: 'If you encounter fraudulent listings, fake profiles, or suspicious behavior, report it immediately through StayeG\'s reporting system or contact support.',
+    description: 'If you encounter fraudulent listings, fake profiles, or suspicious behavior, report it immediately through StayEg\'s reporting system or contact support.',
     level: 'critical' as const,
   },
   {
     icon: Shield,
     title: 'Never Share OTPs or Passwords',
-    description: 'StayeG will never ask for your OTP, password, or sensitive financial information. Do not share these with anyone claiming to be from StayeG.',
+    description: 'StayEg will never ask for your OTP, password, or sensitive financial information. Do not share these with anyone claiming to be from StayEg.',
     level: 'critical' as const,
   },
   {
@@ -143,7 +143,7 @@ const EMERGENCY_CONTACTS = [
   { name: 'Fire Emergency', number: '101', icon: FireExtinguisher, color: 'text-orange-600 bg-orange-50' },
   { name: 'Ambulance', number: '108', icon: Heart, color: 'text-pink-600 bg-pink-50' },
   { name: 'Women Helpline', number: '1091', icon: Phone, color: 'text-purple-600 bg-purple-50' },
-  { name: 'StayeG Support', number: '+91 80-XXXX-XXXX', icon: MessageSquare, color: 'text-brand-teal bg-brand-teal/10' },
+  { name: 'StayEg Support', number: '+91 80-XXXX-XXXX', icon: MessageSquare, color: 'text-brand-teal bg-brand-teal/10' },
 ];
 
 const levelConfig = {
@@ -200,7 +200,7 @@ export default function SafeUsePage() {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Safe Use Guidelines</h1>
-              <p className="text-sm text-muted-foreground">Stay safe on StayeG — tips and best practices for everyone</p>
+              <p className="text-sm text-muted-foreground">Stay safe on StayEg — tips and best practices for everyone</p>
             </div>
           </div>
         </div>
@@ -316,7 +316,7 @@ export default function SafeUsePage() {
               <div className="space-y-2">
                 <h3 className="text-lg font-bold text-foreground">See Something Suspicious?</h3>
                 <p className="text-sm text-muted-foreground">
-                  Report any safety concerns, fraudulent activity, or policy violations to StayeG immediately.
+                  Report any safety concerns, fraudulent activity, or policy violations to StayEg immediately.
                   All reports are treated confidentially and investigated promptly.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-2 pt-2">

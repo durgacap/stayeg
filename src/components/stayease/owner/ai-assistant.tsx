@@ -40,7 +40,7 @@ export default function AIAssistant() {
     {
       id: 'welcome',
       role: 'assistant',
-      content: "Hello! 👋 I'm your StayEase AI assistant. I can help you manage your PG properties efficiently.\n\nTry one of the quick actions below or ask me anything about your PG management!",
+      content: "Hello! 👋 I'm your StayEg AI assistant. I can help you manage your PG properties efficiently.\n\nTry one of the quick actions below or ask me anything about your PG management!",
       timestamp: new Date(),
     },
   ]);
@@ -150,7 +150,7 @@ export default function AIAssistant() {
                   <Bot className="size-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold">StayEase AI</h3>
+                  <h3 className="font-semibold">StayEg AI</h3>
                   <p className="text-xs text-white/80 flex items-center gap-1">
                     <span className="size-1.5 bg-green-400 rounded-full animate-pulse" />
                     Online

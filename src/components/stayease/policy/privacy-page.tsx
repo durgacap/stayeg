@@ -15,7 +15,7 @@ const PRIVACY_SECTIONS = [
     number: '1',
     title: 'Information We Collect',
     icon: Database,
-    content: `At StayeG, we collect information to provide and improve our services. The types of information we collect include:
+    content: `At StayEg, we collect information to provide and improve our services. The types of information we collect include:
 
 Personal Information:
 • Name, email address, phone number, and date of birth
@@ -86,7 +86,7 @@ With Service Partners:
 Legal Requirements:
 • In response to valid legal processes (court orders, subpoenas)
 • To comply with applicable laws and regulations
-• To protect the rights, safety, and property of StayeG and users
+• To protect the rights, safety, and property of StayEg and users
 • To report suspected illegal activities
 
 Business Transfers:
@@ -123,7 +123,7 @@ While we strive to protect your information, no method of electronic transmissio
     number: '5',
     title: 'Cookies & Tracking Technologies',
     icon: Cookie,
-    content: `StayeG uses cookies and similar technologies to enhance your experience:
+    content: `StayEg uses cookies and similar technologies to enhance your experience:
 
 Essential Cookies:
 • Session management and authentication
@@ -170,28 +170,28 @@ Specific Rights Under Indian Data Protection Law (DPDPA):
 • Right to withdraw consent for data processing
 • Right to lodge a complaint with the Data Protection Board
 
-To exercise any of these rights, contact us at privacy@stayease.in. We will respond to your request within 30 days.`,
+To exercise any of these rights, contact us at privacy@stayeg.in. We will respond to your request within 30 days.`,
   },
   {
     number: '7',
     title: "Children's Privacy",
     icon: Baby,
-    content: `StayeG is not intended for children under the age of 18. We do not knowingly collect personal information from children.
+    content: `StayEg is not intended for children under the age of 18. We do not knowingly collect personal information from children.
 
 If we discover that a child under 18 has provided personal information:
 • We will take steps to delete such information promptly
 • We may terminate the child's account
 • We will notify the parent or guardian
 
-Parents or guardians who believe their child has provided personal information to StayeG should contact us at privacy@stayease.in, and we will take appropriate action.
+Parents or guardians who believe their child has provided personal information to StayEg should contact us at privacy@stayeg.in, and we will take appropriate action.
 
-Educational institutions or organizations that wish to use StayeG for students must ensure proper parental consent mechanisms are in place.`,
+Educational institutions or organizations that wish to use StayEg for students must ensure proper parental consent mechanisms are in place.`,
   },
   {
     number: '8',
     title: 'Third-Party Services',
     icon: Globe,
-    content: `StayeG integrates with third-party services that may have their own privacy policies:
+    content: `StayEg integrates with third-party services that may have their own privacy policies:
 
 Payment Processing:
 • Razorpay — handles all payment transactions securely
@@ -213,7 +213,7 @@ Communication:
 • WhatsApp Business API — for notifications and updates
 • Phone numbers shared in compliance with TRAI regulations
 
-We recommend reviewing the privacy policies of these third-party services. StayeG is not responsible for the privacy practices of external websites or services.`,
+We recommend reviewing the privacy policies of these third-party services. StayEg is not responsible for the privacy practices of external websites or services.`,
   },
   {
     number: '9',
@@ -228,7 +228,7 @@ We recommend reviewing the privacy policies of these third-party services. Staye
 We encourage you to review this Policy periodically. Your continued use of the Platform after changes are posted constitutes acceptance of the updated Policy.
 
 If you disagree with any changes, you may:
-• Contact us to express concerns at privacy@stayease.in
+• Contact us to express concerns at privacy@stayeg.in
 • Delete your account before changes take effect
 • Request data export before closing your account`,
   },
@@ -238,13 +238,13 @@ If you disagree with any changes, you may:
     icon: Shield,
     content: `For privacy-related questions, concerns, or requests, please contact:
 
-StayeG Data Protection Officer
-Email: privacy@stayease.in
+StayEg Data Protection Officer
+Email: privacy@stayeg.in
 Phone: +91 80-XXXX-XXXX
 Address: Bangalore, Karnataka, India
 
 For general support:
-Email: support@stayease.in
+Email: support@stayeg.in
 Phone: +91 80-XXXX-XXXX
 Business Hours: Monday to Saturday, 9:00 AM - 6:00 PM IST
 

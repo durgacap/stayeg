@@ -22,11 +22,11 @@ interface OwnerGuideProps {
 const STEPS = [
   {
     icon: Building2,
-    title: 'Welcome to StayeG!',
+    title: 'Welcome to StayEg!',
     highlight: 'Your PG Management Hub',
     description: 'Manage your entire PG business from one powerful dashboard. Track occupancy, collect rent, handle complaints, and grow your business — all from your phone.',
     gradient: 'from-brand-deep to-brand-teal',
-    tip: 'Join 10,000+ PG owners who trust StayeG',
+    tip: 'Join 10,000+ PG owners who trust StayEg',
   },
   {
     icon: Building2,
@@ -58,13 +58,13 @@ const STEPS = [
     highlight: 'Real-Time Ticket System',
     description: 'Tenants report issues instantly. Set priority levels — Low, Medium, High, or Urgent. Assign vendors automatically. Track resolution time and keep everyone happy.',
     gradient: 'from-brand-teal to-brand-sage',
-    tip: 'Resolve complaints 60% faster with StayeG',
+    tip: 'Resolve complaints 60% faster with StayEg',
   },
   {
     icon: CheckCircle2,
     title: 'You\'re All Set!',
     highlight: 'Your PG Empire Starts Here',
-    description: 'Everything is ready. Start managing your PGs like a pro! Explore your dashboard, add your first property, and watch your business grow with StayeG.',
+    description: 'Everything is ready. Start managing your PGs like a pro! Explore your dashboard, add your first property, and watch your business grow with StayEg.',
     gradient: 'from-brand-sage to-brand-teal',
     tip: 'First 1000 PG Owners get 1 year absolutely FREE!',
   },

@@ -82,7 +82,7 @@ const ROLE_LABELS: Record<UserRole, string> = {
 const ROLE_COLORS: Record<UserRole, string> = {
   TENANT: 'bg-blue-100 text-blue-700',
   OWNER: 'bg-brand-sage/15 text-brand-sage',
-  VENDOR: 'bg-emerald-100 text-emerald-700',
+  VENDOR: 'bg-brand-lime/15 text-brand-lime-dark',
   ADMIN: 'bg-purple-100 text-purple-700',
 };
 

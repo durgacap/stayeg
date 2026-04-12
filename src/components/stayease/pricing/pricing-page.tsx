@@ -46,8 +46,8 @@ const FAQ_ITEMS = [
     answer: 'We accept UPI, credit/debit cards, net banking, and wallets. For annual plans, we also offer EMI options through major banks. All payments are processed securely via Razorpay.',
   },
   {
-    question: 'Can tenants use StayeG for free?',
-    answer: 'Yes! StayeG is 100% FREE for tenants. There are no charges for searching, booking, payments, or using any tenant features. We believe finding a good PG should be accessible to everyone.',
+    question: 'Can tenants use StayEg for free?',
+    answer: 'Yes! StayEg is 100% FREE for tenants. There are no charges for searching, booking, payments, or using any tenant features. We believe finding a good PG should be accessible to everyone.',
   },
 ];
 
@@ -242,7 +242,7 @@ export default function PricingPage() {
       <section className="bg-gradient-to-b from-muted to-background py-12">
         <div className="max-w-5xl mx-auto px-4">
           <h2 className="text-2xl sm:text-3xl font-bold text-center text-foreground mb-8">
-            Everyone Benefits on StayeG
+            Everyone Benefits on StayEg
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -260,7 +260,7 @@ export default function PricingPage() {
                     </div>
                     <p className="text-sm text-muted-foreground">
                       Search PGs, book rooms, make payments, file complaints, join communities — all completely free.
-                      No hidden charges, no subscription fees. StayeG is committed to making PG hunting accessible.
+                      No hidden charges, no subscription fees. StayEg is committed to making PG hunting accessible.
                     </p>
                     <ul className="space-y-1.5 pt-1">
                       {['Browse & search unlimited PGs', 'Book & manage stays', 'Online rent payments', 'Community access'].map((item) => (
@@ -429,10 +429,10 @@ export default function PricingPage() {
                 <Button
                   variant="outline"
                   className="border-muted-foreground/30 text-muted-foreground hover:text-background hover:bg-muted-foreground/20 px-6"
-                  onClick={() => showToast('Email sent to sales@stayease.in')}
+                  onClick={() => showToast('Email sent to sales@stayeg.in')}
                 >
                   <Mail className="size-4 mr-2" />
-                  sales@stayease.in
+                  sales@stayeg.in
                 </Button>
               </div>
             </CardContent>

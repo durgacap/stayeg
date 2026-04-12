@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
     }
 
     if (query) {
-      supabaseQuery = supabaseQuery.or(`name.ilike.%${query}%,address.ilike.%${query}%`);
+      const sanitizedQuery = query.replace(/[%_\\]/g, '\\$&');
+      supabaseQuery = supabaseQuery.or(`name.ilike.%${sanitizedQuery}%,address.ilike.%${sanitizedQuery}%`);
     }
 
     if (minPrice > 0) {

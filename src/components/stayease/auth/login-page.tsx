@@ -34,7 +34,7 @@ const DEMO_USERS: Record<UserRole, User> = {
   OWNER: {
     id: 'demo-owner-001',
     name: 'Rajesh Kumar',
-    email: 'rajesh@stayease.in',
+    email: 'rajesh@stayeg.in',
     phone: '+91 98765 43211',
     role: 'OWNER',
     gender: 'MALE',
@@ -46,7 +46,7 @@ const DEMO_USERS: Record<UserRole, User> = {
   ADMIN: {
     id: 'demo-admin-001',
     name: 'Admin User',
-    email: 'admin@stayease.in',
+    email: 'admin@stayeg.in',
     phone: '+91 99999 99999',
     role: 'ADMIN',
     gender: 'MALE',
@@ -163,7 +163,7 @@ export default function LoginPage() {
             <Building2 className="size-7 text-white" />
           </div>
           <h1 className="text-2xl font-bold text-foreground">
-            Welcome to <span className="text-brand-teal">StayEase</span>
+            Welcome to <span className="text-brand-teal">StayEg</span>
           </h1>
           <p className="text-muted-foreground text-sm mt-1">Your trusted PG finding companion</p>
         </motion.div>
@@ -363,7 +363,7 @@ export default function LoginPage() {
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                       {[
-                        { role: 'TENANT' as UserRole, label: 'Tenant', color: 'from-emerald-500 to-teal-500', shadow: 'shadow-emerald-200' },
+                        { role: 'TENANT' as UserRole, label: 'Tenant', color: 'from-brand-deep to-brand-teal', shadow: 'shadow-blue-200' },
                         { role: 'OWNER' as UserRole, label: 'PG Owner', color: 'from-brand-deep to-brand-teal', shadow: 'shadow-brand-teal/20' },
                         { role: 'ADMIN' as UserRole, label: 'Admin', color: 'from-purple-500 to-violet-500', shadow: 'shadow-purple-200' },
                       ].map((demo) => (

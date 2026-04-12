@@ -118,7 +118,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
           </motion.div>
           <div>
             <p className="text-2xl font-bold text-foreground">Database Ready!</p>
-            <p className="text-sm text-muted-foreground mt-1">Loading StayeG...</p>
+            <p className="text-sm text-muted-foreground mt-1">Loading StayEg...</p>
           </div>
         </motion.div>
       </div>
@@ -136,7 +136,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
           </div>
           <h1 className="text-2xl font-bold text-foreground">Quick Database Setup</h1>
           <p className="text-sm text-muted-foreground">
-            Just 3 steps to get your StayeG app running!
+            Just 3 steps to get your StayEg app running!
           </p>
         </div>
 

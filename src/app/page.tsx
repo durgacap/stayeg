@@ -155,7 +155,7 @@ function TopHeader() {
             <Building2 className="size-4 text-white" />
           </div>
           <span className="font-bold text-lg text-foreground hidden sm:block">
-            Stay<span className="text-brand-teal">eG</span>
+            Stay<span className="text-brand-teal">Eg</span>
           </span>
         </button>
 

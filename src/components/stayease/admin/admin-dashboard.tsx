@@ -101,7 +101,7 @@ export default function AdminDashboard() {
         <h1 className="text-2xl font-bold text-foreground flex items-center gap-2">
           <Shield className="size-6 text-brand-teal" /> Admin Dashboard
         </h1>
-        <p className="text-muted-foreground mt-1">Monitor and manage the StayEase platform</p>
+        <p className="text-muted-foreground mt-1">Monitor and manage the StayEg platform</p>
       </div>
 
       {/* Stat Cards */}

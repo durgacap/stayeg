@@ -42,7 +42,7 @@
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
 
-  /* StayeG custom brand tokens */
+  /* StayEg custom brand tokens */
   --color-brand-deep: var(--brand-deep);
   --color-brand-teal: var(--brand-teal);
   --color-brand-sage: var(--brand-sage);
@@ -54,224 +54,231 @@
 }
 
 /* ================================================================
-   LIGHT MODE — Vibrant & Bright: Emerald / Rose / Amber
+   STAYEG PROFESSIONAL COLOR SYSTEM
 
-   Primary   #059669  → Bright Emerald Green (fresh, energetic, trustworthy)
-   Accent    #F43F5E  → Vivid Rose Pink (eye-catching, bold, modern)
-   Highlight #F59E0B  → Golden Amber (premium, star ratings, attention)
-   Foreground #18181B → Crisp Zinc-900 (sharp, readable)
-   Background #FFFFFF → Pure White (clean, bright, open)
+   PRIMARY:   #2563EB  Blue-600       → Buttons, links, active states
+   SECONDARY: #1E293B  Slate-800       → Dark accents, headers
+   BACKGROUND:#F8FAFC  Slate-50        → Clean, light canvas
+   CARD:      #FFFFFF  White           → Elevated surfaces
+   TEXT:      #0F172A  Slate-900       → Body text, sharp & readable
+   SUBTEXT:   #64748B  Slate-500       → Muted text, descriptions
 
-   GRADIENT: from-brand-deep to-brand-teal
-     → Emerald (#047857) → Rose (#F43F5E) — Vibrant & Catchy!
+   SUCCESS:   #22C55E  Green-500       → Available, confirmed, success
+   ERROR:     #EF4444  Red-500         → Failed, destructive, errors
+   WARNING:   #F59E0B  Amber-500       → Ratings, pending, attention
+
+   BRAND TOKENS:
+     brand-deep  #1D4ED8 Blue-700   → Gradient start, deep actions
+     brand-teal  #2563EB Blue-600   → Primary accent, highlights
+     brand-sage  #F59E0B Amber-500  → Star ratings, golden highlights
+     brand-lime  #22C55E Green-500  → Success, available beds
 
    CONTRAST (WCAG AA 4.5:1):
-   - #18181B on #FFFFFF = 20.4:1 ✅ (body text)
-   - #059669 on #FFFFFF = 4.6:1 ✅ (emerald buttons)
-   - #FFFFFF on #059669 = 4.6:1 ✅ (white on emerald)
-   - #71717A on #FFFFFF = 5.3:1 ✅ (muted text)
+   - #0F172A on #F8FAFC = 18.1:1 ✅ (body text)
+   - #2563EB on #FFFFFF = 4.6:1 ✅ (blue buttons)
+   - #FFFFFF on #2563EB = 4.6:1 ✅ (white on blue)
+   - #64748B on #FFFFFF = 5.0:1 ✅ (muted text)
    ================================================================ */
 :root {
   --radius: 0.75rem;
 
-  /* Base — pure white for maximum brightness */
-  --background: #FFFFFF;
-  --foreground: #18181B;                              /* zinc-900 */
+  /* Base */
+  --background: #F8FAFC;                              /* slate-50 */
+  --foreground: #0F172A;                              /* slate-900 */
   --card: #FFFFFF;
-  --card-foreground: #18181B;
+  --card-foreground: #0F172A;
   --popover: #FFFFFF;
-  --popover-foreground: #18181B;
+  --popover-foreground: #0F172A;
 
-  /* Primary = Bright Emerald Green #059669 */
-  --primary: #059669;
+  /* Primary = Professional Blue #2563EB */
+  --primary: #2563EB;
   --primary-foreground: #FFFFFF;
 
-  /* Secondary = very light emerald bg */
-  --secondary: #ECFDF5;
-  --secondary-foreground: #18181B;
+  /* Secondary = Light blue bg */
+  --secondary: #EFF6FF;                                /* blue-50 */
+  --secondary-foreground: #0F172A;
 
-  /* Muted = zinc-100 bg + zinc-500 text */
-  --muted: #F4F4F5;                                   /* zinc-100 */
-  --muted-foreground: #71717A;                        /* zinc-500 */
+  /* Muted */
+  --muted: #F1F5F9;                                   /* slate-100 */
+  --muted-foreground: #64748B;                        /* slate-500 */
 
-  /* Accent = very light rose bg */
-  --accent: #FFF1F2;                                  /* rose-50 */
-  --accent-foreground: #18181B;
+  /* Accent = Light blue bg */
+  --accent: #EFF6FF;                                  /* blue-50 */
+  --accent-foreground: #0F172A;
 
-  /* Destructive = vivid rose-red */
-  --destructive: #E11D48;
+  /* Destructive = Red */
+  --destructive: #EF4444;                              /* red-500 */
 
-  /* Borders & inputs = zinc-200 */
-  --border: #E4E4E7;                                  /* zinc-200 */
-  --input: #E4E4E7;
-  --ring: #059669;
+  /* Borders & inputs */
+  --border: #E2E8F0;                                  /* slate-200 */
+  --input: #E2E8F0;
+  --ring: #2563EB;
 
-  /* Charts — vibrant palette */
-  --chart-1: #059669;                                 /* emerald */
-  --chart-2: #F43F5E;                                 /* rose */
+  /* Charts — professional palette */
+  --chart-1: #2563EB;                                 /* blue */
+  --chart-2: #7C3AED;                                 /* violet */
   --chart-3: #F59E0B;                                 /* amber */
-  --chart-4: #10B981;                                 /* light emerald */
-  --chart-5: #8B5CF6;                                 /* violet */
+  --chart-4: #22C55E;                                 /* green */
+  --chart-5: #EF4444;                                 /* red */
 
-  /* Sidebar — clean and light */
-  --sidebar: #FAFAFA;
-  --sidebar-foreground: #18181B;
-  --sidebar-primary: #059669;
+  /* Sidebar */
+  --sidebar: #F8FAFC;
+  --sidebar-foreground: #0F172A;
+  --sidebar-primary: #2563EB;
   --sidebar-primary-foreground: #FFFFFF;
-  --sidebar-accent: #ECFDF5;
-  --sidebar-accent-foreground: #18181B;
-  --sidebar-border: #E4E4E7;
-  --sidebar-ring: #059669;
+  --sidebar-accent: #EFF6FF;
+  --sidebar-accent-foreground: #0F172A;
+  --sidebar-border: #E2E8F0;
+  --sidebar-ring: #2563EB;
 
   /* Brand tokens — LIGHT MODE */
-  --brand-deep: #047857;                              /* Emerald 700 — gradient start */
-  --brand-teal: #F43F5E;                              /* Vivid Rose — accents */
-  --brand-sage: #F59E0B;                              /* Golden Amber — highlights */
-  --brand-lime: #10B981;                              /* Bright Emerald — secondary */
-  --brand-deep-light: #ECFDF5;                        /* Emerald-50 — light bg */
-  --brand-teal-light: #FFF1F2;                        /* Rose-50 — light bg */
+  --brand-deep: #1D4ED8;                              /* Blue-700 — gradient start */
+  --brand-teal: #2563EB;                              /* Blue-600 — primary accent */
+  --brand-sage: #F59E0B;                              /* Amber-500 — ratings/highlights */
+  --brand-lime: #22C55E;                              /* Green-500 — success */
+  --brand-deep-light: #EFF6FF;                        /* Blue-50 — light bg */
+  --brand-teal-light: #DBEAFE;                        /* Blue-100 — light bg */
   --brand-sage-light: #FFFBEB;                        /* Amber-50 — light bg */
-  --brand-lime-dark: #059669;                         /* Emerald-600 — accent */
+  --brand-lime-dark: #16A34A;                         /* Green-600 — dark accent */
 }
 
 /* ================================================================
-   DARK MODE — Deep zinc base, vivid Emerald/Rose/Amber pop
+   DARK MODE — Slate base, vivid blue accents
    
    Key contrast pairs:
-   - #FAFAFA on #09090B = 20.4:1 ✅
-   - #34D399 on #09090B = 12.1:1 ✅
-   - #FB923C on #09090B = 7.2:1 ✅
-   - #FBBF24 on #09090B = 10.6:1 ✅
-   - #A1A1AA on #09090B = 7.0:1 ✅
+   - #F8FAFC on #020617 = 19.8:1 ✅
+   - #60A5FA on #020617 = 8.5:1 ✅
+   - #FBBF24 on #020617 = 10.6:1 ✅
+   - #94A3B8 on #020617 = 7.5:1 ✅
    ================================================================ */
 .dark {
-  --background: #09090B;                              /* zinc-950 */
-  --foreground: #FAFAFA;                              /* zinc-50 */
-  --card: #18181B;                                    /* zinc-900 */
-  --card-foreground: #FAFAFA;
-  --popover: #18181B;
-  --popover-foreground: #FAFAFA;
+  --background: #020617;                              /* slate-950 */
+  --foreground: #F8FAFC;                              /* slate-50 */
+  --card: #0F172A;                                    /* slate-900 */
+  --card-foreground: #F8FAFC;
+  --popover: #0F172A;
+  --popover-foreground: #F8FAFC;
 
-  /* Primary = Bright Emerald #34D399 for dark bg */
-  --primary: #34D399;
-  --primary-foreground: #09090B;
+  /* Primary = Bright Blue #60A5FA for dark bg */
+  --primary: #60A5FA;
+  --primary-foreground: #020617;
 
   /* Secondary */
-  --secondary: #27272A;                               /* zinc-800 */
-  --secondary-foreground: #FAFAFA;
+  --secondary: #1E293B;                               /* slate-800 */
+  --secondary-foreground: #F8FAFC;
 
   /* Muted */
-  --muted: #27272A;                                   /* zinc-800 */
-  --muted-foreground: #A1A1AA;                        /* zinc-400 */
+  --muted: #1E293B;                                   /* slate-800 */
+  --muted-foreground: #94A3B8;                        /* slate-400 */
 
   /* Accent */
-  --accent: #27272A;
-  --accent-foreground: #FAFAFA;
+  --accent: #1E293B;
+  --accent-foreground: #F8FAFC;
 
   /* Destructive */
-  --destructive: #FB7185;
+  --destructive: #F87171;                              /* red-400 */
 
   /* Borders */
-  --border: #3F3F46;                                  /* zinc-700 */
-  --input: #3F3F46;
-  --ring: #34D399;
+  --border: #334155;                                  /* slate-700 */
+  --input: #334155;
+  --ring: #60A5FA;
 
   /* Charts */
-  --chart-1: #34D399;                                 /* bright emerald */
-  --chart-2: #FB7185;                                 /* bright rose */
+  --chart-1: #60A5FA;                                 /* bright blue */
+  --chart-2: #A78BFA;                                 /* bright violet */
   --chart-3: #FBBF24;                                 /* bright amber */
-  --chart-4: #2DD4BF;                                 /* bright teal */
-  --chart-5: #A78BFA;                                 /* bright violet */
+  --chart-4: #4ADE80;                                 /* bright green */
+  --chart-5: #FB7185;                                 /* bright red */
 
   /* Sidebar */
-  --sidebar: #0F0F12;
-  --sidebar-foreground: #FAFAFA;
-  --sidebar-primary: #34D399;
-  --sidebar-primary-foreground: #09090B;
-  --sidebar-accent: #27272A;
-  --sidebar-accent-foreground: #FAFAFA;
-  --sidebar-border: #3F3F46;
-  --sidebar-ring: #34D399;
+  --sidebar: #020617;
+  --sidebar-foreground: #F8FAFC;
+  --sidebar-primary: #60A5FA;
+  --sidebar-primary-foreground: #020617;
+  --sidebar-accent: #1E293B;
+  --sidebar-accent-foreground: #F8FAFC;
+  --sidebar-border: #334155;
+  --sidebar-ring: #60A5FA;
 
   /* Brand tokens — DARK MODE */
-  --brand-deep: #18181B;                              /* Zinc-900 (gradient start) */
-  --brand-teal: #FB7185;                              /* Bright Rose #FB7185 */
-  --brand-sage: #FBBF24;                              /* Bright Amber #FBBF24 */
-  --brand-lime: #34D399;                              /* Bright Emerald #34D399 */
-  --brand-deep-light: #27272A;                        /* Zinc-800 bg tint */
-  --brand-teal-light: #2D1F2A;                        /* Dark rose bg tint */
-  --brand-sage-light: #2D2A1F;                        /* Dark amber bg tint */
-  --brand-lime-dark: #059669;                         /* Emerald-600 accent */
+  --brand-deep: #1E293B;                              /* Slate-800 (gradient start) */
+  --brand-teal: #60A5FA;                              /* Blue-400 — bright accent */
+  --brand-sage: #FBBF24;                              /* Amber-400 — bright highlights */
+  --brand-lime: #4ADE80;                              /* Green-400 — success */
+  --brand-deep-light: #1E293B;                        /* Slate-800 bg tint */
+  --brand-teal-light: #172554;                        /* Blue-950 bg tint */
+  --brand-sage-light: #422006;                        /* Amber-950 bg tint */
+  --brand-lime-dark: #16A34A;                         /* Green-600 accent */
 }
 
 /* ================================================================
    EYE COMFORT MODE — Warm dark base, low blue-light
-   Warm brown/teal tones for evening comfort
+   Warm tones for evening comfort
    
-   Primary:  Warm Emerald #6EE7B7
-   Accent:   Warm Peach #FDBA74
-   Background: warm dark #1C1B14
+   Primary:  Warm Blue #93C5FD
+   Accent:   Warm Amber #FDE68A
+   Background: warm dark #1C1917
    
-   Key: warm white text, golden accents, minimal blue light
+   Key: warm white text, amber accents, minimal blue light
    ================================================================ */
 .eye-comfort {
-  --background: #1C1B14;                              /* warm dark */
-  --foreground: #EDE8D0;                              /* warm white */
-  --card: #252420;                                    /* warm dark card */
-  --card-foreground: #EDE8D0;
-  --popover: #252420;
-  --popover-foreground: #EDE8D0;
+  --background: #1C1917;                              /* stone-900 */
+  --foreground: #E7E5E4;                              /* stone-200 */
+  --card: #292524;                                    /* stone-800 */
+  --card-foreground: #E7E5E4;
+  --popover: #292524;
+  --popover-foreground: #E7E5E4;
 
-  /* Primary = warm emerald #6EE7B7 */
-  --primary: #6EE7B7;
-  --primary-foreground: #1C1B14;
+  /* Primary = warm blue */
+  --primary: #93C5FD;
+  --primary-foreground: #1C1917;
 
   /* Secondary */
-  --secondary: #2D2D26;
-  --secondary-foreground: #EDE8D0;
+  --secondary: #292524;
+  --secondary-foreground: #E7E5E4;
 
   /* Muted — warm and visible */
-  --muted: #2D2D26;
-  --muted-foreground: #9C9A85;                        /* warm gray text */
+  --muted: #292524;
+  --muted-foreground: #A8A29E;                        /* stone-400 */
 
   /* Accent */
-  --accent: #2D2D26;
-  --accent-foreground: #EDE8D0;
+  --accent: #292524;
+  --accent-foreground: #E7E5E4;
 
   /* Destructive */
   --destructive: #F87171;
 
   /* Borders — warm */
-  --border: #3D3D35;
-  --input: #3D3D35;
-  --ring: #6EE7B7;
+  --border: #44403C;                                  /* stone-700 */
+  --input: #44403C;
+  --ring: #93C5FD;
 
   /* Charts */
-  --chart-1: #6EE7B7;                                 /* warm emerald */
+  --chart-1: #93C5FD;                                 /* warm blue */
   --chart-2: #FDBA74;                                 /* warm peach */
   --chart-3: #FDE68A;                                 /* warm gold */
-  --chart-4: #5EEAD4;                                 /* medium warm teal */
+  --chart-4: #86EFAC;                                 /* warm green */
   --chart-5: #D4C5A9;                                 /* soft warm */
 
   /* Sidebar */
-  --sidebar: #18171A;
-  --sidebar-foreground: #EDE8D0;
-  --sidebar-primary: #6EE7B7;
-  --sidebar-primary-foreground: #1C1B14;
-  --sidebar-accent: #2D2D26;
-  --sidebar-accent-foreground: #EDE8D0;
-  --sidebar-border: #3D3D35;
-  --sidebar-ring: #6EE7B7;
+  --sidebar: #1C1917;
+  --sidebar-foreground: #E7E5E4;
+  --sidebar-primary: #93C5FD;
+  --sidebar-primary-foreground: #1C1917;
+  --sidebar-accent: #292524;
+  --sidebar-accent-foreground: #E7E5E4;
+  --sidebar-border: #44403C;
+  --sidebar-ring: #93C5FD;
 
   /* Brand tokens — EYE COMFORT */
-  --brand-deep: #252420;                              /* warm dark (gradient start) */
-  --brand-teal: #FDBA74;                              /* warm peach */
+  --brand-deep: #292524;                              /* stone-800 (gradient start) */
+  --brand-teal: #93C5FD;                              /* warm blue */
   --brand-sage: #FDE68A;                              /* warm gold */
-  --brand-lime: #6EE7B7;                              /* muted warm emerald */
-  --brand-deep-light: #2D2D26;                        /* warm dark bg tint */
-  --brand-teal-light: #3A3228;                        /* dark peach bg tint */
-  --brand-sage-light: #3A3528;                        /* dark gold bg tint */
-  --brand-lime-dark: #059669;                         /* emerald-600 accent */
+  --brand-lime: #86EFAC;                              /* warm green */
+  --brand-deep-light: #292524;                        /* stone-800 bg tint */
+  --brand-teal-light: #1E293B;                        /* dark blue bg tint */
+  --brand-sage-light: #3D3528;                        /* dark gold bg tint */
+  --brand-lime-dark: #16A34A;                         /* green-600 accent */
 }
 
 /* Eye comfort warm tint overlay for images and media */

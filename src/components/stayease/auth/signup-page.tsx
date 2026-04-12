@@ -166,7 +166,7 @@ export default function SignupPage() {
           <h1 className="text-2xl font-bold text-foreground">
             Create Account
           </h1>
-          <p className="text-muted-foreground text-sm mt-1">Join StayEase and find your perfect PG</p>
+          <p className="text-muted-foreground text-sm mt-1">Join StayEg and find your perfect PG</p>
         </motion.div>
 
         {/* Progress Indicator */}
@@ -332,7 +332,7 @@ export default function SignupPage() {
                     </Label>
                     <div className="grid grid-cols-3 gap-2">
                       {([
-                        { role: 'TENANT' as UserRole, label: 'Tenant', desc: 'Find a PG', icon: UserIcon, gradient: 'from-emerald-500 to-teal-500' },
+                        { role: 'TENANT' as UserRole, label: 'Tenant', desc: 'Find a PG', icon: UserIcon, gradient: 'from-brand-deep to-brand-teal' },
                         { role: 'OWNER' as UserRole, label: 'PG Owner', desc: 'List my PG', icon: Building2, gradient: 'from-brand-deep to-brand-teal' },
                         { role: 'VENDOR' as UserRole, label: 'Vendor', desc: 'Offer services', icon: Briefcase, gradient: 'from-purple-500 to-violet-500' },
                       ]).map((opt) => (

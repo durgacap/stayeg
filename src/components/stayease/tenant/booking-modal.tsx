@@ -1164,7 +1164,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                       className="mt-0.5"
                     />
                     <Label htmlFor="terms" className="text-xs text-muted-foreground font-normal leading-relaxed cursor-pointer">
-                      I agree to StayEase&apos;s terms of service, cancellation policy, and house rules.
+                      I agree to StayEg&apos;s terms of service, cancellation policy, and house rules.
                       I understand that the advance payment is non-refundable if cancelled within 7 days of check-in.
                     </Label>
                   </div>

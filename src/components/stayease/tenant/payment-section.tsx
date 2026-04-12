@@ -305,9 +305,9 @@ export default function PaymentSection() {
                   <Zap className="size-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-lg">Pay via StayeG & Get 10% Cashback!</h3>
+                  <h3 className="font-bold text-lg">Pay via StayEg & Get 10% Cashback!</h3>
                   <p className="text-white/80 text-sm mt-0.5">
-                    On your first 3 rent payments made through StayeG platform
+                    On your first 3 rent payments made through StayEg platform
                   </p>
                 </div>
               </div>
@@ -1117,7 +1117,7 @@ export default function PaymentSection() {
                   <MethodIcon className="size-5 text-brand-teal" />
                   <div>
                     <div className="text-sm font-medium">Paying via {PAYMENT_METHOD_LABELS[selectedMethod]}</div>
-                    <div className="text-xs text-muted-foreground">Secure payment powered by StayeG</div>
+                    <div className="text-xs text-muted-foreground">Secure payment powered by StayEg</div>
                   </div>
                 </div>
 

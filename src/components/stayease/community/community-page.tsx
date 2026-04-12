@@ -329,7 +329,7 @@ function CreatePostDialog({
             Create Post
           </DialogTitle>
           <DialogDescription>
-            Share something with the StayEase community
+            Share something with the StayEg community
           </DialogDescription>
         </DialogHeader>
 
@@ -587,7 +587,7 @@ export default function CommunityPage() {
                   Community
                 </h1>
                 <p className="text-sm text-muted-foreground mt-1">
-                  Connect, share, and explore with fellow StayEase members
+                  Connect, share, and explore with fellow StayEg members
                 </p>
               </div>
               {isLoggedIn && (
