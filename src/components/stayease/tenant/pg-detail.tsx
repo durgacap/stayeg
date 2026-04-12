@@ -168,7 +168,7 @@ export default function PGDetail() {
   return (
     <div className="min-h-screen bg-muted">
       {/* Top Navigation */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b">
+      <div className="sticky top-0 z-30 bg-background border-b">
         <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
           <Button
             variant="ghost"

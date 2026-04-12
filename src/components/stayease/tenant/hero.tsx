@@ -142,7 +142,7 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 1. HERO — Clean white */}
       {/* ===================== */}
-      <section className="relative bg-white pt-8 pb-12 md:pt-14 md:pb-20">
+      <section className="relative bg-background pt-8 pb-12 md:pt-14 md:pb-20">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           {/* Badge */}
           <motion.div
@@ -180,7 +180,7 @@ export default function HeroSection() {
             transition={{ duration: 0.5, delay: 0.1 }}
             className="max-w-2xl mx-auto mb-5"
           >
-            <div className="bg-white rounded-xl border border-gray-200 shadow-sm p-1.5">
+            <div className="bg-card rounded-xl border border-border shadow-sm p-1.5">
               <div className="flex flex-col sm:flex-row gap-1.5">
                 {/* City */}
                 <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/60 min-w-0 sm:min-w-[140px]">
@@ -265,7 +265,7 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 2. HOW IT WORKS       */}
       {/* ===================== */}
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-12 md:py-16 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionHeading
             badge="Simple & Quick"
@@ -281,7 +281,7 @@ export default function HeroSection() {
               { step: '03', icon: Building2, title: 'Move In', desc: 'Complete KYC, pay securely, and move in stress-free.' },
             ].map((item, idx) => (
               <FadeInSection key={item.step} delay={idx * 0.1}>
-                <Card className="border border-border shadow-sm hover:shadow-md transition-shadow group bg-white">
+                <Card className="border border-border shadow-sm hover:shadow-md transition-shadow group bg-card">
                   <CardContent className="p-5 md:p-6">
                     <div className="size-11 rounded-xl bg-primary flex items-center justify-center mb-4">
                       <item.icon className="size-5 text-white" />
@@ -319,7 +319,7 @@ export default function HeroSection() {
               { icon: Headphones, title: '24/7 Support', desc: 'Our team is available round the clock via chat, call, or email.', color: 'bg-rose-50 text-rose-600' },
             ].map((item, idx) => (
               <FadeInSection key={item.title} delay={idx * 0.05}>
-                <Card className="border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all bg-white">
+                <Card className="border border-border shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all bg-card">
                   <CardContent className="p-5">
                     <div className={`size-10 rounded-lg ${item.color} flex items-center justify-center mb-3`}>
                       <item.icon className="size-5" />
@@ -337,7 +337,7 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 4. FOR PG OWNERS      */}
       {/* ===================== */}
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-12 md:py-16 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <FadeInSection>
             <div className="rounded-2xl bg-foreground p-8 md:p-12">
@@ -410,7 +410,7 @@ export default function HeroSection() {
       <section className="py-12 md:py-16 bg-muted/40">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <FadeInSection>
-            <div className="rounded-2xl overflow-hidden border border-border bg-white shadow-sm">
+            <div className="rounded-2xl overflow-hidden border border-border bg-card shadow-sm">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
                 <div className="bg-primary p-8 md:p-10 flex flex-col justify-center min-h-[240px]">
                   <Badge className="mb-4 bg-white/20 text-white border-white/30 self-start">
@@ -461,7 +461,7 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 6. STATS              */}
       {/* ===================== */}
-      <section className="py-12 md:py-14 bg-white">
+      <section className="py-12 md:py-14 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <FadeInSection>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
@@ -523,7 +523,7 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 8. TESTIMONIALS       */}
       {/* ===================== */}
-      <section className="py-12 md:py-16 bg-white">
+      <section className="py-12 md:py-16 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionHeading
             badge="Testimonials"
@@ -592,7 +592,7 @@ export default function HeroSection() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
               <Button onClick={() => setCurrentView('PG_LISTING')}
-                className="bg-white text-primary hover:bg-gray-50 rounded-lg px-6 h-10 text-sm font-semibold">
+                className="bg-white text-primary hover:bg-muted rounded-lg px-6 h-10 text-sm font-semibold">
                 <Search className="size-4 mr-1.5" />
                 Find PG Now
               </Button>
@@ -636,7 +636,7 @@ export default function HeroSection() {
                   whileHover={{ y: -1 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={() => handleCityClick(city)}
-                  className="group bg-white rounded-xl border border-border p-3 text-center hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer"
+                  className="group bg-card rounded-xl border border-border p-3 text-center hover:border-primary/30 hover:shadow-sm transition-all cursor-pointer"
                 >
                   <MapPin className="size-4 text-primary mx-auto mb-1.5" />
                   <div className="font-medium text-foreground text-xs">{city}</div>
@@ -663,7 +663,7 @@ function TestimonialCard({ testimonial: { name, role, avatar, quote, rating } }:
   testimonial: typeof testimonials[0];
 }) {
   return (
-    <Card className="border border-border shadow-sm bg-white">
+    <Card className="border border-border shadow-sm bg-card">
       <CardContent className="p-5">
         <div className="flex gap-0.5 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (

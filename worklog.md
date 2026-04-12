@@ -1237,3 +1237,35 @@ Stage Summary:
 - Text sizes reduced and standardized for mobile readability
 - App compiles cleanly, returns HTTP 200
 
+
+---
+Task ID: 7
+Agent: Main Agent
+Task: Final verification — remove all remaining blur effects, fix mobile header safe area, fix hero dark mode
+
+Work Log:
+- Grepped entire src/ for ANY blur usage — found 8 instances of backdrop-blur across 6 files
+- Removed ALL backdrop-blur-sm and backdrop-blur-md from:
+  - src/app/page.tsx (mobile bottom nav)
+  - src/components/stayease/auth/login-page.tsx (login card)
+  - src/components/stayease/auth/signup-page.tsx (signup card)
+  - src/components/stayease/profile/profile-page.tsx (edit profile button)
+  - src/components/stayease/tenant/pg-detail.tsx (sticky header)
+  - src/components/stayease/tenant/pg-listing.tsx (sticky filter bar)
+  - src/components/stayease/tenant/pg-card.tsx (gender badge + price overlay)
+- Fixed mobile header safe area: changed pt-3 to pt-[max(0.75rem,env(safe-area-inset-top))] in TopHeader
+- Fixed hero.tsx dark mode: replaced all hardcoded bg-white with theme-aware bg-background/bg-card
+  - Hero section, How It Works, For PG Owners, Stats, Testimonials, Cities sections
+  - Search bar, step cards, why-choose cards, testimonial cards, city buttons
+  - CTA button hover changed from hover:bg-gray-50 to hover:bg-muted
+- Verified zero blur effects remain (grep for blur-3xl, blur-xl, blur-2xl, blur-lg, backdrop-blur = 0 results)
+- Verified zero orange/amber/violet primary colors remain (only semantic uses like Fire Emergency)
+- ESLint: 0 application errors (only pre-existing watcher.js errors)
+- Dev server: compiles cleanly, GET / returns 200
+
+Stage Summary:
+- ALL blur effects completely removed from entire codebase (was the user's top complaint)
+- Mobile header now respects safe-area-inset-top (fixes status bar overlap on iOS)
+- Hero section fully dark-mode compatible (no more hardcoded bg-white)
+- Clean teal color palette throughout — professional, simple, not boring
+- Zero new issues introduced

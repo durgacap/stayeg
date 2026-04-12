@@ -393,7 +393,7 @@ export default function ProfilePage() {
               <Button
                 onClick={() => setIsEditingProfile(true)}
                 variant="secondary"
-                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm gap-2"
+                className="bg-white/20 hover:bg-white/30 text-white border border-white/30 gap-2"
               >
                 <Edit3 className="size-4" />
                 Edit Profile

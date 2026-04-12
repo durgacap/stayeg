@@ -208,7 +208,7 @@ export default function SignupPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="shadow-xl shadow-brand-teal/10 border-0 bg-card/80 backdrop-blur-sm">
+        <Card className="shadow-xl shadow-brand-teal/10 border-0 bg-card">
           <CardContent className="p-6">
             <AnimatePresence mode="wait">
               {/* STEP 1: Basic Info */}

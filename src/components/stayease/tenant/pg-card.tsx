@@ -262,7 +262,7 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
             )}
             <Badge
               variant="outline"
-              className={`text-xs font-medium backdrop-blur-sm ${GENDER_COLORS[pg.gender]}`}
+              className={`text-xs font-medium ${GENDER_COLORS[pg.gender]}`}
             >
               {GENDER_LABELS[pg.gender]}
             </Badge>
@@ -274,7 +274,7 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
             variants={staggerItem}
             custom={0}
           >
-            <div className="bg-white/95 backdrop-blur-sm rounded-xl px-3 py-1.5 shadow-sm">
+            <div className="bg-white rounded-xl px-3 py-1.5 shadow-sm">
               <span className="text-lg font-bold text-foreground">
                 ₹{Math.round(pg.price).toLocaleString('en-IN')}
               </span>

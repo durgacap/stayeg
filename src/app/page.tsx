@@ -97,7 +97,7 @@ const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY',
 function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV }) {
   const { currentView, setCurrentView } = useAppStore();
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background/95 backdrop-blur-md border-t border-border md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-40 bg-background border-t border-border md:hidden">
       <div className="flex items-center justify-around py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))]">
         {items.map((item) => {
           const isActive = currentView === item.view;
@@ -145,7 +145,7 @@ function TopHeader() {
           : 'bg-background border-b border-border'
       }`}
     >
-      <div className="max-w-7xl mx-auto px-4 pt-3 pb-2.5 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2.5 flex items-center justify-between">
         {/* Logo */}
         <button
           onClick={() => setCurrentView('LANDING')}

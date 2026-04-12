@@ -231,7 +231,7 @@ export default function PGListing() {
   return (
     <div className="min-h-screen bg-muted/50">
       {/* Sticky Filter Bar */}
-      <div className="sticky top-0 z-30 bg-background/95 backdrop-blur-sm border-b shadow-sm">
+      <div className="sticky top-0 z-30 bg-background border-b shadow-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
           <div className="flex items-center gap-3">
             {/* Back button */}
