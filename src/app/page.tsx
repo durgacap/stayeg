@@ -44,6 +44,8 @@ import PricingPage from '@/components/stayease/pricing/pricing-page';
 import TermsPage from '@/components/stayease/policy/terms-page';
 import PrivacyPage from '@/components/stayease/policy/privacy-page';
 import SafeUsePage from '@/components/stayease/policy/safe-use-page';
+import AboutPage from '@/components/stayease/policy/about-page';
+import HelpPage from '@/components/stayease/policy/help-page';
 import OwnerGuide from '@/components/stayease/owner/owner-guide';
 import CursorFollower from '@/components/ui/cursor-follower';
 
@@ -92,7 +94,7 @@ const OWNER_MOBILE_NAV = [
 ];
 
 const HIDE_HEADER_VIEWS = ['LOGIN', 'SIGNUP'] as const;
-const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'PROFILE'] as const;
+const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'PROFILE'] as const;
 
 function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV | typeof OWNER_MOBILE_NAV }) {
   const { currentView, setCurrentView } = useAppStore();
@@ -296,6 +298,8 @@ function TopHeader() {
                 )}
                 <Separator className="my-2" />
                 <div className="px-3 space-y-1">
+                  <button onClick={() => { setCurrentView('ABOUT'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">About StayEg</button>
+                  <button onClick={() => { setCurrentView('HELP'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Help & Support</button>
                   <button onClick={() => { setCurrentView('TERMS'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Terms of Service</button>
                   <button onClick={() => { setCurrentView('PRIVACY'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Privacy Policy</button>
                   <button onClick={() => { setCurrentView('SAFE_USE'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Safe Use Guidelines</button>
@@ -323,6 +327,8 @@ function MainContent() {
     if (currentView === 'TERMS') return <TermsPage />;
     if (currentView === 'PRIVACY') return <PrivacyPage />;
     if (currentView === 'SAFE_USE') return <SafeUsePage />;
+    if (currentView === 'ABOUT') return <AboutPage />;
+    if (currentView === 'HELP') return <HelpPage />;
 
     // Owner views
     if (currentRole === 'OWNER') {
@@ -403,7 +409,7 @@ export default function StayeGApp() {
 
   const mobileNav = currentRole === 'OWNER' ? OWNER_MOBILE_NAV : TENANT_MOBILE_NAV;
   const hideMobileNav = (HIDE_MOBILE_NAV_VIEWS as readonly string[]).includes(currentView);
-  const FOOTER_VIEWS = ['LANDING', 'PG_LISTING', 'PRICING', 'COMMUNITY', 'TERMS', 'PRIVACY', 'SAFE_USE'] as const;
+  const FOOTER_VIEWS = ['LANDING', 'PG_LISTING', 'PRICING', 'COMMUNITY', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP'] as const;
   const showFooter = (FOOTER_VIEWS as readonly string[]).includes(currentView);
 
   return (

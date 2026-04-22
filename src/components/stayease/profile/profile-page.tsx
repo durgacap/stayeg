@@ -334,7 +334,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-muted/50 pb-24 md:pb-8">
       {/* Profile Header */}
-      <div className="bg-gradient-to-br from-brand-deep via-brand-sage to-brand-teal relative overflow-hidden">
+      <div className="bg-gradient-to-br from-brand-deep via-brand-teal to-brand-deep relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',

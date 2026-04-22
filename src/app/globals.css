@@ -173,13 +173,13 @@
   --sidebar-border: #374151;
   --sidebar-ring: #60A5FA;
 
-  --brand-deep: #1E3A5F;
+  --brand-deep: #3B82F6;
   --brand-teal: #60A5FA;
   --brand-sage: #FBBF24;
   --brand-lime: #4ADE80;
-  --brand-deep-light: #1E293B;
-  --brand-teal-light: #1E40AF;
-  --brand-sage-light: #451A03;
+  --brand-deep-light: #1E3A5F;
+  --brand-teal-light: #93C5FD;
+  --brand-sage-light: #78350F;
   --brand-lime-dark: #16A34A;
 
   /* Gold accent — muted for dark mode */
@@ -232,13 +232,13 @@
   --sidebar-border: #44403C;
   --sidebar-ring: #93C5FD;
 
-  --brand-deep: #292524;
+  --brand-deep: #7DD3FC;
   --brand-teal: #93C5FD;
   --brand-sage: #FDE68A;
   --brand-lime: #86EFAC;
   --brand-deep-light: #292524;
   --brand-teal-light: #1E3A5F;
-  --brand-sage-light: #3D3528;
+  --brand-sage-light: #78350F;
   --brand-lime-dark: #16A34A;
 
   /* Gold accent — warm for eye comfort */

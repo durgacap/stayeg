@@ -49,10 +49,12 @@ export type AppView =
   | 'ADMIN_DASHBOARD'
   | 'ADMIN_VERIFICATION'
   | 'ADMIN_USERS'
-  // Policy pages
+  // Policy & Info pages
   | 'TERMS'
   | 'PRIVACY'
-  | 'SAFE_USE';
+  | 'SAFE_USE'
+  | 'ABOUT'
+  | 'HELP';
 
 export interface User {
   id: string;

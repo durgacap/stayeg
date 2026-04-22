@@ -35,11 +35,18 @@ const footerSections = [
     ],
   },
   {
+    title: 'Company',
+    links: [
+      { label: 'About StayEg', view: 'ABOUT' as const },
+      { label: 'Help & Support', view: 'HELP' as const },
+      { label: 'Safe Use Guidelines', view: 'SAFE_USE' as const },
+    ],
+  },
+  {
     title: 'Legal',
     links: [
       { label: 'Terms of Service', view: 'TERMS' as const },
       { label: 'Privacy Policy', view: 'PRIVACY' as const },
-      { label: 'Safe Use Guidelines', view: 'SAFE_USE' as const },
     ],
   },
 ];

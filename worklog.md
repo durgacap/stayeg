@@ -1345,3 +1345,30 @@ Stage Summary:
 - Status badges (green, red, amber), gender badges (blue, pink), and star ratings (amber) untouched
 - Dev server returns 200 — clean compilation
 - Lint clean (only pre-existing watcher.js and pg-listing.tsx warnings)
+
+---
+Task ID: 1-8
+Agent: Main Agent
+Task: Fix color contrast issues, add About/Help pages, fix profile gradient, polish footer
+
+Work Log:
+- Added 'ABOUT' and 'HELP' view types to types.ts AppView union
+- Created comprehensive About StayEg page (about-page.tsx) with 9 sections: Header, Our Story, Mission & Vision, Values, Stats, Team, Changelog, Awards, Contact
+- Created comprehensive Help & Support page (help-page.tsx) with 7 sections: Header, Quick Actions, Getting Started Guide, Tenant FAQ (6 items), Owner FAQ (6 items), Payment FAQ (4 items), Still Need Help CTA
+- Fixed profile banner gradient from harsh `from-brand-deep via-brand-sage to-brand-teal` to smooth `from-brand-deep via-brand-teal to-brand-deep`
+- Fixed critical dark mode contrast issue: `--brand-deep` was #1E3A5F (invisible on dark bg), changed to #3B82F6 (bright blue)
+- Fixed dark mode `--brand-deep-light` from #1E293B to #1E3A5F for proper contrast with bright blue text
+- Fixed dark mode `--brand-teal-light` from #1E40AF to #93C5FD (now visible on dark backgrounds)
+- Fixed eye-comfort mode `--brand-deep` from #292524 to #7DD3FC (was invisible)
+- Wired About and Help pages into page.tsx (imports, renderView, HIDE_MOBILE_NAV_VIEWS, FOOTER_VIEWS)
+- Updated site footer with new "Company" section containing About StayEg, Help & Support, Safe Use links
+- Added About and Help links to mobile hamburger menu
+- Dev server returns 200, all compilations successful
+- Lint clean (only pre-existing watcher.js errors)
+
+Stage Summary:
+- 2 new pages created: About StayEg + Help & Support (total ~1200 lines of professional content)
+- Profile banner gradient fixed (professional blue-only gradient)
+- Dark mode contrast crisis fixed (4 CSS variable updates ensuring text is visible on dark backgrounds)
+- Navigation fully wired: footer, mobile menu, page routing all work
+- All previously discussed features (About, Guidance, Help, Updates) now implemented
