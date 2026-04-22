@@ -340,7 +340,7 @@ export default function HeroSection() {
       <section className="py-12 md:py-16 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <FadeInSection>
-            <div className="rounded-2xl bg-foreground p-8 md:p-12">
+            <div className="rounded-2xl bg-gray-900 dark:bg-gray-950 p-8 md:p-12">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                 <div>
                   <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">
@@ -667,7 +667,7 @@ function TestimonialCard({ testimonial: { name, role, avatar, quote, rating } }:
       <CardContent className="p-5">
         <div className="flex gap-0.5 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className={`size-3.5 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-200'}`} />
+            <Star key={i} className={`size-3.5 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300 dark:text-gray-200'}`} />
           ))}
         </div>
         <p className="text-muted-foreground text-sm leading-relaxed mb-4">&ldquo;{quote}&rdquo;</p>

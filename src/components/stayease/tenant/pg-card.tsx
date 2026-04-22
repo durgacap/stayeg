@@ -221,13 +221,13 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
                 onClick={handlePrevImage}
                 className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
               >
-                <ChevronLeft className="size-4 text-foreground" />
+                <ChevronLeft className="size-4 text-gray-700" />
               </button>
               <button
                 onClick={handleNextImage}
                 className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition-opacity shadow-sm"
               >
-                <ChevronRight className="size-4 text-foreground" />
+                <ChevronRight className="size-4 text-gray-700" />
               </button>
             </>
           )}
@@ -274,7 +274,7 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
             variants={staggerItem}
             custom={0}
           >
-            <div className="bg-white rounded-xl px-3 py-1.5 shadow-sm">
+            <div className="bg-card rounded-xl px-3 py-1.5 shadow-sm">
               <span className="text-lg font-bold text-foreground">
                 ₹{Math.round(pg.price).toLocaleString('en-IN')}
               </span>

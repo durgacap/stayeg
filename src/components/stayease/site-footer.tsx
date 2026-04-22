@@ -98,15 +98,15 @@ export default function SiteFooter() {
             </p>
             <div className="space-y-2">
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Phone className="size-4 text-brand-deep" />
+                <Phone className="size-4 text-brand-teal" />
                 <span>+91 1800-123-STAY (Toll Free)</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <Mail className="size-4 text-brand-deep" />
+                <Mail className="size-4 text-brand-teal" />
                 <span>hello@stayeg.in</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-500">
-                <MapPin className="size-4 text-brand-deep" />
+                <MapPin className="size-4 text-brand-teal" />
                 <span>Bangalore, India</span>
               </div>
             </div>
@@ -136,7 +136,7 @@ export default function SiteFooter() {
 
         {/* Bottom Section */}
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-gray-600 flex items-center gap-1">
+          <p className="text-sm text-gray-400 flex items-center gap-1">
             &copy; {new Date().getFullYear()} StayEg. Made with
             <Heart className="size-3.5 text-red-500 fill-red-500" />
             in India
@@ -150,7 +150,7 @@ export default function SiteFooter() {
                 className="size-9 rounded-lg bg-white/10 hover:bg-brand-teal flex items-center justify-center transition-colors group"
                 onClick={() => { const { showToast } = useAppStore.getState(); showToast('Coming soon!'); }}
               >
-                <Icon className="size-4 text-gray-500 group-hover:text-white transition-colors" />
+                <Icon className="size-4 text-gray-400 group-hover:text-white transition-colors" />
               </motion.button>
             ))}
           </div>
