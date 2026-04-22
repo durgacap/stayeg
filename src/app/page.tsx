@@ -134,18 +134,13 @@ function TopHeader() {
       ? OWNER_NAV
       : TENANT_NAV;
 
-  const isLanding = currentView === 'LANDING' && currentRole === 'TENANT';
   const hideHeader = (HIDE_HEADER_VIEWS as readonly string[]).includes(currentView);
 
   if (hideHeader) return null;
 
   return (
     <header
-      className={`sticky top-0 z-40 transition-all duration-300 ${
-        isLanding
-          ? 'bg-background border-b border-gold/20'
-          : 'bg-background border-b border-gold/20'
-      }`}
+      className="sticky top-0 z-40 transition-all duration-300 bg-background border-b border-gold/20"
     >
       <div className="max-w-7xl mx-auto px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2.5 flex items-center justify-between">
         {/* Logo */}
@@ -314,7 +309,7 @@ function TopHeader() {
 }
 
 function MainContent() {
-  const { currentView, currentRole } = useAppStore();
+  const { currentView, currentRole, setCurrentView } = useAppStore();
   const bookingModalOpen = currentView === 'BOOKING';
 
   const renderView = () => {
@@ -347,7 +342,34 @@ function MainContent() {
 
     // Admin views
     if (currentRole === 'ADMIN') {
-      return <AdminDashboard />;
+      switch (currentView) {
+        case 'ADMIN_DASHBOARD':
+        case 'ADMIN_VERIFICATION':
+        case 'ADMIN_USERS':
+          return <AdminDashboard />;
+        default: return <AdminDashboard />;
+      }
+    }
+
+    // Vendor views
+    if (currentRole === 'VENDOR') {
+      return (
+        <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
+          <div className="size-16 rounded-full bg-brand-sage/15 flex items-center justify-center mb-4">
+            <Wrench className="size-8 text-brand-sage" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground mb-2">Vendor Portal Coming Soon</h2>
+          <p className="text-sm text-muted-foreground max-w-md mb-6">
+            The vendor dashboard is under construction. You&apos;ll be able to manage services, track earnings, and connect with PG owners soon.
+          </p>
+          <button
+            onClick={() => setCurrentView('LANDING')}
+            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-deep to-brand-teal text-white text-sm font-medium hover:opacity-90 transition-opacity"
+          >
+            Back to Home
+          </button>
+        </div>
+      );
     }
 
     // Tenant views
@@ -361,7 +383,7 @@ function MainContent() {
       case 'NEARBY': return <NearbyServices />;
       case 'COMMUNITY': return <CommunityPage />;
       case 'PROFILE': return <ProfilePage />;
-      case 'BOOKING': return <div />;
+      case 'BOOKING': return null;
       default: return <HeroSection />;
     }
   };

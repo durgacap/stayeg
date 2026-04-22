@@ -22,7 +22,7 @@ const footerSections = [
     links: [
       { label: 'List Your PG', view: 'PRICING' as const },
       { label: 'Pricing Plans', view: 'PRICING' as const },
-      { label: 'Owner Dashboard', view: 'OWNER_DASHBOARD' as const },
+      { label: 'Owner Dashboard', view: 'OWNER_DASHBOARD' as const, authRequired: true as const },
       { label: 'Free 1 Year Offer', view: 'PRICING' as const },
     ],
   },
@@ -52,11 +52,16 @@ const footerSections = [
 ];
 
 export default function SiteFooter() {
-  const { setCurrentView } = useAppStore();
+  const { setCurrentView, isLoggedIn, currentRole } = useAppStore();
   const footerRef = useRef<HTMLElement>(null);
   const isInView = useInView(footerRef, { once: true, margin: '-80px' });
 
-  const handleLinkClick = (view: string) => {
+  const handleLinkClick = (view: string, authRequired?: boolean) => {
+    if (authRequired && !isLoggedIn) {
+      setCurrentView('LOGIN' as any);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
     setCurrentView(view as any);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -120,7 +125,7 @@ export default function SiteFooter() {
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <button
-                      onClick={() => handleLinkClick(link.view)}
+                      onClick={() => handleLinkClick(link.view, 'authRequired' in link ? link.authRequired : undefined)}
                       className="text-sm text-gray-500 hover:text-brand-teal transition-colors"
                     >
                       {link.label}
