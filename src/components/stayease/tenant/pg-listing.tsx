@@ -58,20 +58,21 @@ function PGCardSkeleton() {
   );
 }
 
+type FilterState = {
+  query: string;
+  gender: string;
+  sortBy: string;
+  priceRange: number[];
+  amenities: string[];
+};
+
 function FilterContent({
   filters,
   setFilters,
   onClose,
 }: {
-  filters: {
-    query: string;
-    gender: string;
-    sortBy: string;
-    priceRange: number[];
-    amenities: string[];
-  };
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  setFilters: React.Dispatch<React.SetStateAction<any>>;
+  filters: FilterState;
+  setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
   onClose?: () => void;
 }) {
   return (
@@ -102,7 +103,7 @@ function FilterContent({
         </Label>
         <Slider
           value={filters.priceRange}
-          onValueChange={(v) => setFilters((p) => ({ ...p, priceRange: v as number[] }))}
+          onValueChange={(v) => setFilters((p) => ({ ...p, priceRange: v }))}
           min={0}
           max={30000}
           step={500}
@@ -174,7 +175,7 @@ function FilterContent({
 export default function PGListing() {
   const { searchFilters, setCurrentView } = useAppStore();
 
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<FilterState>({
     query: searchFilters.query || '',
     gender: searchFilters.gender || 'ALL',
     sortBy: searchFilters.sortBy || 'rating',

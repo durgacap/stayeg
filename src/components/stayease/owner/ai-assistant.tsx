@@ -60,7 +60,7 @@ export default function AIAssistant() {
     }
   }, [isAIChatOpen]);
 
-  const ACTION_TO_VIEW: Record<string, string> = {
+  const ACTION_TO_VIEW: Record<string, AppView> = {
     add_room: 'OWNER_ROOMS',
     rent_status: 'OWNER_RENT',
     view_complaints: 'OWNER_COMPLAINTS',

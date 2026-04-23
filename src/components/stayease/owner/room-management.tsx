@@ -25,19 +25,16 @@ import { BADGE, BADGE_BORDER } from '@/lib/constants';
 export default function RoomManagement() {
   const { showToast, selectedPG } = useAppStore();
   const queryClient = useQueryClient();
-  const [selectedPgId, setSelectedPgId] = useState(selectedPG?.id || '');
+  // Use store value as source of truth, local state as fallback for manual selection
+  const [localPgId, setLocalPgId] = useState('');
+  const selectedPgId = selectedPG?.id || localPgId;
+  const handlePgSelect = (id: string) => setLocalPgId(id);
+
   const [addOpen, setAddOpen] = useState(false);
   const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
   const [roomForm, setRoomForm] = useState({
     roomCode: '', roomType: 'DOUBLE', floor: '1', hasAC: false, hasAttachedBath: false, bedCount: '2',
   });
-
-  // Sync selectedPgId when selectedPG changes from store
-  useEffect(() => {
-    if (selectedPG?.id && selectedPG.id !== selectedPgId) {
-      setSelectedPgId(selectedPG.id);
-    }
-  }, [selectedPG?.id, selectedPgId]);
 
   const { data: ownerUser } = useQuery({
     queryKey: ['owner-user'],
@@ -158,7 +155,7 @@ export default function RoomManagement() {
       {/* PG Selector */}
       <div className="flex items-center gap-4">
         <div className="flex-1 max-w-md">
-          <Select value={selectedPgId} onValueChange={setSelectedPgId}>
+          <Select value={selectedPgId} onValueChange={handlePgSelect}>
             <SelectTrigger>
               <SelectValue placeholder="Select a PG property..." />
             </SelectTrigger>
