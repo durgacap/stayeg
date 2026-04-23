@@ -148,9 +148,9 @@ const EMERGENCY_CONTACTS = [
 ];
 
 const levelConfig = {
-  critical: { bg: `${CARD_BG.red} border-red-200 dark:border-red-800`, badge: 'bg-red-500 text-white', label: 'Critical' },
-  high: { bg: `${CARD_BG.amber} border-amber-200 dark:border-amber-800`, badge: 'bg-amber-500 text-white', label: 'Important' },
-  medium: { bg: `${CARD_BG.blue} border-blue-200 dark:border-blue-800`, badge: 'bg-blue-500 text-white dark:bg-blue-600', label: 'Recommended' },
+  critical: { bg: `${CARD_BG.red} border-red-200`, badge: 'bg-red-500 text-white', label: 'Critical' },
+  high: { bg: `${CARD_BG.amber} border-amber-200`, badge: 'bg-amber-500 text-white', label: 'Important' },
+  medium: { bg: `${CARD_BG.blue} border-blue-200`, badge: 'bg-blue-500 text-white', label: 'Recommended' },
 };
 
 function TipCard({ tip }: { tip: typeof TENANT_TIPS[0] }) {

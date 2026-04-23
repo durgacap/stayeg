@@ -430,31 +430,6 @@ export default function LoginPage() {
                     </div>
                   </div>
 
-                  {/* Demo Quick Access */}
-                  <div className="bg-gradient-to-r from-brand-teal/8 to-brand-sage/8 rounded-xl p-4 mb-5 border border-brand-teal/10">
-                    <div className="flex items-center gap-2 mb-3">
-                      <ShieldCheck className="size-4 text-brand-teal" />
-                      <span className="text-xs font-semibold text-foreground">Quick Demo Access</span>
-                      <span className="text-[10px] text-muted-foreground ml-auto">No account needed</span>
-                    </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {[
-                        { role: 'TENANT' as UserRole, label: 'Tenant', icon: UserIcon },
-                        { role: 'OWNER' as UserRole, label: 'PG Owner', icon: Building2 },
-                      ].map((demo) => (
-                        <button
-                          key={demo.role}
-                          onClick={() => handleDemoLogin(demo.role)}
-                          disabled={isSubmitting}
-                          className="flex items-center justify-center gap-1.5 h-9 rounded-lg bg-gradient-to-r from-brand-deep to-brand-teal text-white text-xs font-semibold shadow-md shadow-brand-teal/20 hover:opacity-90 transition-all disabled:opacity-50"
-                        >
-                          <Users className="size-3" />
-                          {demo.label}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
                   {/* Continue as Guest */}
                   <Button
                     variant="outline"

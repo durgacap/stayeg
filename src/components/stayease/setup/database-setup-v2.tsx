@@ -252,15 +252,15 @@ DO $$ BEGIN CREATE TRIGGER workers_updated_at BEFORE UPDATE ON workers FOR EACH 
 
 // ── Table icons for display ────────────────────────────────────────
 const TABLE_ICONS: Record<string, { icon: string; color: string }> = {
-  users:   { icon: '👥', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300' },
+  users:   { icon: '👥', color: 'bg-blue-100 text-blue-700' },
   pgs:     { icon: '🏠', color: 'bg-brand-teal/15 text-brand-teal' },
-  rooms:   { icon: '🚪', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300' },
-  beds:    { icon: '🛏️', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300' },
-  bookings:{ icon: '📋', color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300' },
-  payments:{ icon: '💳', color: 'bg-rose-100 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300' },
-  complaints:{ icon: '📢', color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300' },
+  rooms:   { icon: '🚪', color: 'bg-purple-100 text-purple-700' },
+  beds:    { icon: '🛏️', color: 'bg-amber-100 text-amber-700' },
+  bookings:{ icon: '📋', color: 'bg-green-100 text-green-700' },
+  payments:{ icon: '💳', color: 'bg-rose-100 text-rose-700' },
+  complaints:{ icon: '📢', color: 'bg-orange-100 text-orange-700' },
   vendors: { icon: '🔧', color: 'bg-brand-sage/15 text-brand-sage' },
-  workers: { icon: '👷', color: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300' },
+  workers: { icon: '👷', color: 'bg-cyan-100 text-cyan-700' },
 };
 
 // ── Main Component ─────────────────────────────────────────────────
@@ -402,17 +402,17 @@ export default function DatabaseSetupV2() {
               <div className="flex items-start gap-3">
                 <div className={`mt-0.5 size-8 rounded-full flex items-center justify-center shrink-0 ${
                   allTablesReady
-                    ? 'bg-green-100 dark:bg-green-900/30'
+                    ? 'bg-green-100'
                     : isConnected
-                      ? 'bg-amber-100 dark:bg-amber-900/30'
-                      : 'bg-red-100 dark:bg-red-900/30'
+                      ? 'bg-amber-100'
+                      : 'bg-red-100'
                 }`}>
                   {allTablesReady ? (
-                    <CheckCircle2 className="w-5 h-5 text-green-600 dark:text-green-400" />
+                    <CheckCircle2 className="w-5 h-5 text-green-600" />
                   ) : isConnected ? (
-                    <Zap className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+                    <Zap className="w-5 h-5 text-amber-600" />
                   ) : (
-                    <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400" />
+                    <AlertTriangle className="w-5 h-5 text-red-600" />
                   )}
                 </div>
                 <div className="flex-1 min-w-0 space-y-2">
@@ -444,8 +444,8 @@ export default function DatabaseSetupV2() {
                             key={t.name}
                             className={`flex items-center gap-1.5 px-2 py-1 rounded-md text-xs ${
                               t.exists
-                                ? 'bg-green-50 dark:bg-green-900/20'
-                                : 'bg-red-50 dark:bg-red-900/20'
+                                ? 'bg-green-50'
+                                : 'bg-red-50'
                             }`}
                           >
                             <span>{meta.icon}</span>
@@ -483,15 +483,15 @@ export default function DatabaseSetupV2() {
         {/* ── If already setup ── */}
         {allTablesReady && (
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
-            <Card className="border-green-200 dark:border-green-800 bg-green-50/50 dark:bg-green-900/10">
+            <Card className="border-green-200 bg-green-50/50">
               <CardContent className="p-5 text-center space-y-3">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ type: 'spring', stiffness: 200, delay: 0.4 }}
-                  className="mx-auto w-14 h-14 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center"
+                  className="mx-auto w-14 h-14 bg-green-100 rounded-full flex items-center justify-center"
                 >
-                  <PartyPopper className="w-8 h-8 text-green-600 dark:text-green-400" />
+                  <PartyPopper className="w-8 h-8 text-green-600" />
                 </motion.div>
                 <h2 className="text-lg font-bold text-foreground">🎉 Database is Ready!</h2>
                 <p className="text-sm text-muted-foreground">
@@ -592,7 +592,7 @@ export default function DatabaseSetupV2() {
                   )}
                 </Button>
                 {copied && (
-                  <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-green-600 dark:text-green-400 text-center">
+                  <motion.p initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-green-600 text-center">
                     SQL copied! Now proceed to Step 2 below ↓
                   </motion.p>
                 )}
@@ -645,26 +645,26 @@ export default function DatabaseSetupV2() {
                 </Button>
 
                 {/* Instructions box */}
-                <div className="bg-amber-50 dark:bg-amber-900/15 border border-amber-200 dark:border-amber-800/50 rounded-xl p-3.5 space-y-2">
-                  <p className="text-xs font-semibold text-amber-800 dark:text-amber-200 flex items-center gap-1.5">
+                <div className="bg-amber-50 border border-amber-200 rounded-xl p-3.5 space-y-2">
+                  <p className="text-xs font-semibold text-amber-800 flex items-center gap-1.5">
                     <Shield className="w-3.5 h-3.5" />
                     Quick Instructions
                   </p>
-                  <ol className="text-xs text-amber-700 dark:text-amber-300 ml-1 space-y-1.5">
+                  <ol className="text-xs text-amber-700 ml-1 space-y-1.5">
                     <li className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">1</span>
+                      <span className="w-5 h-5 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">1</span>
                       <span>The SQL Editor page will open in a new tab</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">2</span>
-                      <span>Click in the empty text area and press <kbd className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-700 rounded text-[10px] font-mono">Ctrl+V</kbd> (or <kbd className="px-1.5 py-0.5 bg-amber-100 dark:bg-amber-700 rounded text-[10px] font-mono">⌘V</kbd> on Mac)</span>
+                      <span className="w-5 h-5 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">2</span>
+                      <span>Click in the empty text area and press <kbd className="px-1.5 py-0.5 bg-amber-100 rounded text-[10px] font-mono">Ctrl+V</kbd> (or <kbd className="px-1.5 py-0.5 bg-amber-100 rounded text-[10px] font-mono">⌘V</kbd> on Mac)</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">3</span>
+                      <span className="w-5 h-5 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">3</span>
                       <span>Click the green <strong>&quot;Run&quot;</strong> button at the bottom right</span>
                     </li>
                     <li className="flex items-start gap-2">
-                      <span className="w-5 h-5 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">4</span>
+                      <span className="w-5 h-5 rounded-full bg-amber-200 text-amber-800 flex items-center justify-center text-[10px] font-bold shrink-0 mt-px">4</span>
                       <span>Wait for &quot;Success&quot; message — it takes ~5 seconds</span>
                     </li>
                   </ol>
@@ -694,7 +694,7 @@ export default function DatabaseSetupV2() {
                   <motion.div initial={{ opacity: 0, y: -4 }} animate={{ opacity: 1, y: 0 }}>
                     <Separator className="my-3" />
                     <div className="space-y-2">
-                      <p className="text-xs text-green-600 dark:text-green-400 font-medium text-center flex items-center justify-center gap-1">
+                      <p className="text-xs text-green-600 font-medium text-center flex items-center justify-center gap-1">
                         <CheckCircle2 className="w-3.5 h-3.5" />
                         All tables created! Now add sample data:
                       </p>
@@ -722,8 +722,8 @@ export default function DatabaseSetupV2() {
                       exit={{ opacity: 0, y: -4, height: 0 }}
                       className={`rounded-lg p-3 text-xs font-medium text-center ${
                         seedResult.success
-                          ? 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300 border border-green-200 dark:border-green-800'
-                          : 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300 border border-red-200 dark:border-red-800'
+                          ? 'bg-green-50 text-green-700 border border-green-200'
+                          : 'bg-red-50 text-red-700 border border-red-200'
                       }`}
                     >
                       {seedResult.success ? (

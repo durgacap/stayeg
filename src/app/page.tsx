@@ -5,8 +5,8 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { pageTransition } from '@/lib/animations';
 import {
   Home, Search, BookOpen, CalendarDays, CreditCard, MessageSquare,
-  MapPin, User, Menu, Bell, Building2, LayoutDashboard, BedDouble,
-  Users, Wallet, Wrench, HardHat, Shield, AlertTriangle, LogIn, LogOut,
+  MapPin, User, Menu, Building2, LayoutDashboard, BedDouble,
+  Users, Wallet, Wrench, HardHat, AlertTriangle, LogIn, LogOut,
   UsersRound, ChevronRight, IndianRupee,
 } from 'lucide-react';
 // Database setup already completed via Supabase — skipping setup wizard
@@ -16,7 +16,6 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useAppStore } from '@/store/use-app-store';
-import { ThemeToggle } from '@/components/layout/theme-toggle';
 import HeroSection from '@/components/stayease/tenant/hero';
 import PGListing from '@/components/stayease/tenant/pg-listing';
 import PGDetail from '@/components/stayease/tenant/pg-detail';
@@ -48,7 +47,6 @@ import AboutPage from '@/components/stayease/policy/about-page';
 import HelpPage from '@/components/stayease/policy/help-page';
 import OwnerGuide from '@/components/stayease/owner/owner-guide';
 import NotificationsPanel from '@/components/stayease/notifications-panel';
-import CursorFollower from '@/components/ui/cursor-follower';
 import DatabaseSetupV2 from '@/components/stayease/setup/database-setup-v2';
 import HowItWorksPage from '@/components/stayease/policy/how-it-works-page';
 import ContactPage from '@/components/stayease/policy/contact-page';
@@ -187,9 +185,6 @@ function TopHeader() {
 
         {/* Right side */}
         <div className="flex items-center gap-1">
-          {/* Theme Toggle */}
-          <ThemeToggle />
-
           {isLoggedIn ? (
             <>
               {/* Logged-in: notifications, profile, logout */}
@@ -305,11 +300,6 @@ function TopHeader() {
                   <button onClick={() => { setCurrentView('HOW_IT_WORKS'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">How It Works</button>
                   <button onClick={() => { setCurrentView('CONTACT'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Contact Us</button>
                   <button onClick={() => { setCurrentView('HELP'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Help & Support</button>
-                  {!isLoggedIn && (
-                    <button onClick={() => { setCurrentView('DATABASE_SETUP_V2'); setMobileMenuOpen(false); }} className="block text-xs text-brand-teal hover:text-brand-teal/80 font-medium">
-                      ⚙️ Setup Database
-                    </button>
-                  )}
                   <button onClick={() => { setCurrentView('TERMS'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Terms of Service</button>
                   <button onClick={() => { setCurrentView('PRIVACY'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Privacy Policy</button>
                   <button onClick={() => { setCurrentView('SAFE_USE'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Safe Use Guidelines</button>
@@ -478,7 +468,6 @@ export default function StayeGApp() {
       </main>
       {showFooter && <SiteFooter />}
       {!hideMobileNav && <MobileNav items={mobileNav} />}
-      <CursorFollower />
       <OwnerGuide open={showOwnerGuide} onClose={handleGuideClose} />
       <TenantOnboarding />
       <OwnerSetupWizard open={showSetupWizard} onClose={handleSetupWizardClose} />

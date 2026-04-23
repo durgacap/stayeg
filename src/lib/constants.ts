@@ -44,82 +44,82 @@ export const NEARBY_SERVICES = [
 ];
 
 // ============================
-// DARK-MODE-AWARE BADGE & CARD COLORS
+// BADGE & CARD COLORS
 // ============================
 export const BADGE = {
-  blue: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-  green: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300',
-  red: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-  yellow: 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-300',
-  purple: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300',
-  pink: 'bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-300',
-  indigo: 'bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-300',
-  cyan: 'bg-cyan-100 text-cyan-700 dark:bg-cyan-900/30 dark:text-cyan-300',
-  amber: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300',
-  orange: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300',
-  gray: 'bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300',
-  night: 'bg-slate-700 text-gray-200 dark:bg-slate-600 dark:text-gray-100',
+  blue: 'bg-blue-100 text-blue-700',
+  green: 'bg-green-100 text-green-700',
+  red: 'bg-red-100 text-red-700',
+  yellow: 'bg-yellow-100 text-yellow-700',
+  purple: 'bg-purple-100 text-purple-700',
+  pink: 'bg-pink-100 text-pink-700',
+  indigo: 'bg-indigo-100 text-indigo-700',
+  cyan: 'bg-cyan-100 text-cyan-700',
+  amber: 'bg-amber-100 text-amber-700',
+  orange: 'bg-orange-100 text-orange-700',
+  gray: 'bg-gray-100 text-gray-700',
+  night: 'bg-slate-700 text-gray-200',
 } as const;
 
 export const BADGE_BORDER = {
-  blue: 'bg-blue-100 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800',
-  green: 'bg-green-100 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800',
-  red: 'bg-red-100 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800',
-  yellow: 'bg-yellow-100 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800',
-  purple: 'bg-purple-100 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800',
-  pink: 'bg-pink-100 text-pink-700 border-pink-200 dark:bg-pink-900/30 dark:text-pink-300 dark:border-pink-800',
-  amber: 'bg-amber-100 text-amber-700 border-amber-200 dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800',
+  blue: 'bg-blue-100 text-blue-700 border-blue-200',
+  green: 'bg-green-100 text-green-700 border-green-200',
+  red: 'bg-red-100 text-red-700 border-red-200',
+  yellow: 'bg-yellow-100 text-yellow-700 border-yellow-200',
+  purple: 'bg-purple-100 text-purple-700 border-purple-200',
+  pink: 'bg-pink-100 text-pink-700 border-pink-200',
+  amber: 'bg-amber-100 text-amber-700 border-amber-200',
 } as const;
 
 export const CARD_BG = {
-  blue: 'bg-blue-50 dark:bg-blue-900/20',
-  green: 'bg-green-50 dark:bg-green-900/20',
-  yellow: 'bg-yellow-50 dark:bg-yellow-900/20',
-  red: 'bg-red-50 dark:bg-red-900/20',
-  purple: 'bg-purple-50 dark:bg-purple-900/20',
-  amber: 'bg-amber-50 dark:bg-amber-900/20',
-  pink: 'bg-pink-50 dark:bg-pink-900/20',
-  orange: 'bg-orange-50 dark:bg-orange-900/20',
+  blue: 'bg-blue-50',
+  green: 'bg-green-50',
+  yellow: 'bg-yellow-50',
+  red: 'bg-red-50',
+  purple: 'bg-purple-50',
+  amber: 'bg-amber-50',
+  pink: 'bg-pink-50',
+  orange: 'bg-orange-50',
 } as const;
 
 export const TEXT_COLOR = {
-  green: 'text-green-700 dark:text-green-400',
-  red: 'text-red-700 dark:text-red-400',
-  yellow: 'text-yellow-700 dark:text-yellow-400',
-  blue: 'text-blue-700 dark:text-blue-400',
-  purple: 'text-purple-700 dark:text-purple-400',
-  greenLight: 'text-green-600 dark:text-green-400',
+  green: 'text-green-700',
+  red: 'text-red-700',
+  yellow: 'text-yellow-700',
+  blue: 'text-blue-700',
+  purple: 'text-purple-700',
+  greenLight: 'text-green-600',
 } as const;
 
 export const STATUSES = {
   BOOKING: {
-    PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-    CONFIRMED: { label: 'Confirmed', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-    ACTIVE: { label: 'Active', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-    COMPLETED: { label: 'Completed', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
-    CANCELLED: { label: 'Cancelled', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
+    PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800' },
+    CONFIRMED: { label: 'Confirmed', color: 'bg-green-100 text-green-800' },
+    ACTIVE: { label: 'Active', color: 'bg-green-100 text-green-800' },
+    COMPLETED: { label: 'Completed', color: 'bg-gray-100 text-gray-800' },
+    CANCELLED: { label: 'Cancelled', color: 'bg-red-100 text-red-800' },
   },
   PAYMENT: {
-    PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-    COMPLETED: { label: 'Completed', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-    FAILED: { label: 'Failed', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
-    REFUNDED: { label: 'Refunded', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
+    PENDING: { label: 'Pending', color: 'bg-yellow-100 text-yellow-800' },
+    COMPLETED: { label: 'Completed', color: 'bg-green-100 text-green-800' },
+    FAILED: { label: 'Failed', color: 'bg-red-100 text-red-800' },
+    REFUNDED: { label: 'Refunded', color: 'bg-gray-100 text-gray-800' },
   },
   COMPLAINT: {
-    OPEN: { label: 'Open', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
-    IN_PROGRESS: { label: 'In Progress', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-    RESOLVED: { label: 'Resolved', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-    CLOSED: { label: 'Closed', color: 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400' },
+    OPEN: { label: 'Open', color: 'bg-red-100 text-red-800' },
+    IN_PROGRESS: { label: 'In Progress', color: 'bg-yellow-100 text-yellow-800' },
+    RESOLVED: { label: 'Resolved', color: 'bg-green-100 text-green-800' },
+    CLOSED: { label: 'Closed', color: 'bg-gray-100 text-gray-800' },
   },
   BED: {
-    AVAILABLE: { label: 'Available', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-    OCCUPIED: { label: 'Occupied', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
-    MAINTENANCE: { label: 'Maintenance', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
+    AVAILABLE: { label: 'Available', color: 'bg-green-100 text-green-800' },
+    OCCUPIED: { label: 'Occupied', color: 'bg-red-100 text-red-800' },
+    MAINTENANCE: { label: 'Maintenance', color: 'bg-yellow-100 text-yellow-800' },
   },
   PG: {
-    PENDING: { label: 'Pending Review', color: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400' },
-    APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' },
-    REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400' },
+    PENDING: { label: 'Pending Review', color: 'bg-yellow-100 text-yellow-800' },
+    APPROVED: { label: 'Approved', color: 'bg-green-100 text-green-800' },
+    REJECTED: { label: 'Rejected', color: 'bg-red-100 text-red-800' },
   },
 } as const;
 

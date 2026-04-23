@@ -70,8 +70,8 @@ export default function TooltipGuide({
                 exit={{ scale: 0, opacity: 0 }}
                 className="absolute -top-1 -right-1 z-10 flex h-4 w-4 items-center justify-center"
               >
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-deep opacity-75 dark:bg-brand-teal" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-brand-deep dark:bg-brand-teal" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-brand-deep opacity-75" />
+                <span className="relative inline-flex h-3 w-3 rounded-full bg-brand-deep" />
               </motion.span>
             )}
           </AnimatePresence>
@@ -87,7 +87,7 @@ export default function TooltipGuide({
           {/* Step indicator */}
           {step !== undefined && totalSteps !== undefined && (
             <div className="mb-2">
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-deep dark:text-brand-teal">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-brand-deep">
                 Tip {step} of {totalSteps}
               </span>
             </div>
@@ -106,7 +106,7 @@ export default function TooltipGuide({
             <Button
               size="sm"
               onClick={handleDismiss}
-              className="h-7 text-xs bg-brand-deep hover:bg-brand-deep/90 dark:bg-brand-teal dark:hover:bg-brand-teal/90 text-white"
+              className="h-7 text-xs bg-brand-deep hover:bg-brand-deep/90 text-white"
             >
               <Check className="size-3 mr-1" />
               Got it

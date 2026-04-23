@@ -113,8 +113,8 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center">
         <motion.div initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} className="text-center space-y-4">
-          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }} className="mx-auto w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-            <CheckCircle2 className="w-10 h-10 text-green-600 dark:text-green-400" />
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: 'spring', stiffness: 200 }} className="mx-auto w-20 h-20 bg-green-100 rounded-full flex items-center justify-center">
+            <CheckCircle2 className="w-10 h-10 text-green-600" />
           </motion.div>
           <div>
             <p className="text-2xl font-bold text-foreground">Database Ready!</p>
@@ -190,7 +190,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
                 )}
               </Button>
               {copied && (
-                <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-1 text-xs text-green-600 dark:text-green-400">
+                <motion.div initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="flex items-center gap-1 text-xs text-green-600">
                   <CheckCircle2 className="w-3 h-3" />
                   Great! Now go to the next step below.
                 </motion.div>
@@ -222,13 +222,13 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
               Open Supabase SQL Editor
             </Button>
 
-            <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-3 space-y-1">
-              <p className="text-xs font-semibold text-amber-800 dark:text-amber-200 flex items-center gap-1">
+            <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 space-y-1">
+              <p className="text-xs font-semibold text-amber-800 flex items-center gap-1">
                 <AlertTriangle className="w-3 h-3" /> In the SQL Editor:
               </p>
-              <ol className="text-xs text-amber-700 dark:text-amber-300 ml-3 list-decimal space-y-0.5">
+              <ol className="text-xs text-amber-700 ml-3 list-decimal space-y-0.5">
                 <li>Click anywhere in the text area</li>
-                <li>Press <kbd className="px-1 py-0.5 bg-amber-100 dark:bg-amber-800 rounded text-[10px] font-mono">Ctrl+V</kbd> (or <kbd className="px-1 py-0.5 bg-amber-100 dark:bg-amber-800 rounded text-[10px] font-mono">Cmd+V</kbd> on Mac)</li>
+                <li>Press <kbd className="px-1 py-0.5 bg-amber-100 rounded text-[10px] font-mono">Ctrl+V</kbd> (or <kbd className="px-1 py-0.5 bg-amber-100 rounded text-[10px] font-mono">Cmd+V</kbd> on Mac)</li>
                 <li>Click the green <strong>&quot;Run&quot;</strong> button at the bottom</li>
                 <li>Wait for &quot;Success&quot; message</li>
               </ol>
@@ -263,7 +263,7 @@ export default function DatabaseSetup({ onReady }: { onReady: () => void }) {
             </Button>
 
             {setupStatus?.status === 'setup_required' && currentStep === 2 && !verifying && (
-              <p className="text-xs text-center text-amber-600 dark:text-amber-400">
+              <p className="text-xs text-center text-amber-600">
                 Tables not found yet. Make sure you clicked &quot;Run&quot; in the SQL Editor.
               </p>
             )}

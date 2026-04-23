@@ -87,7 +87,7 @@ function ProgressStepper({ currentStep }: { currentStep: number }) {
                 }}
                 className={`relative flex items-center justify-center size-10 rounded-full text-white transition-colors ${
                   isActive
-                    ? 'ring-2 ring-brand-deep/30 dark:ring-brand-teal/30'
+                    ? 'ring-2 ring-brand-deep/30'
                     : ''
                 }`}
               >
@@ -99,7 +99,7 @@ function ProgressStepper({ currentStep }: { currentStep: number }) {
                 {isActive && (
                   <motion.div
                     layoutId="step-pulse"
-                    className="absolute inset-0 rounded-full bg-brand-deep/30 dark:bg-brand-teal/30"
+                    className="absolute inset-0 rounded-full bg-brand-deep/30"
                     animate={{ scale: [1, 1.4, 1], opacity: [0.5, 0, 0.5] }}
                     transition={{ duration: 2, repeat: Infinity }}
                   />
@@ -108,7 +108,7 @@ function ProgressStepper({ currentStep }: { currentStep: number }) {
               <span
                 className={`text-xs font-medium ${
                   isActive
-                    ? 'text-brand-deep dark:text-brand-teal'
+                    ? 'text-brand-deep'
                     : isCompleted
                       ? 'text-brand-teal'
                       : 'text-muted-foreground'
@@ -318,7 +318,7 @@ function StepRoomsBeds({
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2">
-                    <BedDouble className="size-4 text-brand-deep dark:text-brand-teal" />
+                    <BedDouble className="size-4 text-brand-deep" />
                     Room {index + 1}
                   </CardTitle>
                   {rooms.length > 1 && (
@@ -440,7 +440,7 @@ function StepRoomsBeds({
       <Button
         variant="outline"
         onClick={onAddRoom}
-        className="w-full border-dashed border-2 border-gold/30 hover:border-brand-deep hover:bg-brand-deep/5 dark:hover:border-brand-teal dark:hover:bg-brand-teal/5 h-11"
+        className="w-full border-dashed border-2 border-gold/30 hover:border-brand-deep hover:bg-brand-deep/5 h-11"
       >
         <Plus className="size-4 mr-2" />
         Add Another Room
@@ -624,7 +624,7 @@ function StepStaffPlans({
                 <Card
                   className={`cursor-pointer transition-all border-2 ${
                     isSelected
-                      ? 'border-brand-deep dark:border-brand-teal shadow-gold-md bg-brand-deep/5 dark:bg-brand-teal/5'
+                      ? 'border-brand-deep shadow-gold-md bg-brand-deep/5'
                       : 'border-gold/20 hover:border-gold/50'
                   }`}
                   onClick={() => onSelectPlan(plan.id)}
@@ -662,7 +662,7 @@ function StepStaffPlans({
                       <div
                         className={`size-5 rounded-full border-2 flex items-center justify-center shrink-0 mt-1 ${
                           isSelected
-                            ? 'bg-brand-deep dark:bg-brand-teal border-brand-deep dark:border-brand-teal'
+                            ? 'bg-brand-deep border-brand-deep'
                             : 'border-muted-foreground/30'
                         }`}
                       >
@@ -729,7 +729,7 @@ function StepStaffPlans({
           {selectedPlan && (
             <div className="flex justify-between pt-1 border-t">
               <span>Plan</span>
-              <span className="font-medium text-brand-deep dark:text-brand-teal">
+              <span className="font-medium text-brand-deep">
                 {PRICING_PLANS.find((p) => p.id === selectedPlan)?.name} — ₹
                 {PRICING_PLANS.find((p) => p.id === selectedPlan)?.price.toLocaleString('en-IN')}
               </span>

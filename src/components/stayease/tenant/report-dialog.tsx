@@ -106,7 +106,7 @@ export default function ReportDialog({ targetId, targetType, trigger }: ReportDi
   const targetLabel = targetType === 'PG' ? 'this PG' : targetType === 'USER' ? 'this user' : 'this review';
 
   const defaultTrigger = (
-    <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-red-500 dark:hover:text-red-400 transition-colors">
+    <button className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-red-500 transition-colors">
       <Flag className="size-3" />
       Report
     </button>
@@ -121,8 +121,8 @@ export default function ReportDialog({ targetId, targetType, trigger }: ReportDi
       <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <div className="flex items-center gap-2 mb-1">
-            <div className="size-9 bg-red-100 dark:bg-red-900/20 rounded-lg flex items-center justify-center">
-              <Flag className="size-5 text-red-600 dark:text-red-400" />
+            <div className="size-9 bg-red-100 rounded-lg flex items-center justify-center">
+              <Flag className="size-5 text-red-600" />
             </div>
             <div>
               <DialogTitle className="text-lg">Report an Issue</DialogTitle>
@@ -155,7 +155,7 @@ export default function ReportDialog({ targetId, targetType, trigger }: ReportDi
                   htmlFor={`report-${reason.value}`}
                   className={`flex items-start gap-3 p-3 rounded-lg border cursor-pointer transition-all ${
                     selectedReason === reason.value
-                      ? 'border-brand-teal bg-brand-teal/5 dark:bg-brand-teal/10'
+                      ? 'border-brand-teal bg-brand-teal/5'
                       : 'border-border hover:border-brand-teal/30 hover:bg-muted/50'
                   }`}
                 >

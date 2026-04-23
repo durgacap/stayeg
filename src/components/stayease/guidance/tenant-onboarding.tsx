@@ -28,7 +28,7 @@ const STEPS: OnboardingStep[] = [
       'Your one-stop platform for finding the perfect PG accommodation. Browse verified listings, book securely, and join a vibrant community of tenants.',
     icon: <Home className="size-10" />,
     gradient: 'from-brand-deep to-brand-teal',
-    bgColor: 'bg-brand-deep/10 dark:bg-brand-deep/5',
+    bgColor: 'bg-brand-deep/10',
     accentColor: 'text-brand-deep',
   },
   {
@@ -38,7 +38,7 @@ const STEPS: OnboardingStep[] = [
       'Search by city, budget, amenities, and gender preference. Filter results with smart tools and explore detailed listings with photos, reviews, and virtual tours.',
     icon: <Search className="size-10" />,
     gradient: 'from-brand-teal to-brand-lime',
-    bgColor: 'bg-brand-teal/10 dark:bg-brand-teal/5',
+    bgColor: 'bg-brand-teal/10',
     accentColor: 'text-brand-teal',
   },
   {
@@ -48,7 +48,7 @@ const STEPS: OnboardingStep[] = [
       'Book your preferred bed in just a few taps. Pay securely with UPI, cards, or net banking. Track your payments and get digital receipts instantly.',
     icon: <CreditCard className="size-10" />,
     gradient: 'from-brand-deep to-brand-sage',
-    bgColor: 'bg-brand-sage/10 dark:bg-brand-sage/5',
+    bgColor: 'bg-brand-sage/10',
     accentColor: 'text-brand-sage',
   },
   {
@@ -58,7 +58,7 @@ const STEPS: OnboardingStep[] = [
       'Connect with fellow tenants, find roommates, share tips, and discover nearby services. Be part of a thriving PG community in your city!',
     icon: <Users className="size-10" />,
     gradient: 'from-brand-lime to-brand-teal',
-    bgColor: 'bg-brand-lime/10 dark:bg-brand-lime/5',
+    bgColor: 'bg-brand-lime/10',
     accentColor: 'text-brand-lime',
   },
 ];
@@ -85,9 +85,9 @@ const illustrationFeatures: Record<number, React.ReactNode> = {
         (Icon, i) => (
           <div
             key={i}
-            className="flex items-center justify-center rounded-lg bg-white/80 dark:bg-white/10 p-3"
+            className="flex items-center justify-center rounded-lg bg-white/80 p-3"
           >
-            <Icon className="size-5 text-brand-deep dark:text-brand-teal" />
+            <Icon className="size-5 text-brand-deep" />
           </div>
         )
       )}
@@ -95,18 +95,18 @@ const illustrationFeatures: Record<number, React.ReactNode> = {
   ),
   2: (
     <div className="space-y-2 mt-4">
-      <div className="flex items-center gap-2 rounded-lg bg-white/80 dark:bg-white/10 px-3 py-2">
+      <div className="flex items-center gap-2 rounded-lg bg-white/80 px-3 py-2">
         <MapPin className="size-4 text-brand-teal" />
         <span className="text-xs font-medium">Koramangala, Bangalore</span>
       </div>
-      <div className="flex items-center gap-2 rounded-lg bg-white/80 dark:bg-white/10 px-3 py-2">
+      <div className="flex items-center gap-2 rounded-lg bg-white/80 px-3 py-2">
         <span className="text-xs font-medium text-brand-teal">₹5,000 - ₹15,000/mo</span>
       </div>
       <div className="flex gap-1.5 flex-wrap">
         {['WiFi', 'AC', 'Meals', 'Parking'].map((tag) => (
           <span
             key={tag}
-            className="rounded-full bg-white/80 dark:bg-white/10 px-2.5 py-0.5 text-[10px] font-medium text-brand-deep dark:text-brand-teal"
+            className="rounded-full bg-white/80 px-2.5 py-0.5 text-[10px] font-medium text-brand-deep"
           >
             {tag}
           </span>
@@ -123,7 +123,7 @@ const illustrationFeatures: Record<number, React.ReactNode> = {
       ].map((item) => (
         <div
           key={item.label}
-          className="flex items-center gap-3 rounded-lg bg-white/80 dark:bg-white/10 px-3 py-2"
+          className="flex items-center gap-3 rounded-lg bg-white/80 px-3 py-2"
         >
           <ShieldCheck className="size-4 text-brand-sage" />
           <div>
@@ -143,7 +143,7 @@ const illustrationFeatures: Record<number, React.ReactNode> = {
       ].map((item) => (
         <div
           key={item.label}
-          className="flex items-center justify-between rounded-lg bg-white/80 dark:bg-white/10 px-3 py-2"
+          className="flex items-center justify-between rounded-lg bg-white/80 px-3 py-2"
         >
           <div className="flex items-center gap-2">
             <Users className="size-4 text-brand-lime" />
@@ -293,7 +293,7 @@ export default function TenantOnboarding({ onComplete }: TenantOnboardingProps) 
                   key={index}
                   className={`h-2 rounded-full transition-all ${
                     index === currentStep
-                      ? 'w-8 bg-brand-deep dark:bg-brand-teal'
+                      ? 'w-8 bg-brand-deep'
                       : 'w-2 bg-muted-foreground/30'
                   }`}
                   layout

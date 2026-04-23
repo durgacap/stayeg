@@ -1,7 +1,7 @@
 @import "tailwindcss";
 @import "tw-animate-css";
 
-@custom-variant dark (&:is(.dark *));
+/* Dark mode removed — StayEg uses light mode only */
 
 @theme inline {
   --color-background: var(--background);
@@ -141,148 +141,8 @@
 }
 
 /* ================================================================
-   DARK MODE — Soft charcoal, NOT pure black
-   All text meets WCAG AA against dark backgrounds
+   DARK MODE REMOVED — StayEg uses light mode only
    ================================================================ */
-.dark {
-  --background: #111827;
-  --foreground: #F9FAFB;
-  --card: #1F2937;
-  --card-foreground: #F9FAFB;
-  --popover: #1F2937;
-  --popover-foreground: #F9FAFB;
-
-  --primary: #60A5FA;
-  --primary-foreground: #111827;
-
-  --secondary: #1E293B;
-  --secondary-foreground: #F9FAFB;
-
-  --muted: #1F2937;
-  --muted-foreground: #D1D5DB;       /* Was #9CA3AF — too dim. Now Gray-300 */
-
-  --accent: #1E293B;
-  --accent-foreground: #F9FAFB;
-
-  --destructive: #F87171;
-
-  --border: #374151;
-  --input: #374151;
-  --ring: #60A5FA;
-
-  --chart-1: #60A5FA;
-  --chart-2: #FBBF24;
-  --chart-3: #818CF8;
-  --chart-4: #4ADE80;
-  --chart-5: #FB7185;
-
-  --sidebar: #111827;
-  --sidebar-foreground: #F9FAFB;
-  --sidebar-primary: #60A5FA;
-  --sidebar-primary-foreground: #111827;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #F9FAFB;
-  --sidebar-border: #374151;
-  --sidebar-ring: #60A5FA;
-
-  /*
-   * Brand tokens — WCAG AA contrast verification (DARK mode)
-   * -----------------------------------------------------------------
-   * brand-deep  #3B82F6 on deep-light  #0F172A = 4.85:1 ✅ (AA: 4.5)
-   * brand-teal  #60A5FA on teal-light  #172554 = 5.78:1 ✅ (AA: 4.5)
-   * brand-sage  #F59E0B on sage-light  #451A03 = 6.97:1 ✅ (AA: 4.5)
-   * -----------------------------------------------------------------
-   */
-  --brand-deep: #3B82F6;
-  --brand-teal: #60A5FA;
-  --brand-sage: #F59E0B;           /* Amber-400 — bright on dark bg */
-  --brand-lime: #4ADE80;
-  --brand-deep-light: #0F172A;       /* Was #1E3A5F — 3.13:1 fail. Now Slate-900 */
-  --brand-teal-light: #172554;       /* Was #1E3A5F — 4.52:1 borderline. Now Blue-950 */
-  --brand-sage-light: #451A03;       /* Was #78350F — 4.22:1 fail. Now Amber-950 */
-  --brand-lime-dark: #16A34A;
-
-  /* Gold accent — brighter for dark mode */
-  --gold: #D4AF5A;
-  --gold-light: #2A2518;
-  --gold-dark: #A68B3C;
-}
-
-/* ================================================================
-   EYE COMFORT — Warm stone tones
-   All text meets WCAG AA against warm backgrounds
-   ================================================================ */
-.eye-comfort {
-  --background: #1C1917;
-  --foreground: #F5F5F4;
-  --card: #292524;
-  --card-foreground: #F5F5F4;
-  --popover: #292524;
-  --popover-foreground: #F5F5F4;
-
-  --primary: #93C5FD;
-  --primary-foreground: #1C1917;
-
-  --secondary: #292524;
-  --secondary-foreground: #F5F5F4;
-
-  --muted: #292524;
-  --muted-foreground: #D6D3D1;       /* Was #A8A29E — too dim. Now Stone-300 */
-
-  --accent: #292524;
-  --accent-foreground: #F5F5F4;
-
-  --destructive: #FCA5A5;
-
-  --border: #44403C;
-  --input: #44403C;
-  --ring: #93C5FD;
-
-  --chart-1: #93C5FD;
-  --chart-2: #FDE68A;
-  --chart-3: #C4B5FD;
-  --chart-4: #86EFAC;
-  --chart-5: #D4C5A9;
-
-  --sidebar: #1C1917;
-  --sidebar-foreground: #F5F5F4;
-  --sidebar-primary: #93C5FD;
-  --sidebar-primary-foreground: #1C1917;
-  --sidebar-accent: #292524;
-  --sidebar-accent-foreground: #F5F5F4;
-  --sidebar-border: #44403C;
-  --sidebar-ring: #93C5FD;
-
-  /*
-   * Brand tokens — WCAG AA contrast verification (EYE-COMFORT mode)
-   * -----------------------------------------------------------------
-   * brand-deep  #7DD3FC on deep-light  #44403C = 6.16:1 ✅ (AA: 4.5)
-   * brand-teal  #93C5FD on teal-light  #172554 = 8.15:1 ✅ (AA: 4.5)
-   * brand-sage  #FBBF24 on sage-light  #451A03 = 8.97:1 ✅ (AA: 4.5)
-   * -----------------------------------------------------------------
-   */
-  --brand-deep: #7DD3FC;
-  --brand-teal: #93C5FD;
-  --brand-sage: #FBBF24;
-  --brand-lime: #86EFAC;
-  --brand-deep-light: #44403C;       /* Stone-700 — background for deep text */
-  --brand-teal-light: #172554;       /* Was #1E3A5F — 5.97:1 OK. Now Blue-950 for margin */
-  --brand-sage-light: #451A03;       /* Was #78350F — 5.15:1 OK. Now Amber-950 for margin */
-  --brand-lime-dark: #16A34A;
-
-  /* Gold accent — warm for eye comfort */
-  --gold: #D4B06A;
-  --gold-light: #2E2820;
-  --gold-dark: #A68B3C;
-}
-
-.eye-comfort img,
-.eye-comfort video {
-  filter: sepia(0.06) saturate(0.9) brightness(0.94);
-}
-.eye-comfort body {
-  filter: none;
-}
 
 /* ================================================================
    BASE STYLES & UTILITY CLASSES
@@ -344,39 +204,13 @@
 @utility bg-section-dark {
   background-color: #1E293B;
 }
-.dark .bg-section-dark {
-  background-color: #111827;
-}
-.eye-comfort .bg-section-dark {
-  background-color: #292524;
-}
 
 @utility bg-section-primary {
   background-color: #2563EB;
 }
-.dark .bg-section-primary {
-  background-color: #1E40AF;
-}
-.eye-comfort .bg-section-primary {
-  background-color: #1E3A5F;
-}
 
 @utility bg-section-muted {
   background-color: #F3F4F6;
-}
-.dark .bg-section-muted {
-  background-color: #1F2937;
-}
-.eye-comfort .bg-section-muted {
-  background-color: #292524;
-}
-
-html {
-  transition: color-scheme 0.3s ease;
-}
-
-html.theme-transitioning * {
-  transition: background-color 0.3s ease, color 0.2s ease, border-color 0.3s ease, box-shadow 0.3s ease !important;
 }
 
 /* Scrollbar styling for better UX */

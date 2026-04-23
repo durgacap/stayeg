@@ -351,7 +351,7 @@ export default function HeroSection() {
                     The Future of PG Management is{' '}
                     <span className="text-primary">Here</span>
                   </h2>
-                  <p className="text-gray-300 dark:text-gray-400 eye-comfort:text-stone-300 mb-6 text-sm">
+                  <p className="text-gray-300 mb-6 text-sm">
                     Run your PG business like a pro — automate rent, manage staff, track occupancy, and delight tenants. All from one dashboard.
                   </p>
 
@@ -364,7 +364,7 @@ export default function HeroSection() {
                     ].map((item) => (
                       <li key={item} className="flex items-center gap-2.5">
                         <CheckCircle2 className="size-4 text-primary shrink-0" />
-                        <span className="text-gray-300 dark:text-gray-400 eye-comfort:text-stone-300 text-sm">{item}</span>
+                        <span className="text-gray-300 text-sm">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -394,7 +394,7 @@ export default function HeroSection() {
                     <div key={item.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
                       <item.icon className="size-6 text-primary mb-2" />
                       <h4 className="text-white font-semibold text-sm mb-0.5">{item.label}</h4>
-                      <p className="text-gray-300 dark:text-gray-400 eye-comfort:text-stone-300 text-xs">{item.value}</p>
+                      <p className="text-gray-300 text-xs">{item.value}</p>
                     </div>
                   ))}
                 </div>
@@ -412,7 +412,7 @@ export default function HeroSection() {
           <FadeInSection>
             <div className="rounded-2xl overflow-hidden border border-border bg-card shadow-sm">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                <div className="bg-gradient-to-br from-blue-800 to-blue-700 p-8 md:p-10 flex flex-col justify-center min-h-[240px]">
+                <div className="bg-gradient-to-br from-brand-deep to-brand-teal p-8 md:p-10 flex flex-col justify-center min-h-[240px]">
                   <Badge className="mb-4 bg-white/15 backdrop-blur-sm text-white border-white/25 self-start">
                     For Service Providers
                   </Badge>

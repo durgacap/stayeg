@@ -29,15 +29,15 @@ export default function VerificationBadge({
       >
         {isVerified ? (
           <>
-            <ShieldCheck className="size-4 text-blue-600 dark:text-blue-400" />
-            <span className="text-xs font-semibold text-blue-700 dark:text-blue-300">
+            <ShieldCheck className="size-4 text-blue-600" />
+            <span className="text-xs font-semibold text-blue-700">
               Verified
             </span>
           </>
         ) : (
           <>
-            <Shield className="size-4 text-gray-400 dark:text-gray-500" />
-            <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+            <Shield className="size-4 text-gray-400" />
+            <span className="text-xs font-medium text-gray-500">
               Unverified
             </span>
           </>
@@ -55,29 +55,29 @@ export default function VerificationBadge({
       className={cn('flex items-center gap-2.5', className)}
     >
       {isVerified ? (
-        <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
-          <div className="size-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center shrink-0">
-            <ShieldCheck className="size-5 text-blue-600 dark:text-blue-400" />
+        <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-blue-50 border border-blue-200">
+          <div className="size-8 rounded-full bg-blue-100 flex items-center justify-center shrink-0">
+            <ShieldCheck className="size-5 text-blue-600" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-blue-700 dark:text-blue-300">
+            <p className="text-sm font-semibold text-blue-700">
               Verified PG
             </p>
-            <p className="text-xs text-blue-600/80 dark:text-blue-400/80">
+            <p className="text-xs text-blue-600/80">
               Physically inspected by StayEg team
             </p>
           </div>
         </div>
       ) : (
-        <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-900/30 border border-gray-200 dark:border-gray-700">
-          <div className="size-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
-            <Shield className="size-5 text-gray-400 dark:text-gray-500" />
+        <div className="flex items-center gap-2.5 px-3 py-2 rounded-lg bg-gray-50 border border-gray-200">
+          <div className="size-8 rounded-full bg-gray-100 flex items-center justify-center shrink-0">
+            <Shield className="size-5 text-gray-400" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-gray-500 dark:text-gray-400">
+            <p className="text-sm font-semibold text-gray-500">
               Unverified
             </p>
-            <p className="text-xs text-gray-400 dark:text-gray-500">
+            <p className="text-xs text-gray-400">
               Not yet inspected
             </p>
           </div>

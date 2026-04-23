@@ -231,7 +231,7 @@ export default function RatingsReviews({ pgId }: { pgId: string }) {
           className={`${sizeClass} ${
             filled
               ? 'text-amber-400 fill-amber-400'
-              : 'text-gray-300 dark:text-gray-600'
+              : 'text-gray-300'
           }`}
         />
       );
@@ -380,7 +380,7 @@ export default function RatingsReviews({ pgId }: { pgId: string }) {
                         className={`size-7 transition-colors ${
                           i < (hoverRating || overallRating)
                             ? 'text-amber-400 fill-amber-400'
-                            : 'text-gray-300 dark:text-gray-600'
+                            : 'text-gray-300'
                         }`}
                       />
                     </button>
@@ -568,7 +568,7 @@ export default function RatingsReviews({ pgId }: { pgId: string }) {
                     </button>
                     <button
                       onClick={handleReport}
-                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground hover:bg-red-50 hover:text-red-600 dark:hover:bg-red-900/10 dark:hover:text-red-400 transition-colors"
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-muted text-muted-foreground hover:bg-red-50 hover:text-red-600 transition-colors"
                     >
                       <Flag className="size-3" />
                       Report

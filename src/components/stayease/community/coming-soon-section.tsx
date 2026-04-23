@@ -105,7 +105,7 @@ const COMING_SOON_FEATURES = [
     icon: ShieldAlert,
     title: 'Emergency SOS',
     description: 'One-tap emergency alert system',
-    color: 'bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400',
+    color: 'bg-red-100 text-red-600',
   },
   {
     icon: Users,

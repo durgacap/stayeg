@@ -266,7 +266,7 @@ export default function ComplaintManagement() {
                               <p className="text-sm text-muted-foreground mb-3">{c.description}</p>
                             )}
                             {c.resolution && (
-                              <div className={`${CARD_BG.green} border border-green-200 dark:border-green-800 rounded-lg p-3 mb-3`}>
+                              <div className={`${CARD_BG.green} border border-green-200 rounded-lg p-3 mb-3`}>
                                 <p className={`text-sm font-medium ${TEXT_COLOR.green}`}>Resolution:</p>
                                 <p className={`text-sm ${TEXT_COLOR.green} mt-1`}>{c.resolution}</p>
                               </div>

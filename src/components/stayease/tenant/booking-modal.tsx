@@ -10,7 +10,6 @@ import {
   Phone,
   IndianRupee,
   BedDouble,
-  Loader2,
   AlertCircle,
   Shield,
   Camera,
@@ -1191,15 +1190,13 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                       className="flex-1 bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white h-11"
                     >
                       {isSubmitting ? (
-                        <>
-                          <Loader2 className="size-4 animate-spin mr-2" />
-                          Processing...
-                        </>
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                          className="size-5 border-2 border-white/30 border-t-white rounded-full"
+                        />
                       ) : (
-                        <>
-                          <Shield className="size-4 mr-1" />
-                          Confirm & Pay ₹{totalAmount.toLocaleString('en-IN')}
-                        </>
+                        <>Confirm & Pay ₹{totalAmount.toLocaleString('en-IN')}</>
                       )}
                     </Button>
                   </div>

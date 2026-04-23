@@ -56,9 +56,9 @@ const KYC_STATUS_CONFIG: Record<KYCStatus, {
     label: 'Under Review',
     badgeClass: BADGE.yellow,
     icon: Clock,
-    iconColor: 'text-amber-600 dark:text-amber-400',
-    bgColor: 'bg-amber-50 dark:bg-amber-900/10',
-    borderColor: 'border-amber-200 dark:border-amber-800',
+    iconColor: 'text-amber-600',
+    bgColor: 'bg-amber-50',
+    borderColor: 'border-amber-200',
     description: 'Your documents are being reviewed by our verification team.',
     subDescription: 'This usually takes 24-48 hours. We\'ll notify you once complete.',
   },
@@ -66,9 +66,9 @@ const KYC_STATUS_CONFIG: Record<KYCStatus, {
     label: 'Verified',
     badgeClass: BADGE.green,
     icon: ShieldCheck,
-    iconColor: 'text-green-600 dark:text-green-400',
-    bgColor: 'bg-green-50 dark:bg-green-900/10',
-    borderColor: 'border-green-200 dark:border-green-800',
+    iconColor: 'text-green-600',
+    bgColor: 'bg-green-50',
+    borderColor: 'border-green-200',
     description: 'Your identity has been successfully verified!',
     subDescription: 'You have full access to all platform features.',
   },
@@ -76,9 +76,9 @@ const KYC_STATUS_CONFIG: Record<KYCStatus, {
     label: 'Rejected',
     badgeClass: BADGE.red,
     icon: ShieldX,
-    iconColor: 'text-red-600 dark:text-red-400',
-    bgColor: 'bg-red-50 dark:bg-red-900/10',
-    borderColor: 'border-red-200 dark:border-red-800',
+    iconColor: 'text-red-600',
+    bgColor: 'bg-red-50',
+    borderColor: 'border-red-200',
     description: 'Your verification was rejected. Please review the reason below and resubmit with correct documents.',
     subDescription: 'Reason: Document image was blurry or unreadable.',
   },
@@ -178,9 +178,9 @@ export default function KYCUpload({ userKycStatus = 'NOT_STARTED' }: KYCUploadPr
               animate="visible"
             >
               <div className="relative size-20 mb-4">
-                <div className="absolute inset-0 rounded-full bg-amber-100 dark:bg-amber-900/20 animate-ping opacity-20" />
-                <div className="relative size-20 rounded-full bg-amber-100 dark:bg-amber-900/20 flex items-center justify-center">
-                  <Loader2 className="size-10 text-amber-600 dark:text-amber-400 animate-spin" />
+                <div className="absolute inset-0 rounded-full bg-amber-100 animate-ping opacity-20" />
+                <div className="relative size-20 rounded-full bg-amber-100 flex items-center justify-center">
+                  <Loader2 className="size-10 text-amber-600 animate-spin" />
                 </div>
               </div>
 
@@ -197,12 +197,12 @@ export default function KYCUpload({ userKycStatus = 'NOT_STARTED' }: KYCUploadPr
               </p>
 
               <div className="mt-6 w-full max-w-sm space-y-3">
-                <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 rounded-lg">
-                  <Check className="size-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg">
+                  <Check className="size-4 text-amber-600 shrink-0" />
                   <span className="text-sm text-foreground">Aadhaar Card submitted</span>
                 </div>
-                <div className="flex items-center gap-3 p-3 bg-amber-50 dark:bg-amber-900/10 rounded-lg">
-                  <Check className="size-4 text-amber-600 dark:text-amber-400 shrink-0" />
+                <div className="flex items-center gap-3 p-3 bg-amber-50 rounded-lg">
+                  <Check className="size-4 text-amber-600 shrink-0" />
                   <span className="text-sm text-foreground">PAN Card submitted</span>
                 </div>
               </div>
@@ -232,8 +232,8 @@ export default function KYCUpload({ userKycStatus = 'NOT_STARTED' }: KYCUploadPr
               initial="hidden"
               animate="visible"
             >
-              <div className="size-20 rounded-full bg-green-100 dark:bg-green-900/20 flex items-center justify-center mb-4">
-                <ShieldCheck className="size-10 text-green-600 dark:text-green-400" />
+              <div className="size-20 rounded-full bg-green-100 flex items-center justify-center mb-4">
+                <ShieldCheck className="size-10 text-green-600" />
               </div>
 
               <Badge className={`${config.badgeClass} mb-3 border-0`}>
@@ -249,9 +249,9 @@ export default function KYCUpload({ userKycStatus = 'NOT_STARTED' }: KYCUploadPr
               </p>
 
               <div className="mt-5 w-full max-w-sm">
-                <div className="rounded-lg border border-green-200 dark:border-green-800 overflow-hidden">
-                  <div className="bg-green-50 dark:bg-green-900/10 px-4 py-3">
-                    <p className="text-xs font-semibold text-green-700 dark:text-green-400 uppercase tracking-wider">
+                <div className="rounded-lg border border-green-200 overflow-hidden">
+                  <div className="bg-green-50 px-4 py-3">
+                    <p className="text-xs font-semibold text-green-700 uppercase tracking-wider">
                       Verified Information
                     </p>
                   </div>
@@ -311,11 +311,11 @@ export default function KYCUpload({ userKycStatus = 'NOT_STARTED' }: KYCUploadPr
               animate="visible"
               className="space-y-4"
             >
-              <div className="flex items-start gap-3 p-3 bg-red-50 dark:bg-red-900/10 rounded-lg">
-                <AlertCircle className="size-5 text-red-600 dark:text-red-400 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-3 p-3 bg-red-50 rounded-lg">
+                <AlertCircle className="size-5 text-red-600 shrink-0 mt-0.5" />
                 <div>
-                  <p className="text-sm font-medium text-red-700 dark:text-red-400">Rejection Reason</p>
-                  <p className="text-sm text-red-600 dark:text-red-300 mt-0.5">
+                  <p className="text-sm font-medium text-red-700">Rejection Reason</p>
+                  <p className="text-sm text-red-600 mt-0.5">
                     The uploaded document image was blurry or unreadable. Please resubmit with clear, high-quality photos of your documents.
                   </p>
                 </div>
@@ -495,7 +495,7 @@ function KYCUploadForm({
           <div className="space-y-2">
             <Label className="text-xs font-medium text-muted-foreground">Front Side</Label>
             {aadhaarFront ? (
-              <div className="relative rounded-lg overflow-hidden border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10">
+              <div className="relative rounded-lg overflow-hidden border border-green-200 bg-green-50">
                 <div className="aspect-[16/10] bg-muted flex items-center justify-center">
                   <img
                     src={aadhaarFront.preview}
@@ -505,8 +505,8 @@ function KYCUploadForm({
                 </div>
                 <div className="px-3 py-2 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <Check className="size-3.5 text-green-600 dark:text-green-400" />
-                    <span className="text-xs text-green-700 dark:text-green-400 font-medium">Uploaded</span>
+                    <Check className="size-3.5 text-green-600" />
+                    <span className="text-xs text-green-700 font-medium">Uploaded</span>
                     <span className="text-xs text-muted-foreground">({aadhaarFront.size})</span>
                   </div>
                   <button
@@ -535,7 +535,7 @@ function KYCUploadForm({
           <div className="space-y-2">
             <Label className="text-xs font-medium text-muted-foreground">Back Side</Label>
             {aadhaarBack ? (
-              <div className="relative rounded-lg overflow-hidden border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10">
+              <div className="relative rounded-lg overflow-hidden border border-green-200 bg-green-50">
                 <div className="aspect-[16/10] bg-muted flex items-center justify-center">
                   <img
                     src={aadhaarBack.preview}
@@ -545,8 +545,8 @@ function KYCUploadForm({
                 </div>
                 <div className="px-3 py-2 flex items-center justify-between">
                   <div className="flex items-center gap-1.5">
-                    <Check className="size-3.5 text-green-600 dark:text-green-400" />
-                    <span className="text-xs text-green-700 dark:text-green-400 font-medium">Uploaded</span>
+                    <Check className="size-3.5 text-green-600" />
+                    <span className="text-xs text-green-700 font-medium">Uploaded</span>
                     <span className="text-xs text-muted-foreground">({aadhaarBack.size})</span>
                   </div>
                   <button
@@ -585,7 +585,7 @@ function KYCUploadForm({
         <div className="space-y-2">
           <Label className="text-xs font-medium text-muted-foreground">Front Side</Label>
           {panFront ? (
-            <div className="relative rounded-lg overflow-hidden border border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/10 max-w-xs">
+            <div className="relative rounded-lg overflow-hidden border border-green-200 bg-green-50 max-w-xs">
               <div className="aspect-[16/10] bg-muted flex items-center justify-center">
                 <img
                   src={panFront.preview}
@@ -595,8 +595,8 @@ function KYCUploadForm({
               </div>
               <div className="px-3 py-2 flex items-center justify-between">
                 <div className="flex items-center gap-1.5">
-                  <Check className="size-3.5 text-green-600 dark:text-green-400" />
-                  <span className="text-xs text-green-700 dark:text-green-400 font-medium">Uploaded</span>
+                  <Check className="size-3.5 text-green-600" />
+                  <span className="text-xs text-green-700 font-medium">Uploaded</span>
                   <span className="text-xs text-muted-foreground">({panFront.size})</span>
                 </div>
                 <button
