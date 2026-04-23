@@ -2,6 +2,14 @@ import { supabase, isTableMissing } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/api-auth';
 
+const DEMO_WORKERS = [
+  { id: 'demo-worker-1', name: 'Mohan', role: 'SECURITY', phone: '+91 98765 60001', pg_id: 'demo-pg-1', shift: 'NIGHT', status: 'ACTIVE' },
+  { id: 'demo-worker-2', name: 'Lakshmi', role: 'COOK', phone: '+91 98765 60002', pg_id: 'demo-pg-1', shift: 'MORNING', status: 'ACTIVE' },
+  { id: 'demo-worker-3', name: 'Suresh', role: 'CLEANER', phone: '+91 98765 60003', pg_id: 'demo-pg-2', shift: 'MORNING', status: 'ACTIVE' },
+  { id: 'demo-worker-4', name: 'Geeta', role: 'MANAGER', phone: '+91 98765 60004', pg_id: 'demo-pg-3', shift: 'MORNING', status: 'ACTIVE' },
+  { id: 'demo-worker-5', name: 'Ravi', role: 'MAINTENANCE', phone: '+91 98765 60005', pg_id: 'demo-pg-4', shift: 'EVENING', status: 'ACTIVE' },
+];
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
@@ -18,7 +26,12 @@ export async function GET(request: NextRequest) {
 
     const { data: workers, error } = await query;
     if (error) {
-      if (isTableMissing(error)) return NextResponse.json([]);
+      if (isTableMissing(error)) {
+        let filtered = [...DEMO_WORKERS];
+        if (pgId) filtered = filtered.filter((w) => w.pg_id === pgId);
+        if (role) filtered = filtered.filter((w) => w.role === role);
+        return NextResponse.json(filtered);
+      }
       throw error;
     }
 

@@ -47,6 +47,7 @@ import SafeUsePage from '@/components/stayease/policy/safe-use-page';
 import AboutPage from '@/components/stayease/policy/about-page';
 import HelpPage from '@/components/stayease/policy/help-page';
 import OwnerGuide from '@/components/stayease/owner/owner-guide';
+import NotificationsPanel from '@/components/stayease/notifications-panel';
 import CursorFollower from '@/components/ui/cursor-follower';
 import DatabaseSetupV2 from '@/components/stayease/setup/database-setup-v2';
 
@@ -186,9 +187,9 @@ function TopHeader() {
           {isLoggedIn ? (
             <>
               {/* Logged-in: notifications, profile, logout */}
-              <Button variant="ghost" size="icon" className="relative hidden sm:flex">
-                <Bell className="size-5 text-muted-foreground" />
-              </Button>
+              <div className="hidden sm:flex">
+                <NotificationsPanel />
+              </div>
               <button onClick={() => setCurrentView('PROFILE')}>
                 <Avatar className="size-8 cursor-pointer">
                   <AvatarImage src={currentUser?.avatar} alt={currentUser?.name} />

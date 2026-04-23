@@ -2,6 +2,12 @@ import { supabase, isTableMissing } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/api-auth';
 
+const DEMO_BOOKINGS = [
+  { id: 'demo-booking-1', user_id: 'demo-tenant-001', pg_id: 'demo-pg-1', bed_id: 'demo-bed-2', check_in_date: '2025-01-15', advance_paid: 8500, status: 'ACTIVE', created_at: '2025-01-15T10:00:00Z', user: { id: 'demo-tenant-001', name: 'Rahul Sharma', email: 'rahul.sharma@example.com', phone: '+91 98765 43210', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Rahul' }, pg: { id: 'demo-pg-1', name: 'CozyStay PG', address: '42, 4th Cross, Koramangala', city: 'Bangalore', images: 'https://images.unsplash.com/photo-1522771739844-6a9f6d5f14af?w=600&h=400&fit=crop' }, bed: { id: 'demo-bed-2', bed_number: 2, status: 'OCCUPIED', room: { room_code: 'A101', room_type: 'DOUBLE', floor: 1 } } },
+  { id: 'demo-booking-2', user_id: 'demo-tenant-002', pg_id: 'demo-pg-3', bed_id: 'demo-bed-11', check_in_date: '2025-02-01', advance_paid: 9000, status: 'ACTIVE', created_at: '2025-02-01T10:00:00Z', user: { id: 'demo-tenant-002', name: 'Priya M.', email: 'priya.m@example.com', phone: '+91 98765 43213', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Priya' }, pg: { id: 'demo-pg-3', name: 'Sunrise Ladies PG', address: '78, Indiranagar 2nd Stage', city: 'Bangalore', images: 'https://images.unsplash.com/photo-1578683010236-d716f9a3f461?w=600&h=400&fit=crop' }, bed: { id: 'demo-bed-11', bed_number: 1, status: 'OCCUPIED', room: { room_code: 'C102', room_type: 'DOUBLE', floor: 1 } } },
+  { id: 'demo-booking-3', user_id: 'demo-tenant-003', pg_id: 'demo-pg-2', bed_id: 'demo-bed-6', check_in_date: '2024-12-01', advance_paid: 7000, status: 'ACTIVE', created_at: '2024-12-01T10:00:00Z', user: { id: 'demo-tenant-003', name: 'Arjun K.', email: 'arjun.k@example.com', phone: '+91 98765 43214', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Arjun' }, pg: { id: 'demo-pg-2', name: 'Green Valley PG', address: '15, HSR Layout Sector 2', city: 'Bangalore', images: 'https://images.unsplash.com/photo-1555854877-bab0e564b8d5?w=600&h=400&fit=crop' }, bed: { id: 'demo-bed-6', bed_number: 1, status: 'OCCUPIED', room: { room_code: 'B201', room_type: 'DORMITORY', floor: 2 } } },
+];
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -22,7 +28,21 @@ export async function GET(request: NextRequest) {
 
     const { data: bookings, error } = await query;
     if (error) {
-      if (isTableMissing(error)) return NextResponse.json([]);
+      if (isTableMissing(error)) {
+        let filtered = [...DEMO_BOOKINGS];
+        if (userId) filtered = filtered.filter((b) => b.user_id === userId);
+        if (pgId) filtered = filtered.filter((b) => b.pg_id === pgId);
+        const formatted = filtered.map((b) => ({
+          ...b,
+          pg: b.pg
+            ? {
+                ...b.pg,
+                images: b.pg.images ? b.pg.images.split(',').filter(Boolean) : [],
+              }
+            : undefined,
+        }));
+        return NextResponse.json(formatted);
+      }
       throw error;
     }
 

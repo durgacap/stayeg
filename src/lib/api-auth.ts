@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { UserRole, User } from '@/lib/types';
-import { supabase } from '@/lib/supabase';
+import { supabase, isTableMissing } from '@/lib/supabase';
 
 // ============================
 // Session helpers (client-side localStorage)
@@ -122,6 +122,18 @@ export async function requireSession(
     .single();
 
   if (error || !user) {
+    // If Supabase tables don't exist (demo mode), create a demo user
+    if (error && isTableMissing(error)) {
+      return {
+        user: {
+          id: `demo-${Date.now()}`,
+          email: userEmail,
+          role: 'TENANT',
+          is_verified: false,
+        },
+      };
+    }
+
     return {
       error: NextResponse.json(
         { error: 'Authentication failed: user not found' },

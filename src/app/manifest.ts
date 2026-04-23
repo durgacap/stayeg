@@ -2,14 +2,14 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "StayEg — India's Most Trusted PG Platform",
+    name: "StayEg - PG Accommodation Finder",
     short_name: "StayEg",
     description:
-      "Find, book, and manage verified PG accommodations across 20+ Indian cities. Zero brokerage, instant booking.",
+      "Find and book PG accommodations across India",
     start_url: "/",
     display: "standalone",
     background_color: "#FFFFFF",
-    theme_color: "#2563EB",
+    theme_color: "#1D4ED8",
     orientation: "portrait-primary",
     scope: "/",
     categories: ["real estate", "lifestyle", "business"],

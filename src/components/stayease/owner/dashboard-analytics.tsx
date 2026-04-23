@@ -26,7 +26,7 @@ export default function OwnerDashboard() {
       const res = await fetch('/api/auth?role=OWNER');
       if (!res.ok) throw new Error('Failed to fetch owner');
       const users = await res.json();
-      return users[0] || null;
+      return (Array.isArray(users) ? users : users.users)?.[0] || null;
     },
   });
 
