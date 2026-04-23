@@ -8,46 +8,50 @@ import { useAppStore } from '@/store/use-app-store';
 import type { AppView } from '@/lib/types';
 import { slideUp, hoverScale, tapScale } from '@/lib/animations';
 
-const footerSections = [
+const FOOTER_SECTIONS = [
   {
     title: 'For Tenants',
     links: [
-      { label: 'Find PGs', view: 'PG_LISTING' as const },
-      { label: 'Explore Cities', view: 'LANDING' as const },
-      { label: 'Community', view: 'COMMUNITY' as const },
-      { label: 'Pricing', view: 'PRICING' as const },
+      { label: 'Find PGs', view: 'PG_LISTING' as AppView },
+      { label: 'Explore Cities', view: 'LANDING' as AppView },
+      { label: 'Community', view: 'COMMUNITY' as AppView },
+      { label: 'How It Works', view: 'HOW_IT_WORKS' as AppView },
+      { label: 'Pricing', view: 'PRICING' as AppView },
     ],
   },
   {
     title: 'For PG Owners',
     links: [
-      { label: 'List Your PG', view: 'PRICING' as const },
-      { label: 'Pricing Plans', view: 'PRICING' as const },
-      { label: 'Owner Dashboard', view: 'OWNER_DASHBOARD' as const, authRequired: true as const, roleRequired: 'OWNER' as const },
-      { label: 'Free 1 Year Offer', view: 'PRICING' as const },
+      { label: 'List Your PG', view: 'PRICING' as AppView },
+      { label: 'Pricing Plans', view: 'PRICING' as AppView },
+      { label: 'Owner Dashboard', view: 'OWNER_DASHBOARD' as AppView, authRequired: true as const, roleRequired: 'OWNER' as const },
+      { label: 'Free 1 Year Offer', view: 'PRICING' as AppView },
     ],
   },
   {
     title: 'For Vendors',
     links: [
-      { label: 'Register as Vendor', view: 'SIGNUP' as const },
-      { label: 'List Services', view: 'SIGNUP' as const },
-      { label: 'Get Verified', view: 'SIGNUP' as const },
+      { label: 'Register as Vendor', view: 'SIGNUP' as AppView },
+      { label: 'List Services', view: 'SIGNUP' as AppView },
+      { label: 'Get Verified', view: 'SIGNUP' as AppView },
     ],
   },
   {
     title: 'Company',
     links: [
-      { label: 'About StayEg', view: 'ABOUT' as const },
-      { label: 'Help & Support', view: 'HELP' as const },
-      { label: 'Safe Use Guidelines', view: 'SAFE_USE' as const },
+      { label: 'About StayEg', view: 'ABOUT' as AppView },
+      { label: 'How It Works', view: 'HOW_IT_WORKS' as AppView },
+      { label: 'Contact Us', view: 'CONTACT' as AppView },
+      { label: 'Help & Support', view: 'HELP' as AppView },
+      { label: 'Safe Use Guidelines', view: 'SAFE_USE' as AppView },
     ],
   },
   {
     title: 'Legal',
     links: [
-      { label: 'Terms of Service', view: 'TERMS' as const },
-      { label: 'Privacy Policy', view: 'PRIVACY' as const },
+      { label: 'Terms of Service', view: 'TERMS' as AppView },
+      { label: 'Privacy Policy', view: 'PRIVACY' as AppView },
+      { label: 'Refund Policy', view: 'REFUND_POLICY' as AppView },
     ],
   },
 ];
@@ -124,7 +128,7 @@ export default function SiteFooter() {
           </div>
 
           {/* Link Columns */}
-          {footerSections.map((section) => (
+          {FOOTER_SECTIONS.map((section) => (
             <div key={section.title}>
               <h3 className="text-sm font-semibold text-white mb-4">{section.title}</h3>
               <ul className="space-y-2.5">

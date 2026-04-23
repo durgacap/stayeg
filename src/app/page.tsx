@@ -50,6 +50,12 @@ import OwnerGuide from '@/components/stayease/owner/owner-guide';
 import NotificationsPanel from '@/components/stayease/notifications-panel';
 import CursorFollower from '@/components/ui/cursor-follower';
 import DatabaseSetupV2 from '@/components/stayease/setup/database-setup-v2';
+import HowItWorksPage from '@/components/stayease/policy/how-it-works-page';
+import ContactPage from '@/components/stayease/policy/contact-page';
+import RefundPolicyPage from '@/components/stayease/policy/refund-policy-page';
+import TenantOnboarding from '@/components/stayease/guidance/tenant-onboarding';
+import TenantAIAssistant from '@/components/stayease/guidance/tenant-ai-assistant';
+import OwnerSetupWizard from '@/components/stayease/owner/setup-wizard';
 
 // Navigation items
 const PUBLIC_NAV = [
@@ -96,7 +102,7 @@ const OWNER_MOBILE_NAV = [
 ];
 
 const HIDE_HEADER_VIEWS = ['LOGIN', 'SIGNUP'] as const;
-const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'PROFILE', 'DATABASE_SETUP_V2'] as const;
+const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'PROFILE', 'DATABASE_SETUP_V2', 'HOW_IT_WORKS', 'CONTACT', 'REFUND_POLICY'] as const;
 
 function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV | typeof OWNER_MOBILE_NAV }) {
   const { currentView, setCurrentView } = useAppStore();
@@ -296,6 +302,8 @@ function TopHeader() {
                 <Separator className="my-2" />
                 <div className="px-3 space-y-1">
                   <button onClick={() => { setCurrentView('ABOUT'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">About StayEg</button>
+                  <button onClick={() => { setCurrentView('HOW_IT_WORKS'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">How It Works</button>
+                  <button onClick={() => { setCurrentView('CONTACT'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Contact Us</button>
                   <button onClick={() => { setCurrentView('HELP'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Help & Support</button>
                   {!isLoggedIn && (
                     <button onClick={() => { setCurrentView('DATABASE_SETUP_V2'); setMobileMenuOpen(false); }} className="block text-xs text-brand-teal hover:text-brand-teal/80 font-medium">
@@ -305,6 +313,7 @@ function TopHeader() {
                   <button onClick={() => { setCurrentView('TERMS'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Terms of Service</button>
                   <button onClick={() => { setCurrentView('PRIVACY'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Privacy Policy</button>
                   <button onClick={() => { setCurrentView('SAFE_USE'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Safe Use Guidelines</button>
+                  <button onClick={() => { setCurrentView('REFUND_POLICY'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Refund Policy</button>
                 </div>
               </div>
             </SheetContent>
@@ -334,6 +343,9 @@ function MainContent() {
     if (currentView === 'SAFE_USE') return <SafeUsePage />;
     if (currentView === 'ABOUT') return <AboutPage />;
     if (currentView === 'HELP') return <HelpPage />;
+    if (currentView === 'HOW_IT_WORKS') return <HowItWorksPage />;
+    if (currentView === 'CONTACT') return <ContactPage />;
+    if (currentView === 'REFUND_POLICY') return <RefundPolicyPage />;
 
     // Owner views
     if (currentRole === 'OWNER') {
@@ -416,6 +428,7 @@ function MainContent() {
         onOpenChange={() => { useAppStore.getState().setCurrentView('PG_DETAIL'); }}
       />
       {currentRole === 'OWNER' && <AIAssistant />}
+      {currentRole === 'TENANT' && <TenantAIAssistant />}
     </>
   );
 }
@@ -423,6 +436,7 @@ function MainContent() {
 export default function StayeGApp() {
   const { currentView, currentRole, isLoggedIn } = useAppStore();
   const [showOwnerGuide, setShowOwnerGuide] = useState(false);
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
 
   // Show owner guide when owner first reaches dashboard
   useEffect(() => {
@@ -438,10 +452,22 @@ export default function StayeGApp() {
   }, [isLoggedIn, currentRole, currentView]);
 
   const handleGuideClose = () => setShowOwnerGuide(false);
+  const handleSetupWizardClose = () => setShowSetupWizard(false);
+
+  // Show setup wizard for new owners with no PGs
+  useEffect(() => {
+    if (isLoggedIn && currentRole === 'OWNER' && currentView === 'OWNER_DASHBOARD') {
+      const hasSeenWizard = localStorage.getItem('stayeg_owner_setup_done');
+      if (!hasSeenWizard) {
+        const timer = setTimeout(() => setShowSetupWizard(true), 500);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isLoggedIn, currentRole, currentView]);
 
   const mobileNav = currentRole === 'OWNER' ? OWNER_MOBILE_NAV : TENANT_MOBILE_NAV;
   const hideMobileNav = (HIDE_MOBILE_NAV_VIEWS as readonly string[]).includes(currentView);
-  const FOOTER_VIEWS = ['LANDING', 'PG_LISTING', 'PRICING', 'COMMUNITY', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP'] as const;
+  const FOOTER_VIEWS = ['LANDING', 'PG_LISTING', 'PRICING', 'COMMUNITY', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'HOW_IT_WORKS', 'CONTACT', 'REFUND_POLICY'] as const;
   const showFooter = (FOOTER_VIEWS as readonly string[]).includes(currentView);
 
   return (
@@ -454,6 +480,8 @@ export default function StayeGApp() {
       {!hideMobileNav && <MobileNav items={mobileNav} />}
       <CursorFollower />
       <OwnerGuide open={showOwnerGuide} onClose={handleGuideClose} />
+      <TenantOnboarding />
+      <OwnerSetupWizard open={showSetupWizard} onClose={handleSetupWizardClose} />
     </div>
   );
 }

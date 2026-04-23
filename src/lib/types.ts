@@ -56,7 +56,12 @@ export type AppView =
   | 'PRIVACY'
   | 'SAFE_USE'
   | 'ABOUT'
-  | 'HELP';
+  | 'HELP'
+  | 'HOW_IT_WORKS'
+  | 'CONTACT'
+  | 'REFUND_POLICY'
+  // Owner
+  | 'OWNER_SETUP';
 
 export interface User {
   id: string;
@@ -268,4 +273,31 @@ export interface CommunityGroup {
   category: string;
   avatar?: string;
   isJoined: boolean;
+}
+
+export interface Review {
+  id: string;
+  pgId: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string;
+  rating: number;
+  comment: string;
+  cleanliness: number;
+  safety: number;
+  valueForMoney: number;
+  amenities: number;
+  management: number;
+  createdAt: string;
+}
+
+export interface Report {
+  id: string;
+  reporterId: string;
+  targetId: string;
+  targetType: 'PG' | 'USER' | 'REVIEW';
+  reason: string;
+  description: string;
+  status: 'PENDING' | 'REVIEWED' | 'RESOLVED';
+  createdAt: string;
 }

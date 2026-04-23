@@ -37,6 +37,7 @@ import {
   COMMUNITY_CATEGORIES,
 } from '@/lib/constants';
 import type { CommunityPost, CommunityGroup } from '@/lib/types';
+import ComingSoonSection from '@/components/stayease/community/coming-soon-section';
 
 // ─── Helpers ───────────────────────────────────────────────
 function timeAgo(dateStr: string): string {
@@ -646,6 +647,12 @@ export default function CommunityPage() {
               >
                 My Groups
               </TabsTrigger>
+              <TabsTrigger
+                value="coming-soon"
+                className="rounded-lg px-4 py-2 text-sm font-medium data-[state=active]:bg-card data-[state=active]:shadow-sm data-[state=active]:text-brand-teal"
+              >
+                ✨ Coming Soon
+              </TabsTrigger>
             </TabsList>
             <div className="text-xs text-muted-foreground hidden sm:flex items-center gap-1">
               <TrendingUp className="size-3.5" />
@@ -809,6 +816,11 @@ export default function CommunityPage() {
                 </div>
               </>
             )}
+          </TabsContent>
+
+          {/* ── Coming Soon Tab ─────────────────────────── */}
+          <TabsContent value="coming-soon">
+            <ComingSoonSection />
           </TabsContent>
         </Tabs>
       </div>
