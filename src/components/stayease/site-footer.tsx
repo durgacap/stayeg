@@ -23,7 +23,7 @@ const footerSections = [
     links: [
       { label: 'List Your PG', view: 'PRICING' as const },
       { label: 'Pricing Plans', view: 'PRICING' as const },
-      { label: 'Owner Dashboard', view: 'OWNER_DASHBOARD' as const, authRequired: true as const },
+      { label: 'Owner Dashboard', view: 'OWNER_DASHBOARD' as const, authRequired: true as const, roleRequired: 'OWNER' as const },
       { label: 'Free 1 Year Offer', view: 'PRICING' as const },
     ],
   },
@@ -57,10 +57,15 @@ export default function SiteFooter() {
   const footerRef = useRef<HTMLElement>(null);
   const isInView = useInView(footerRef, { once: true, margin: '-80px' });
 
-  const handleLinkClick = (view: AppView, authRequired?: boolean) => {
+  const handleLinkClick = (view: AppView, authRequired?: boolean, roleRequired?: string) => {
     if (authRequired && !isLoggedIn) {
       setCurrentView('LOGIN');
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+    if (roleRequired && currentRole !== roleRequired) {
+      const { showToast } = useAppStore.getState();
+      showToast('Access restricted to PG Owners');
       return;
     }
     setCurrentView(view);
@@ -126,7 +131,7 @@ export default function SiteFooter() {
                 {section.links.map((link) => (
                   <li key={link.label}>
                     <button
-                      onClick={() => handleLinkClick(link.view, 'authRequired' in link ? link.authRequired : undefined)}
+                      onClick={() => handleLinkClick(link.view, 'authRequired' in link ? link.authRequired : undefined, 'roleRequired' in link ? link.roleRequired : undefined)}
                       className="text-sm text-gray-500 hover:text-brand-teal transition-colors"
                     >
                       {link.label}
