@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Check,
@@ -28,6 +28,7 @@ import {
   Ticket,
   LogIn,
   Sparkles,
+  Zap,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import {
@@ -76,6 +77,8 @@ const PAYMENT_OPTIONS: { value: PaymentMethod; label: string; icon: React.Elemen
   { value: 'WALLET', label: 'Wallet', icon: Wallet },
 ];
 
+const RAZORPAY_SCRIPT_URL = 'https://checkout.razorpay.com/v1/checkout.js';
+
 const BANKS = [
   'SBI', 'HDFC Bank', 'ICICI Bank', 'Axis Bank', 'Kotak Mahindra',
   'Punjab National Bank', 'Bank of Baroda', 'Canara Bank', 'Union Bank', 'IndusInd Bank',
@@ -121,7 +124,8 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
   const [couponError, setCouponError] = useState('');
   const [couponDiscount, setCouponDiscount] = useState(0);
   const [copiedCoupon, setCopiedCoupon] = useState<string | null>(null);
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('UPI');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>('RAZORPAY');
+  const [razorpayLoading, setRazorpayLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [formData, setFormData] = useState({
@@ -310,6 +314,134 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
       setError(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setIsSubmitting(false);
+    }
+  };
+
+  // Razorpay checkout handler
+  const openRazorpayCheckout = (options: Record<string, unknown>) => {
+    const rzp = new (window as unknown as { Razorpay: new (o: Record<string, unknown>) => { open: () => void } }).Razorpay(options);
+    rzp.open();
+  };
+
+  const handleRazorpayPay = async () => {
+    if (!selectedPG || !selectedBed || !currentUser || !checkInDate) return;
+    if (!formData.agreedToTerms) {
+      setError('Please agree to the terms and conditions.');
+      return;
+    }
+
+    setRazorpayLoading(true);
+    setError(null);
+
+    try {
+      // Step 1: Create Razorpay order
+      const orderRes = await authFetch('/api/payments/razorpay', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          amount: totalAmount,
+          userId: currentUser.id,
+          pgId: selectedPG.id,
+          bedId: selectedBed.id,
+          type: 'ADVANCE',
+          userName: formData.name,
+          userEmail: formData.email,
+          userPhone: formData.phone,
+        }),
+      });
+
+      const orderData = await orderRes.json();
+      if (!orderRes.ok) {
+        throw new Error(orderData.error || 'Failed to create payment order');
+      }
+
+      // Step 2: Define checkout options
+      const rzpOptions: Record<string, unknown> = {
+        key: orderData.key,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: orderData.name,
+        description: orderData.description,
+        order_id: orderData.orderId,
+        handler: async (response: { razorpay_payment_id: string; razorpay_order_id: string; razorpay_signature: string }) => {
+          // Step 3: Verify payment with backend
+          try {
+            const verifyRes = await authFetch('/api/payments/verify', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                razorpayOrderId: response.razorpay_order_id,
+                razorpayPaymentId: response.razorpay_payment_id,
+                razorpaySignature: response.razorpay_signature,
+                userId: currentUser!.id,
+                pgId: selectedPG!.id,
+                amount: totalAmount,
+                type: 'ADVANCE',
+              }),
+            });
+
+            if (!verifyRes.ok) {
+              throw new Error('Payment verification failed');
+            }
+
+            // Step 4: Create the booking after successful payment
+            const res = await authFetch('/api/bookings', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                userId: currentUser!.id,
+                pgId: selectedPG!.id,
+                bedId: selectedBed!.id,
+                checkInDate: format(checkInDate!, 'yyyy-MM-dd'),
+                advancePaid: totalAmount,
+                couponCode: appliedCoupon,
+                discount: couponDiscount,
+                paymentMethod: 'RAZORPAY',
+                images: uploadedImages,
+              }),
+            });
+
+            if (!res.ok) {
+              const data = await res.json();
+              throw new Error(data.error || 'Booking failed after payment');
+            }
+
+            showToast('Payment successful! Booking confirmed.');
+            setStep(4); // success
+          } catch (err: unknown) {
+            setError(err instanceof Error ? err.message : 'Payment was received but booking failed. Please contact support.');
+          }
+        },
+        prefill: orderData.prefill,
+        theme: orderData.theme,
+        modal: {
+          ondismiss: () => {
+            showToast('Payment cancelled');
+          },
+        },
+      };
+
+      // Step 5: Load Razorpay script and open checkout
+      if (!(window as unknown as Record<string, unknown>).Razorpay) {
+        const script = document.createElement('script');
+        script.src = RAZORPAY_SCRIPT_URL;
+        script.async = true;
+        script.onload = () => {
+          openRazorpayCheckout(rzpOptions);
+          setRazorpayLoading(false);
+        };
+        script.onerror = () => {
+          setError('Failed to load payment gateway. Please try again.');
+          setRazorpayLoading(false);
+        };
+        document.body.appendChild(script);
+      } else {
+        openRazorpayCheckout(rzpOptions);
+        setRazorpayLoading(false);
+      }
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Payment failed. Please try again.');
+      setRazorpayLoading(false);
     }
   };
 
@@ -992,6 +1124,40 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                       <CreditCard className="size-4" />
                       Payment Method
                     </Label>
+
+                    {/* Razorpay - Recommended */}
+                    <button
+                      onClick={() => setPaymentMethod('RAZORPAY')}
+                      className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl border-2 transition-all ${
+                        paymentMethod === 'RAZORPAY'
+                          ? 'border-brand-teal/50 bg-brand-teal/10'
+                          : 'border-border bg-card hover:border-brand-teal/20 hover:bg-brand-teal/5'
+                      }`}
+                    >
+                      <div className="size-9 rounded-lg bg-brand-teal/15 flex items-center justify-center shrink-0">
+                        <Zap className="size-5 text-brand-teal" />
+                      </div>
+                      <div className="flex-1 text-left">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-foreground">Pay with Razorpay</span>
+                          <Badge className="text-[10px] px-1.5 py-0 bg-brand-teal/20 text-brand-teal border-0">Recommended</Badge>
+                        </div>
+                        <span className="text-xs text-muted-foreground">Cards, UPI, Net Banking & Wallets — 100% secure</span>
+                      </div>
+                      <div className={`size-5 rounded-full border-2 flex items-center justify-center shrink-0 ${
+                        paymentMethod === 'RAZORPAY' ? 'border-brand-teal bg-brand-teal' : 'border-muted-foreground/30'
+                      }`}>
+                        {paymentMethod === 'RAZORPAY' && <Check className="size-3 text-white" />}
+                      </div>
+                    </button>
+
+                    {/* Divider */}
+                    <div className="flex items-center gap-3">
+                      <div className="flex-1 h-px bg-border" />
+                      <span className="text-xs text-muted-foreground">or pay directly</span>
+                      <div className="flex-1 h-px bg-border" />
+                    </div>
+
                     <div className="flex flex-wrap gap-2">
                       {PAYMENT_OPTIONS.map((opt) => {
                         const Icon = opt.icon;
@@ -1014,6 +1180,39 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
 
                     {/* Payment Method Specific Inputs */}
                     <AnimatePresence mode="wait">
+                      {paymentMethod === 'RAZORPAY' && (
+                        <motion.div
+                          key="razorpay-info"
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="space-y-2 bg-brand-teal/5 border border-brand-teal/20 rounded-xl p-4 overflow-hidden"
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className="size-8 rounded-lg bg-brand-teal/15 flex items-center justify-center shrink-0 mt-0.5">
+                              <Zap className="size-4 text-brand-teal" />
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-sm font-medium text-foreground">Secure Checkout by Razorpay</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                Click &quot;Pay with Razorpay&quot; below to open the secure payment window. 
+                                You can pay using Credit/Debit Card, UPI, Net Banking, or Wallet.
+                              </p>
+                              <div className="flex items-center gap-3 mt-2">
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Shield className="size-3" />
+                                  256-bit SSL
+                                </div>
+                                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                                  <Check className="size-3" />
+                                  PCI DSS Compliant
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      )}
+
                       {(paymentMethod === 'CREDIT_CARD' || paymentMethod === 'DEBIT_CARD') && (
                         <motion.div
                           key="card-inputs"
@@ -1199,6 +1398,26 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                         <>Confirm & Pay ₹{totalAmount.toLocaleString('en-IN')}</>
                       )}
                     </Button>
+                    {paymentMethod === 'RAZORPAY' && (
+                      <Button
+                        onClick={handleRazorpayPay}
+                        disabled={razorpayLoading || !formData.agreedToTerms}
+                        className="flex-1 bg-gradient-to-r from-brand-teal to-brand-lime hover:from-brand-teal/90 hover:to-brand-lime/90 text-white h-11"
+                      >
+                        {razorpayLoading ? (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                            className="size-5 border-2 border-white/30 border-t-white rounded-full"
+                          />
+                        ) : (
+                          <>
+                            <Zap className="size-4 mr-1.5" />
+                            Pay ₹{totalAmount.toLocaleString('en-IN')} with Razorpay
+                          </>
+                        )}
+                      </Button>
+                    )}
                   </div>
                 </motion.div>
               )}

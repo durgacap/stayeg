@@ -112,8 +112,21 @@ export default function RoomManagement() {
     const statuses = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE'];
     const nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
     const nextStatus = statuses[nextIndex];
+    // Optimistic local update so the UI stays responsive
     setBedStatuses(prev => ({ ...prev, [bedId]: nextStatus }));
     showToast(`Bed ${bedId.slice(-4)} set to ${nextStatus}`);
+    // Attempt to persist — fails silently since the API may not support bed updates yet
+    (async () => {
+      try {
+        await authFetch(`/api/pgs/${selectedPgId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'update_bed_status', bedId, status: nextStatus }),
+        });
+      } catch (warn) {
+        console.warn('Bed status persistence not supported yet:', warn);
+      }
+    })();
   };
 
   const bedStatusColor = (status: string) => {

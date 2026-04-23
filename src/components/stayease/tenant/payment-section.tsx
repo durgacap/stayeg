@@ -247,8 +247,55 @@ export default function PaymentSection() {
     });
   };
 
-  const handleDownloadReceipt = (paymentId: string) => {
-    showToast('Receipt download started');
+  const handleDownloadReceipt = (payment: Payment) => {
+    const receipt = `
+╔══════════════════════════════════════╗
+║         STAYEG PAYMENT RECEIPT       ║
+╠══════════════════════════════════════╣
+║ Receipt No: PAY-${payment.id?.slice(0, 8).toUpperCase()}
+║ Date: ${payment.paidDate || new Date().toISOString()}
+║ Status: ${payment.status}
+║                                      ║
+║ Amount: ₹${payment.amount?.toLocaleString('en-IN')}
+║ Type: ${payment.type}
+║ Method: ${payment.method || 'Online'}
+║${payment.couponCode ? `║ Coupon: ${payment.couponCode} (-₹${payment.discount || 0})` : ''}
+║${payment.pg ? `║ PG: ${payment.pg.name}` : ''}
+╚══════════════════════════════════════╝
+  `.trim();
+    const blob = new Blob([receipt], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `StayEg_Receipt_${payment.id?.slice(0, 8)}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    showToast('Receipt downloaded!');
+  };
+
+  const handleRetryPayment = async (payment: Payment) => {
+    setPayingId(payment.id);
+    try {
+      const res = await authFetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser?.id,
+          pgId: payment.pgId,
+          bookingId: payment.bookingId,
+          amount: payment.amount,
+          type: payment.type,
+          status: 'PENDING',
+        }),
+      });
+      if (!res.ok) throw new Error('Retry failed');
+      queryClient.invalidateQueries({ queryKey: ['payments'] });
+      showToast('Payment retry initiated successfully!');
+    } catch {
+      showToast('Payment retry failed. Please try again.');
+    } finally {
+      setPayingId(null);
+    }
   };
 
   const handleAddPaymentMethod = () => {
@@ -514,7 +561,7 @@ export default function PaymentSection() {
                                     <Button
                                       variant="ghost"
                                       size="sm"
-                                      onClick={() => handleDownloadReceipt(payment.id)}
+                                      onClick={() => handleDownloadReceipt(payment)}
                                       className="h-7 text-xs text-muted-foreground hover:text-brand-teal"
                                     >
                                       <Download className="size-3 mr-1" />
@@ -570,7 +617,7 @@ export default function PaymentSection() {
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    onClick={() => handleDownloadReceipt(payment.id)}
+                                    onClick={() => handleDownloadReceipt(payment)}
                                     className="h-6 w-6 p-0 text-muted-foreground"
                                   >
                                     <Download className="size-3.5" />
@@ -734,7 +781,7 @@ export default function PaymentSection() {
                                 <Button
                                   size="sm"
                                   variant="outline"
-                                  onClick={() => handlePayNow(payment)}
+                                  onClick={() => handleRetryPayment(payment)}
                                   disabled={payingId === payment.id}
                                   className="text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
                                 >

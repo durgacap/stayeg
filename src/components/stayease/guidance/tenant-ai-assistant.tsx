@@ -4,12 +4,11 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageSquare, X, Send, Bot, User, Sparkles, Search,
-  CreditCard, AlertCircle,
+  CreditCard, AlertCircle, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useAppStore } from '@/store/use-app-store';
-import { BADGE_BORDER } from '@/lib/constants';
 
 interface Message {
   id: string;
@@ -58,6 +57,7 @@ export default function TenantAIAssistant() {
     },
   ]);
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -107,19 +107,24 @@ export default function TenantAIAssistant() {
     setMessages((prev) => [...prev, userMsg]);
     setInput('');
 
+    const userQuery = input.trim();
+    setIsTyping(true);
+
     setTimeout(() => {
-      const response = getAIResponse(input.trim());
-      const aiMsg: Message = {
-        id: `ai-${Date.now()}`,
-        role: 'assistant',
-        content: response,
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, aiMsg]);
-    }, 1000);
+      getAIResponse(userQuery).then((response) => {
+        setIsTyping(false);
+        const aiMsg: Message = {
+          id: `ai-${Date.now()}`,
+          role: 'assistant',
+          content: response,
+          timestamp: new Date(),
+        };
+        setMessages((prev) => [...prev, aiMsg]);
+      });
+    }, 600);
   };
 
-  const getAIResponse = (query: string): string => {
+  const getFallbackResponse = (query: string): string => {
     const q = query.toLowerCase();
     if (
       q.includes('pg') ||
@@ -166,6 +171,24 @@ export default function TenantAIAssistant() {
     )
       return "Join the StayEg community! 🤝\n\nYou can:\n• Find roommates in your area\n• Join interest-based groups\n• Share tips and recommendations\n• Discover nearby events\n\nCheck out the Community section to get started!";
     return DEFAULT_RESPONSE;
+  };
+
+  const getAIResponse = async (question: string): Promise<string> => {
+    try {
+      const res = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: question,
+          context: 'Tenant',
+        }),
+      });
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.reply || "I'm sorry, I couldn't process that. Please try again.";
+    } catch {
+      return getFallbackResponse(question);
+    }
   };
 
   return (
@@ -222,15 +245,15 @@ export default function TenantAIAssistant() {
               </Button>
             </div>
 
-            {/* Demo Badge */}
-            <div className="px-4 pt-3 shrink-0">
-              <div
-                className={`flex items-center justify-center gap-1.5 ${BADGE_BORDER.amber} rounded-lg px-3 py-1.5 text-xs font-medium`}
-              >
-                <Sparkles className="size-3" />
-                Tenant Assistant (Demo Mode)
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="px-4 pt-3 shrink-0">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="size-3.5 animate-spin text-brand-teal" />
+                  <span>Thinking...</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">

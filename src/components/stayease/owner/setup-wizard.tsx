@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, BedDouble, Users, ArrowRight, ArrowLeft, Plus, X, Check,
-  ChevronRight, Sparkles, Crown, Zap, Star,
+  ChevronRight, Sparkles, Crown, Zap, Star, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +22,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { CITIES, AMENITIES_LIST, PRICING_PLANS } from '@/lib/constants';
 import type { RoomType, WorkerRole, WorkerShift } from '@/lib/types';
 
@@ -826,9 +827,10 @@ export default function OwnerSetupWizard({
   open: boolean;
   onClose: () => void;
 }) {
-  const { setCurrentView } = useAppStore();
+  const { setCurrentView, currentUser, showToast } = useAppStore();
   const [step, setStep] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Form state
   const [pgData, setPgData] = useState<PGFormData>({
@@ -912,17 +914,46 @@ export default function OwnerSetupWizard({
     }
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (!validateStep(step)) return;
     if (step < 2) {
       setStep((s) => s + 1);
     } else {
-      setShowSuccess(true);
-      setTimeout(() => {
-        setCurrentView('OWNER_DASHBOARD');
-        resetState();
-        onClose();
-      }, 3000);
+      // Step 2 (final): persist PG data to backend
+      setIsSubmitting(true);
+      try {
+        const payload = {
+          name: pgData.name,
+          ownerId: currentUser?.id,
+          description: pgData.description,
+          address: pgData.address,
+          city: pgData.city,
+          gender: pgData.gender,
+          price: Number(pgData.monthlyRent) || 0,
+          securityDeposit: Number(pgData.securityDeposit) || 0,
+          amenities: pgData.amenities,
+          images: [],
+        };
+        const res = await authFetch('/api/pgs', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        if (!res.ok) {
+          const errBody = await res.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(errBody.error || 'Failed to create PG');
+        }
+        setShowSuccess(true);
+        setTimeout(() => {
+          setCurrentView('OWNER_DASHBOARD');
+          resetState();
+          onClose();
+        }, 3000);
+      } catch (err) {
+        showToast(err instanceof Error ? err.message : 'Failed to save PG. Please try again.');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -1059,14 +1090,18 @@ export default function OwnerSetupWizard({
 
             <Button
               onClick={handleNext}
-              disabled={!validateStep(step)}
+              disabled={!validateStep(step) || isSubmitting}
               className="bg-gradient-to-r from-brand-deep to-brand-teal text-white hover:opacity-90 min-w-[120px]"
             >
               {step === 2 ? (
-                <>
-                  Complete Setup
-                  <Sparkles className="size-4 ml-1" />
-                </>
+                isSubmitting ? (
+                  <Loader2 className="size-4 mr-1 animate-spin" />
+                ) : (
+                  <>
+                    Complete Setup
+                    <Sparkles className="size-4 ml-1" />
+                  </>
+                )
               ) : (
                 <>
                   Next

@@ -315,7 +315,7 @@ function TopHeader() {
 }
 
 function MainContent() {
-  const { currentView, currentRole, setCurrentView } = useAppStore();
+  const { currentView, currentRole, setCurrentView, isLoggedIn } = useAppStore();
   const bookingModalOpen = currentView === 'BOOKING';
 
   const renderView = () => {
@@ -336,6 +336,31 @@ function MainContent() {
     if (currentView === 'HOW_IT_WORKS') return <HowItWorksPage />;
     if (currentView === 'CONTACT') return <ContactPage />;
     if (currentView === 'REFUND_POLICY') return <RefundPolicyPage />;
+
+    // Route protection: redirect unauthenticated users from protected views
+    const PROTECTED_VIEWS = new Set(['BOOKING', 'MY_BOOKINGS', 'PAYMENTS', 'COMPLAINTS', 'NEARBY', 'PROFILE', 'OWNER_DASHBOARD', 'OWNER_PGS', 'OWNER_ROOMS', 'OWNER_TENANTS', 'OWNER_RENT', 'OWNER_VENDORS', 'OWNER_WORKERS', 'OWNER_COMPLAINTS', 'ADMIN_DASHBOARD', 'ADMIN_VERIFICATION', 'ADMIN_USERS']);
+
+    if (!isLoggedIn && PROTECTED_VIEWS.has(currentView)) {
+      return (
+        <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
+          <div className="size-16 rounded-full bg-brand-teal/10 flex items-center justify-center mb-4">
+            <LogIn className="size-8 text-brand-teal" />
+          </div>
+          <h2 className="text-xl font-bold text-foreground mb-2">Login Required</h2>
+          <p className="text-sm text-muted-foreground max-w-md mb-6">
+            Please sign in to access this feature.
+          </p>
+          <div className="flex gap-3">
+            <Button variant="outline" onClick={() => setCurrentView('LANDING')}>
+              Back to Home
+            </Button>
+            <Button onClick={() => setCurrentView('LOGIN')} className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white">
+              Sign In
+            </Button>
+          </div>
+        </div>
+      );
+    }
 
     // Owner views
     if (currentRole === 'OWNER') {

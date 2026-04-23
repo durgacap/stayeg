@@ -79,6 +79,39 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Prevent double booking: check if bed is already occupied
+    const { data: existingBed, error: bedCheckError } = await supabase
+      .from('beds')
+      .select('status')
+      .eq('id', bedId)
+      .single();
+
+    if (bedCheckError) throw bedCheckError;
+
+    if (existingBed && existingBed.status === 'OCCUPIED') {
+      return NextResponse.json(
+        { error: 'This bed is already booked. Please select another bed.' },
+        { status: 409 }
+      );
+    }
+
+    // Check for any active booking on this bed
+    const { data: activeBooking, error: activeCheckError } = await supabase
+      .from('bookings')
+      .select('id')
+      .eq('bed_id', bedId)
+      .in('status', ['PENDING', 'CONFIRMED', 'ACTIVE'])
+      .maybeSingle();
+
+    if (activeCheckError) throw activeCheckError;
+
+    if (activeBooking) {
+      return NextResponse.json(
+        { error: 'This bed already has an active booking. Please select another bed.' },
+        { status: 409 }
+      );
+    }
+
     // Create booking first
     const { data: booking, error: bookingError } = await supabase
       .from('bookings')

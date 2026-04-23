@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Bell,
@@ -12,12 +12,16 @@ import {
   UserCheck,
   IndianRupee,
   Wifi,
+  CalendarDays,
+  MessageSquare,
+  TrendingUp,
   type LucideIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Separator } from '@/components/ui/separator';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Popover,
   PopoverTrigger,
@@ -33,6 +37,27 @@ interface Notification {
   description: string;
   time: string;
   read: boolean;
+}
+
+// formatTimeAgo helper: converts ISO date strings to relative time
+function formatTimeAgo(dateStr: string): string {
+  if (!dateStr) return 'Just now';
+  const now = new Date();
+  const date = new Date(dateStr);
+  const diffMs = now.getTime() - date.getTime();
+  const diffSecs = Math.floor(diffMs / 1000);
+  const diffMins = Math.floor(diffSecs / 60);
+  const diffHours = Math.floor(diffMins / 60);
+  const diffDays = Math.floor(diffHours / 24);
+  const diffWeeks = Math.floor(diffDays / 7);
+  const diffMonths = Math.floor(diffDays / 30);
+
+  if (diffSecs < 60) return 'Just now';
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffWeeks < 5) return `${diffWeeks}w ago`;
+  return `${diffMonths}mo ago`;
 }
 
 const TENANT_NOTIFICATIONS: Notification[] = [
@@ -114,11 +139,223 @@ const OWNER_NOTIFICATIONS: Notification[] = [
 ];
 
 export default function NotificationsPanel() {
-  const { currentRole } = useAppStore();
+  const { currentRole, isLoggedIn, currentUser } = useAppStore();
   const [notifications, setNotifications] = useState<Notification[]>(
     currentRole === 'OWNER' ? OWNER_NOTIFICATIONS : TENANT_NOTIFICATIONS
   );
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchNotifications = useCallback(async () => {
+    if (!isLoggedIn || !currentUser?.id) return;
+
+    setIsLoading(true);
+    try {
+      const [bookingsRes, paymentsRes, complaintsRes] = await Promise.allSettled([
+        fetch(`/api/bookings?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
+        fetch(`/api/payments?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
+        fetch(`/api/complaints?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
+      ]);
+
+      const bookings = bookingsRes.status === 'fulfilled' ? (bookingsRes.value as any[]) : [];
+      const payments = paymentsRes.status === 'fulfilled' ? (paymentsRes.value as any[]) : [];
+      const complaints = complaintsRes.status === 'fulfilled' ? (complaintsRes.value as any[]) : [];
+
+      const dynamicNotifs: Notification[] = [];
+
+      // Tenant notifications from bookings
+      if (currentRole === 'TENANT') {
+        bookings.forEach((booking: any) => {
+          const statusLabel =
+            booking.status === 'CONFIRMED'
+              ? 'Confirmed'
+              : booking.status === 'ACTIVE'
+                ? 'Active'
+                : booking.status === 'CANCELLED'
+                  ? 'Cancelled'
+                  : 'Pending';
+          dynamicNotifs.push({
+            id: `booking-${booking.id}`,
+            icon: CalendarDays,
+            iconColor: booking.status === 'CONFIRMED' || booking.status === 'ACTIVE' ? 'text-brand-teal' : 'text-amber-500',
+            title: `Booking ${statusLabel}`,
+            description: `Your booking at ${booking.pg?.name || 'PG'} is ${statusLabel.toLowerCase()}.`,
+            time: formatTimeAgo(booking.created_at || booking.createdAt),
+            read: false,
+          });
+        });
+
+        // Tenant notifications from payments
+        payments.forEach((payment: any) => {
+          if (payment.status === 'FAILED') {
+            dynamicNotifs.push({
+              id: `payment-failed-${payment.id}`,
+              icon: AlertTriangle,
+              iconColor: 'text-red-500',
+              title: `Payment Failed - ₹${payment.amount?.toLocaleString('en-IN') || '0'}`,
+              description: `Your ${payment.type?.replace('_', ' ') || 'rent'} payment at ${payment.pg?.name || 'PG'} failed. Please retry.`,
+              time: formatTimeAgo(payment.created_at || payment.paidDate || payment.createdAt),
+              read: false,
+            });
+          } else if (payment.status === 'COMPLETED') {
+            dynamicNotifs.push({
+              id: `payment-completed-${payment.id}`,
+              icon: IndianRupee,
+              iconColor: 'text-emerald-500',
+              title: `Payment Received - ₹${payment.amount?.toLocaleString('en-IN') || '0'}`,
+              description: `Your ${payment.type?.replace('_', ' ') || 'rent'} payment for ${payment.pg?.name || 'PG'} has been processed.`,
+              time: formatTimeAgo(payment.created_at || payment.paidDate || payment.createdAt),
+              read: true,
+            });
+          } else if (payment.status === 'PENDING') {
+            dynamicNotifs.push({
+              id: `payment-pending-${payment.id}`,
+              icon: CreditCard,
+              iconColor: 'text-amber-500',
+              title: `Payment Due - ₹${payment.amount?.toLocaleString('en-IN') || '0'}`,
+              description: `${payment.type?.replace('_', ' ') || 'Rent'} payment${payment.dueDate ? ` due on ${new Date(payment.dueDate).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}` : ''} for ${payment.pg?.name || 'PG'}.`,
+              time: formatTimeAgo(payment.created_at || payment.dueDate || payment.createdAt),
+              read: false,
+            });
+          }
+        });
+
+        // Tenant notifications from complaints
+        complaints.forEach((complaint: any) => {
+          const catIcon = complaint.category === 'MAINTENANCE' || complaint.category === 'CLEANLINESS' ? CheckCircle2 : MessageSquare;
+          const catColor =
+            complaint.status === 'RESOLVED' || complaint.status === 'CLOSED'
+              ? 'text-emerald-500'
+              : complaint.status === 'IN_PROGRESS'
+                ? 'text-amber-500'
+                : 'text-red-500';
+          const catTitle =
+            complaint.status === 'RESOLVED'
+              ? 'Resolved'
+              : complaint.status === 'CLOSED'
+                ? 'Closed'
+                : complaint.status === 'IN_PROGRESS'
+                  ? 'In Progress'
+                  : 'New';
+          dynamicNotifs.push({
+            id: `complaint-${complaint.id}`,
+            icon: catIcon,
+            iconColor: catColor,
+            title: `Complaint ${catTitle}: ${complaint.title || complaint.category}`,
+            description: complaint.description
+              ? complaint.description.slice(0, 80) + (complaint.description.length > 80 ? '...' : '')
+              : `Your ${complaint.category?.toLowerCase() || ''} complaint has been updated.`,
+            time: formatTimeAgo(complaint.createdAt || complaint.created_at),
+            read: complaint.status === 'RESOLVED' || complaint.status === 'CLOSED',
+          });
+        });
+
+        // Add welcome notification if user is new
+        if (currentUser?.createdAt) {
+          const daysSinceJoin = Math.floor(
+            (Date.now() - new Date(currentUser.createdAt).getTime()) / (1000 * 60 * 60 * 24)
+          );
+          if (daysSinceJoin < 7) {
+            dynamicNotifs.push({
+              id: 'welcome',
+              icon: Bell,
+              iconColor: 'text-brand-teal',
+              title: 'Welcome to StayEg!',
+              description: 'Explore PGs near you, manage bookings, and enjoy seamless payments.',
+              time: 'Just now',
+              read: true,
+            });
+          }
+        }
+      }
+
+      // Owner notifications from bookings
+      if (currentRole === 'OWNER') {
+        bookings.forEach((booking: any) => {
+          const statusLabel =
+            booking.status === 'CONFIRMED'
+              ? 'Confirmed'
+              : booking.status === 'ACTIVE'
+                ? 'Active'
+                : booking.status === 'PENDING'
+                  ? 'Pending Approval'
+                  : booking.status === 'CANCELLED'
+                    ? 'Cancelled'
+                    : 'Updated';
+          dynamicNotifs.push({
+            id: `booking-${booking.id}`,
+            icon: CalendarCheck,
+            iconColor: booking.status === 'PENDING' ? 'text-amber-500' : 'text-brand-teal',
+            title: `Booking ${statusLabel}`,
+            description: `${booking.user?.name || 'A tenant'} booked a ${booking.bed?.room?.roomType?.toLowerCase() || ''} room in ${booking.pg?.name || 'PG'}.`,
+            time: formatTimeAgo(booking.created_at || booking.createdAt),
+            read: booking.status !== 'PENDING',
+          });
+        });
+
+        // Owner notifications from payments
+        payments.forEach((payment: any) => {
+          if (payment.status === 'COMPLETED') {
+            dynamicNotifs.push({
+              id: `payment-received-${payment.id}`,
+              icon: IndianRupee,
+              iconColor: 'text-emerald-500',
+              title: `Payment Received - ₹${payment.amount?.toLocaleString('en-IN') || '0'}`,
+              description: `${payment.user?.name || 'Tenant'} paid for ${payment.pg?.name || 'PG'} (${payment.type?.replace('_', ' ') || 'rent'}).`,
+              time: formatTimeAgo(payment.created_at || payment.paidDate || payment.createdAt),
+              read: false,
+            });
+          }
+        });
+
+        // Owner notifications from complaints
+        complaints.forEach((complaint: any) => {
+          dynamicNotifs.push({
+            id: `complaint-${complaint.id}`,
+            icon: complaint.status === 'OPEN' ? AlertTriangle : MessageSquare,
+            iconColor: complaint.status === 'OPEN' ? 'text-red-500' : 'text-amber-500',
+            title: `Complaint: ${complaint.title || complaint.category}`,
+            description: `${complaint.user?.name || 'Tenant'} reported an issue in ${complaint.pg?.name || 'PG'}.`,
+            time: formatTimeAgo(complaint.createdAt || complaint.created_at),
+            read: complaint.status === 'RESOLVED' || complaint.status === 'CLOSED',
+          });
+        });
+
+        // Fetch analytics for owner
+        const analyticsRes = await fetch(`/api/analytics?ownerId=${currentUser.id}`).then((r) =>
+          r.ok ? r.json() : null
+        );
+        if (analyticsRes) {
+          dynamicNotifs.push({
+            id: 'analytics',
+            icon: TrendingUp,
+            iconColor: 'text-brand-teal',
+            title: `Occupancy: ${analyticsRes.occupancyRate || 0}%`,
+            description: `${analyticsRes.activeBookings || 0} active bookings · ₹${(analyticsRes.monthlyRevenue || 0).toLocaleString('en-IN')} revenue this month.`,
+            time: 'Updated just now',
+            read: false,
+          });
+        }
+      }
+
+      // Sort by most recent first (unread first, then by position)
+      dynamicNotifs.sort((a, b) => {
+        if (a.read !== b.read) return a.read ? 1 : -1;
+        return 0;
+      });
+
+      setNotifications(dynamicNotifs.length > 0 ? dynamicNotifs : (currentRole === 'OWNER' ? OWNER_NOTIFICATIONS : TENANT_NOTIFICATIONS));
+    } catch {
+      // Fallback to hardcoded notifications on error
+      setNotifications(currentRole === 'OWNER' ? OWNER_NOTIFICATIONS : TENANT_NOTIFICATIONS);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [isLoggedIn, currentUser?.id, currentRole]);
+
+  useEffect(() => {
+    fetchNotifications();
+  }, [fetchNotifications]);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
 
@@ -195,7 +432,20 @@ export default function NotificationsPanel() {
         {/* Notification list */}
         <ScrollArea className="max-h-80 sm:max-h-96">
           <AnimatePresence initial={false}>
-            {notifications.length === 0 ? (
+            {isLoading ? (
+              <div className="divide-y divide-border/50">
+                {Array.from({ length: 4 }).map((_, i) => (
+                  <div key={i} className="flex items-start gap-3 px-4 py-3">
+                    <Skeleton className="size-8 rounded-lg shrink-0" />
+                    <div className="flex-1 space-y-2">
+                      <Skeleton className="h-4 w-3/4" />
+                      <Skeleton className="h-3 w-full" />
+                      <Skeleton className="h-3 w-16" />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : notifications.length === 0 ? (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}

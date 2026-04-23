@@ -4,14 +4,13 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   MessageSquare, X, Send, Bot, User, Sparkles, Plus, CreditCard, MessageCircle,
-  BarChart3, Building2, ChevronRight,
+  BarChart3, Building2, ChevronRight, Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/store/use-app-store';
 import type { AppView } from '@/lib/types';
-import { BADGE_BORDER } from '@/lib/constants';
 
 interface Message {
   id: string;
@@ -37,7 +36,8 @@ const AI_RESPONSES: Record<string, string> = {
 };
 
 export default function AIAssistant() {
-  const { isAIChatOpen, setAIChatOpen, setCurrentView } = useAppStore();
+  const { isAIChatOpen, setAIChatOpen, setCurrentView, currentRole } = useAppStore();
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome',
@@ -103,19 +103,24 @@ export default function AIAssistant() {
     setMessages(prev => [...prev, userMsg]);
     setInput('');
 
+    const userQuery = input.trim();
+    setIsTyping(true);
+
     setTimeout(() => {
-      const response = getAIResponse(input.trim());
-      const aiMsg: Message = {
-        id: `ai-${Date.now()}`,
-        role: 'assistant',
-        content: response,
-        timestamp: new Date(),
-      };
-      setMessages(prev => [...prev, aiMsg]);
-    }, 1000);
+      getAIResponse(userQuery).then((response) => {
+        setIsTyping(false);
+        const aiMsg: Message = {
+          id: `ai-${Date.now()}`,
+          role: 'assistant',
+          content: response,
+          timestamp: new Date(),
+        };
+        setMessages(prev => [...prev, aiMsg]);
+      });
+    }, 600);
   };
 
-  const getAIResponse = (query: string): string => {
+  const getFallbackResponse = (query: string): string => {
     const q = query.toLowerCase();
     if (q.includes('room') || q.includes('bed') || q.includes('add')) return AI_RESPONSES.add_room;
     if (q.includes('rent') || q.includes('payment') || q.includes('due')) return AI_RESPONSES.rent_status;
@@ -123,6 +128,24 @@ export default function AIAssistant() {
     if (q.includes('summary') || q.includes('overview') || q.includes('dashboard')) return AI_RESPONSES.summary;
     if (q.includes('pg') || q.includes('property') || q.includes('manage')) return AI_RESPONSES.manage_pgs;
     return "I'd be happy to help you with that! Here are some things I can assist with:\n\n• Managing rooms and beds\n• Checking rent payment status\n• Reviewing complaints\n• Dashboard analytics\n• PG property management\n\nTry asking about any of these topics or use the quick actions below.";
+  };
+
+  const getAIResponse = async (question: string): Promise<string> => {
+    try {
+      const res = await fetch('/api/ai-chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: question,
+          context: currentRole === 'OWNER' ? 'PG Owner' : 'Tenant',
+        }),
+      });
+      if (!res.ok) throw new Error('API error');
+      const data = await res.json();
+      return data.reply || "I'm sorry, I couldn't process that. Please try again.";
+    } catch {
+      return getFallbackResponse(question);
+    }
   };
 
   const navigateTo = (view: AppView) => {
@@ -181,13 +204,15 @@ export default function AIAssistant() {
               </Button>
             </div>
 
-            {/* Demo Badge */}
-            <div className="px-4 pt-3 shrink-0">
-              <div className={`flex items-center justify-center gap-1.5 ${BADGE_BORDER.amber} rounded-lg px-3 py-1.5 text-xs font-medium`}>
-                <Sparkles className="size-3" />
-                AI Assistant (Demo Mode — responses are for demonstration only)
+            {/* Typing Indicator */}
+            {isTyping && (
+              <div className="px-4 pt-3 shrink-0">
+                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="size-3.5 animate-spin text-brand-teal" />
+                  <span>Thinking...</span>
+                </div>
               </div>
-            </div>
+            )}
 
             {/* Messages */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4">

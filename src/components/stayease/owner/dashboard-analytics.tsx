@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useAppStore } from '@/store/use-app-store';
 import { CARD_BG, TEXT_COLOR } from '@/lib/constants';
 
@@ -32,7 +33,7 @@ export default function OwnerDashboard() {
 
   const ownerId = ownerUser?.id;
 
-  const { data: analytics, isLoading } = useQuery({
+  const { data: analytics, isLoading, isError, refetch } = useQuery({
     queryKey: ['owner-analytics', ownerId],
     queryFn: async () => {
       const res = await fetch(`/api/analytics?ownerId=${ownerId}`);
@@ -242,6 +243,18 @@ export default function OwnerDashboard() {
 
   return (
     <div className="p-4 md:p-6 space-y-6">
+      {/* Error Banner */}
+      {isError && (
+        <div className="bg-destructive/10 border border-destructive/20 rounded-xl p-4 flex items-center gap-3 mb-6">
+          <AlertTriangle className="size-5 text-destructive shrink-0" />
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-medium text-destructive">Failed to load dashboard data</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Please check your connection and try again.</p>
+          </div>
+          <Button variant="outline" size="sm" onClick={() => refetch()} className="shrink-0">Retry</Button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>

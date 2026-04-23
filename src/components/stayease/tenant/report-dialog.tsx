@@ -19,6 +19,8 @@ import { Separator } from '@/components/ui/separator';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { toast } from '@/lib/toast';
 import { fadeIn, scaleIn, staggerContainer, staggerItem } from '@/lib/animations';
+import { authFetch } from '@/lib/api-client';
+import { useAppStore } from '@/store/use-app-store';
 
 interface ReportDialogProps {
   targetId: string;
@@ -66,7 +68,7 @@ export default function ReportDialog({ targetId, targetType, trigger }: ReportDi
   const [contactEmail, setContactEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = useCallback(() => {
+  const handleSubmit = useCallback(async () => {
     if (!selectedReason) {
       toast.error('Please select a reason for your report');
       return;
@@ -81,17 +83,35 @@ export default function ReportDialog({ targetId, targetType, trigger }: ReportDi
     }
 
     setIsSubmitting(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsSubmitting(false);
+    try {
+      const currentUser = useAppStore.getState().currentUser;
+      const res = await authFetch('/api/reports', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          reporterId: currentUser?.id,
+          targetId,
+          targetType,
+          reason: selectedReason,
+          description: description.trim(),
+          contactEmail: contactEmail || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to submit report');
+      }
       setOpen(false);
       toast.success('Report submitted successfully. Our team will review within 24-48 hours.');
-      // Reset form
       setSelectedReason('');
       setDescription('');
       setContactEmail('');
-    }, 1500);
-  }, [selectedReason, description, contactEmail]);
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to submit report. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }, [selectedReason, description, contactEmail, targetId, targetType]);
 
   const handleOpenChange = useCallback((newOpen: boolean) => {
     setOpen(newOpen);

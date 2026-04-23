@@ -123,7 +123,7 @@ const KYC_CONFIG: Record<KYCStatus, {
   },
 };
 
-const STATS_CONFIG: Record<UserRole, { label: string; icon: typeof CreditCard; value: number; color: string }[]> = {
+const STATS_CONFIG: Record<UserRole, { label: string; icon: typeof CreditCard; value: number; color: string; isMonetary?: boolean }[]> = {
   TENANT: [
     { label: 'Total Bookings', icon: BookOpen, value: 3, color: 'bg-brand-teal/10 text-brand-teal' },
     { label: 'Active Stay', icon: Building2, value: 1, color: 'bg-brand-lime/15 text-brand-lime' },
@@ -134,18 +134,18 @@ const STATS_CONFIG: Record<UserRole, { label: string; icon: typeof CreditCard; v
     { label: 'My PGs', icon: Building2, value: 3, color: 'bg-brand-teal/10 text-brand-teal' },
     { label: 'Total Rooms', icon: Briefcase, value: 24, color: 'bg-brand-lime/15 text-brand-lime' },
     { label: 'Active Tenants', icon: UserIcon, value: 42, color: 'bg-brand-sage/10 text-brand-sage' },
-    { label: 'Revenue', icon: CreditCard, value: 186400, color: 'bg-brand-teal/10 text-brand-teal' },
+    { label: 'Revenue', icon: CreditCard, value: 186400, color: 'bg-brand-teal/10 text-brand-teal', isMonetary: true },
   ],
   VENDOR: [
     { label: 'Services Done', icon: Wrench, value: 56, color: 'bg-brand-teal/10 text-brand-teal' },
     { label: 'Rating', icon: Star, value: 4.8, color: 'bg-brand-sage/10 text-brand-sage' },
-    { label: 'Earnings', icon: CreditCard, value: 74500, color: 'bg-brand-lime/15 text-brand-lime' },
+    { label: 'Earnings', icon: CreditCard, value: 74500, color: 'bg-brand-lime/15 text-brand-lime', isMonetary: true },
     { label: 'Pending Jobs', icon: Clock, value: 2, color: 'bg-brand-teal/10 text-brand-teal' },
   ],
   ADMIN: [
     { label: 'Total Users', icon: UserIcon, value: 2840, color: 'bg-brand-teal/10 text-brand-teal' },
     { label: 'Active PGs', icon: Building2, value: 156, color: 'bg-brand-lime/15 text-brand-lime' },
-    { label: 'Revenue', icon: CreditCard, value: 2400000, color: 'bg-brand-sage/10 text-brand-sage' },
+    { label: 'Revenue', icon: CreditCard, value: 2400000, color: 'bg-brand-sage/10 text-brand-sage', isMonetary: true },
     { label: 'Pending KYC', icon: ShieldAlert, value: 23, color: 'bg-brand-teal/10 text-brand-teal' },
   ],
 };
@@ -325,9 +325,14 @@ export default function ProfilePage() {
     }, 1500);
   }, [logout]);
 
-  const formatStatValue = (value: number) => {
-    if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
-    if (value >= 1000) return `₹${(value / 1000).toFixed(1)}K`;
+  const formatStatValue = (value: number, isMonetary = false) => {
+    if (isMonetary) {
+      if (value >= 100000) return `₹${(value / 100000).toFixed(1)}L`;
+      if (value >= 1000) return `₹${(value / 1000).toFixed(1)}K`;
+      return `₹${value}`;
+    }
+    if (value >= 100000) return `${(value / 100000).toFixed(1)}L`;
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`;
     return String(value);
   };
 
@@ -441,7 +446,7 @@ export default function ProfilePage() {
                   </div>
                   <div className="min-w-0">
                     <div className="text-lg font-bold text-foreground truncate">
-                      {stat.label === 'Rating' ? stat.value.toFixed(1) : formatStatValue(stat.value)}
+                      {stat.label === 'Rating' ? stat.value.toFixed(1) : formatStatValue(stat.value, stat.isMonetary)}
                     </div>
                     <div className="text-xs text-muted-foreground truncate">{stat.label}</div>
                   </div>

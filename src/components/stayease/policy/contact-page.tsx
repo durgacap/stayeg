@@ -15,6 +15,7 @@ import {
   Instagram,
   HelpCircle,
   ChevronRight,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
@@ -171,18 +172,35 @@ export default function ContactPage() {
   const [email, setEmail] = useState('');
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim() || !email.trim() || !subject || !message.trim()) {
       toast.error('Please fill in all fields');
       return;
     }
-    toast.success('Message sent successfully! We\'ll get back to you within 2 hours.');
-    setName('');
-    setEmail('');
-    setSubject('');
-    setMessage('');
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/contact', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: name.trim(), email: email.trim(), subject, message: message.trim() }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || 'Failed to send message');
+      }
+      toast.success('Message sent successfully! We\'ll get back to you within 2 hours.');
+      setName('');
+      setEmail('');
+      setSubject('');
+      setMessage('');
+    } catch (error: any) {
+      toast.error(error.message || 'Failed to send message. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -327,10 +345,15 @@ export default function ContactPage() {
                     {/* Submit */}
                     <Button
                       type="submit"
+                      disabled={isSubmitting}
                       className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white border-0 w-full sm:w-auto"
                     >
-                      <Send className="size-4 mr-2" />
-                      Send Message
+                      {isSubmitting ? (
+                        <Loader2 className="size-4 mr-2 animate-spin" />
+                      ) : (
+                        <Send className="size-4 mr-2" />
+                      )}
+                      {isSubmitting ? 'Sending...' : 'Send Message'}
                     </Button>
                   </form>
                 </CardContent>

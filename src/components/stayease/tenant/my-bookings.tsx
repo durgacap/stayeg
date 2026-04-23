@@ -16,6 +16,7 @@ import {
   Building2,
   Clock,
   Eye,
+  AlertTriangle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -37,7 +38,7 @@ export default function MyBookings() {
   const queryClient = useQueryClient();
   const [cancellingId, setCancellingId] = useState<string | null>(null);
 
-  const { data: bookings = [], isLoading } = useQuery<Booking[]>({
+  const { data: bookings = [], isLoading, isError, refetch } = useQuery<Booking[]>({
     queryKey: ['bookings', currentUser?.id],
     queryFn: async () => {
       if (!currentUser?.id) return [];
@@ -256,6 +257,16 @@ export default function MyBookings() {
       </div>
 
       <div className="max-w-5xl mx-auto px-4 py-6">
+        {/* Error State */}
+        {isError && (
+          <div className="text-center py-12 px-4">
+            <AlertTriangle className="size-12 text-destructive mx-auto mb-3" />
+            <h3 className="text-lg font-semibold text-foreground mb-1">Failed to load bookings</h3>
+            <p className="text-sm text-muted-foreground mb-4">Something went wrong. Please try again.</p>
+            <Button variant="outline" onClick={() => refetch()}>Retry</Button>
+          </div>
+        )}
+
         {/* Quick Stats */}
         {!isLoading && bookings.length > 0 && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
