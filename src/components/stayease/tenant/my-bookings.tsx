@@ -23,6 +23,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { STATUSES } from '@/lib/constants';
 import type { Booking, BookingStatus } from '@/lib/types';
 
@@ -62,7 +63,7 @@ export default function MyBookings() {
   const handleCancelBooking = async (bookingId: string) => {
     setCancellingId(bookingId);
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await authFetch('/api/bookings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: bookingId, status: 'CANCELLED' }),
@@ -205,30 +206,33 @@ export default function MyBookings() {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      className="text-center py-16"
+      className="flex flex-col items-center justify-center py-16 px-4"
     >
-      <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className={`size-16 rounded-full flex items-center justify-center mb-4 ${
+        type === 'active' ? 'bg-brand-teal/10' : 'bg-muted'
+      }`}>
         {type === 'active' ? (
-          <Calendar className="size-10 text-muted-foreground" />
+          <Calendar className="size-8 text-brand-teal" />
         ) : (
-          <Clock className="size-10 text-muted-foreground" />
+          <Clock className="size-8 text-muted-foreground" />
         )}
       </div>
-      <h3 className="text-lg font-semibold text-foreground mb-2">
-        {type === 'active' ? 'No active bookings' : 'No past bookings'}
+      <h3 className="text-lg font-semibold text-foreground mb-1">
+        {type === 'active' ? 'No bookings yet' : 'No past bookings'}
       </h3>
-      <p className="text-muted-foreground mb-4">
+      <p className="text-sm text-muted-foreground mb-4 text-center max-w-sm">
         {type === 'active'
-          ? 'You haven\'t made any bookings yet. Find your perfect PG today!'
+          ? 'Start exploring PGs and book your perfect stay today!'
           : 'Your completed and cancelled bookings will appear here.'}
       </p>
       {type === 'active' && (
         <Button
+          size="sm"
           onClick={() => setCurrentView('PG_LISTING')}
-          className="bg-brand-teal/100 hover:bg-brand-deep text-white"
+          className="bg-brand-teal hover:bg-brand-deep text-white"
         >
           Browse PGs
-          <ChevronRight className="size-4" />
+          <ChevronRight className="size-4 ml-1" />
         </Button>
       )}
     </motion.div>
@@ -257,9 +261,9 @@ export default function MyBookings() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-6">
             {[
               { label: 'Total', count: bookings.length, icon: Building2, color: 'bg-brand-teal/10 text-brand-teal' },
-              { label: 'Active', count: groupedBookings.active.length, icon: Calendar, color: 'bg-green-50 text-green-600' },
+              { label: 'Active', count: groupedBookings.active.length, icon: Calendar, color: 'bg-brand-lime/15 text-brand-lime' },
               { label: 'Completed', count: bookings.filter((b) => b.status === 'COMPLETED').length, icon: Clock, color: 'bg-muted text-muted-foreground' },
-              { label: 'Cancelled', count: bookings.filter((b) => b.status === 'CANCELLED').length, icon: XCircle, color: 'bg-red-50 text-red-600' },
+              { label: 'Cancelled', count: bookings.filter((b) => b.status === 'CANCELLED').length, icon: XCircle, color: 'bg-destructive/10 text-destructive' },
             ].map((stat) => (
               <motion.div
                 key={stat.label}
@@ -292,7 +296,26 @@ export default function MyBookings() {
             {isLoading ? (
               <div className="space-y-4">
                 {Array.from({ length: 3 }).map((_, i) => (
-                  <Skeleton key={i} className="h-40 w-full rounded-xl" />
+                  <div key={i} className="bg-card rounded-xl border shadow-sm p-4 sm:p-5 animate-pulse">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                      <div className="flex-1 min-w-0 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="h-5 w-40 bg-muted rounded" />
+                          <div className="h-5 w-16 bg-muted rounded-full" />
+                        </div>
+                        <div className="h-4 w-52 bg-muted rounded" />
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="h-10 bg-muted rounded-lg" />
+                          <div className="h-10 bg-muted rounded-lg" />
+                          <div className="h-10 bg-muted rounded-lg" />
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <div className="h-8 w-20 bg-muted rounded-md" />
+                        <div className="h-8 w-20 bg-muted rounded-md" />
+                      </div>
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (
@@ -312,7 +335,23 @@ export default function MyBookings() {
             {isLoading ? (
               <div className="space-y-4">
                 {Array.from({ length: 2 }).map((_, i) => (
-                  <Skeleton key={i} className="h-40 w-full rounded-xl" />
+                  <div key={i} className="bg-card rounded-xl border shadow-sm p-4 sm:p-5 animate-pulse">
+                    <div className="flex flex-col sm:flex-row sm:items-start gap-4">
+                      <div className="flex-1 min-w-0 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="h-5 w-40 bg-muted rounded" />
+                          <div className="h-5 w-16 bg-muted rounded-full" />
+                        </div>
+                        <div className="h-4 w-48 bg-muted rounded" />
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <div className="h-10 bg-muted rounded-lg" />
+                          <div className="h-10 bg-muted rounded-lg" />
+                          <div className="h-10 bg-muted rounded-lg" />
+                        </div>
+                      </div>
+                      <div className="h-8 w-20 bg-muted rounded-md" />
+                    </div>
+                  </div>
                 ))}
               </div>
             ) : (

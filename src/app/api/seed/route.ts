@@ -1,7 +1,7 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'stayeg-admin-2024';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'stayeg-v1.2-secure-2025';
 
 export async function POST(request: NextRequest) {
   try {

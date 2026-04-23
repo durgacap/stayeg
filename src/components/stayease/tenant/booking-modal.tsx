@@ -58,6 +58,7 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { AVAILABLE_COUPONS, BADGE } from '@/lib/constants';
 import type { PaymentMethod } from '@/lib/types';
 
@@ -284,7 +285,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
 
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/bookings', {
+      const res = await authFetch('/api/bookings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -416,13 +417,13 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
               transition={{ type: 'spring', stiffness: 200, damping: 15 }}
               className="relative z-10"
             >
-              <div className="size-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div className="size-20 bg-brand-lime/20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <motion.div
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3, type: 'spring', stiffness: 200 }}
                 >
-                  <Check className="size-10 text-green-600" strokeWidth={3} />
+                  <Check className="size-10 text-brand-lime" strokeWidth={3} />
                 </motion.div>
               </div>
               <motion.h3
@@ -558,7 +559,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                         {selectedRoom?.roomCode || selectedBed?.room?.roomCode} • Bed {selectedBed?.bedNumber} • ₹{monthRent.toLocaleString('en-IN')}/mo
                       </div>
                     </div>
-                    <Badge variant="secondary" className="shrink-0 text-green-700 bg-green-100">
+                    <Badge variant="secondary" className="shrink-0 text-brand-lime bg-brand-lime/20">
                       Available
                     </Badge>
                   </div>
@@ -641,9 +642,9 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                   </div>
 
                   {/* Tip */}
-                  <div className="flex items-start gap-2 bg-blue-50 p-3 rounded-lg">
-                    <Sparkles className="size-4 text-blue-500 mt-0.5 shrink-0" />
-                    <p className="text-xs text-blue-700">
+                  <div className="flex items-start gap-2 bg-brand-teal/10 p-3 rounded-lg">
+                    <Sparkles className="size-4 text-brand-teal mt-0.5 shrink-0" />
+                    <p className="text-xs text-brand-teal">
                       Tip: Photograph walls, furniture, fixtures, and any existing damage. This protects you during move-out.
                     </p>
                   </div>
@@ -788,7 +789,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                   </div>
 
                   {error && (
-                    <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm">
+                    <div className="flex items-center gap-2 bg-destructive/10 text-destructive px-3 py-2 rounded-lg text-sm">
                       <AlertCircle className="size-4 shrink-0" />
                       {error}
                     </div>
@@ -875,7 +876,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                   </div>
 
                   {/* Cost Breakdown */}
-                  <div className="bg-brand-sage-light border border-brand-sage/20 rounded-xl p-4 space-y-2">
+                  <div className="bg-brand-sage/10 border border-brand-sage/20 rounded-xl p-4 space-y-2">
                     <h4 className="text-sm font-semibold text-foreground mb-1 flex items-center gap-2">
                       <Shield className="size-4" />
                       Cost Breakdown
@@ -900,12 +901,12 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
 
                     {/* Coupon Section */}
                     {appliedCoupon ? (
-                      <div className="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-2.5">
+                      <div className="flex items-center justify-between bg-brand-lime/15 border border-brand-lime/20 rounded-lg p-2.5">
                         <div className="flex items-center gap-2">
-                          <Tag className="size-4 text-green-600" />
+                          <Tag className="size-4 text-brand-lime" />
                           <div>
-                            <span className="text-sm font-medium text-green-800">{appliedCoupon}</span>
-                            <span className="text-xs text-green-600 ml-2">-₹{couponDiscount.toLocaleString('en-IN')}</span>
+                            <span className="text-sm font-medium text-foreground">{appliedCoupon}</span>
+                            <span className="text-xs text-brand-lime ml-2">-₹{couponDiscount.toLocaleString('en-IN')}</span>
                           </div>
                         </div>
                         <button
@@ -970,7 +971,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                     )}
 
                     {couponDiscount > 0 && (
-                      <div className="flex justify-between text-green-700">
+                      <div className="flex justify-between text-brand-lime">
                         <span className="text-sm font-medium">Coupon Discount</span>
                         <span className="text-sm font-bold">-₹{couponDiscount.toLocaleString('en-IN')}</span>
                       </div>
@@ -1169,7 +1170,7 @@ export default function BookingModal({ open, onOpenChange }: BookingModalProps) 
                   </div>
 
                   {error && (
-                    <div className="flex items-center gap-2 bg-red-50 text-red-600 px-3 py-2 rounded-lg text-sm">
+                    <div className="flex items-center gap-2 bg-destructive/10 text-destructive px-3 py-2 rounded-lg text-sm">
                       <AlertCircle className="size-4 shrink-0" />
                       {error}
                     </div>

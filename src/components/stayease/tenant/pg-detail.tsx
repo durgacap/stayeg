@@ -280,7 +280,7 @@ export default function PGDetail() {
                     <span>{pgData?.address}{pgData?.city ? `, ${pgData.city}` : ''}</span>
                   </div>
                   <div className="flex flex-wrap items-center gap-3">
-                    <div className="flex items-center gap-1 bg-brand-sage-light px-3 py-1.5 rounded-lg">
+                    <div className="flex items-center gap-1 bg-brand-sage/10 px-3 py-1.5 rounded-lg">
                       <Star className="size-5 text-brand-sage fill-brand-sage" />
                       <span className="font-bold text-foreground">{pgData?.rating?.toFixed(1)}</span>
                       <span className="text-sm text-muted-foreground">({pgData?.totalReviews} reviews)</span>

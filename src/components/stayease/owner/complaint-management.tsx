@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { STATUSES, BADGE, BADGE_BORDER, CARD_BG, TEXT_COLOR } from '@/lib/constants';
 
 const PRIORITY_CONFIG: Record<string, { color: string; bg: string; icon: string }> = {
@@ -80,7 +81,7 @@ export default function ComplaintManagement() {
     mutationFn: async ({ id, status, resolution: res }: { id: string; status: string; resolution?: string }) => {
       const body: Record<string, string> = { id, status };
       if (res) body.resolution = res;
-      const resp = await fetch('/api/complaints', {
+      const resp = await authFetch('/api/complaints', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(body),

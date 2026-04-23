@@ -17,6 +17,7 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { STATUSES, BADGE, TEXT_COLOR } from '@/lib/constants';
 
 export default function RentManagement() {
@@ -62,7 +63,7 @@ export default function RentManagement() {
 
   const markPaidMutation = useMutation({
     mutationFn: async ({ id, method }: { id: string; method: string }) => {
-      const res = await fetch('/api/payments', {
+      const res = await authFetch('/api/payments', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status: 'COMPLETED', paidDate: new Date().toISOString(), method }),

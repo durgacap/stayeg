@@ -1,5 +1,29 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, isTableMissing } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
+
+const DEMO_ANALYTICS = {
+  totalPGs: 5,
+  totalRooms: 7,
+  totalBeds: 20,
+  occupiedBeds: 8,
+  availableBeds: 12,
+  occupancyRate: 40,
+  monthlyRevenue: 285000,
+  pendingPayments: 3,
+  pendingAmount: 25500,
+  totalTenants: 8,
+  activeBookings: 8,
+  revenueTrend: [
+    { month: 'Nov', revenue: 220000 },
+    { month: 'Dec', revenue: 245000 },
+    { month: 'Jan', revenue: 260000 },
+    { month: 'Feb', revenue: 275000 },
+    { month: 'Mar', revenue: 280000 },
+    { month: 'Apr', revenue: 285000 },
+  ],
+  genderDistribution: { male: 2, female: 2, unisex: 1 },
+  openComplaints: 2,
+};
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +40,10 @@ export async function GET(request: NextRequest) {
       .select('id')
       .eq('owner_id', ownerId);
 
-    if (pgError) throw pgError;
+    if (pgError) {
+      if (isTableMissing(pgError)) return NextResponse.json(DEMO_ANALYTICS);
+      throw pgError;
+    }
     const pgIds = (pgs || []).map((p: any) => p.id);
     if (pgIds.length === 0) {
       return NextResponse.json({

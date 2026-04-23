@@ -223,7 +223,7 @@ export default function AIAssistant() {
                         )}
                       </p>
                     ))}
-                    <p className="text-[10px] mt-1 opacity-50">
+                    <p className="text-[10px] mt-1 opacity-70">
                       {msg.timestamp.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
                     </p>
                   </div>

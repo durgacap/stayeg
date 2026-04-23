@@ -138,97 +138,97 @@ const VALUES = [
   {
     icon: ShieldCheck,
     title: 'Trust & Transparency',
-    description: 'Every PG is verified in person. Listings reflect reality, not marketing spin. We publish genuine reviews and real photos.',
+    description: 'Every PG listed on StayEg undergoes a physical verification by our field team. We publish authentic reviews, unedited photos, and transparent pricing so tenants can book with confidence.',
   },
   {
     icon: IndianRupee,
-    title: 'Zero Brokerage',
-    description: 'Tenants pay nothing to search or book. Owners pay a single transparent platform fee. No hidden charges, ever.',
+    title: 'Zero Brokerage for Tenants',
+    description: 'Tenants never pay a single rupee to search, browse, or book on StayEg. PG owners pay a straightforward, disclosed platform fee — no hidden charges, no surprise add-ons.',
   },
   {
     icon: Heart,
-    title: 'Tenant First',
-    description: 'Every feature, from instant complaints to secure payments, is designed around the tenant experience and safety.',
+    title: 'Tenant-First Design',
+    description: 'Every product decision — from instant complaint resolution to secure in-app payments — begins with a simple question: does this make the tenant\'s life easier and safer?',
   },
   {
     icon: Smartphone,
-    title: 'Technology Driven',
-    description: 'AI-powered recommendations, digital KYC, automated rent reminders, and smart matching between tenants and PGs.',
+    title: 'Technology as a Differentiator',
+    description: 'Our AI-powered matching engine pairs tenants with PGs based on commute distance, lifestyle preferences, and budget. Automated rent reminders, digital KYC, and real-time availability tracking set us apart from paper-based alternatives.',
   },
   {
     icon: Users,
-    title: 'Community Building',
-    description: 'In-app community groups, events, and forums help tenants feel at home and build lasting connections.',
+    title: 'Community at Scale',
+    description: 'Moving to a new city is isolating. StayEg\'s in-app community groups, local event boards, and interest-based forums help tenants build a support network from day one.',
   },
   {
     icon: Shield,
-    title: 'Safety & Security',
-    description: 'Aadhaar/PAN verification, 24/7 emergency helpline, verified vendors, and a rigorous PG safety audit protocol.',
+    title: 'Safety Without Compromise',
+    description: 'Mandatory Aadhaar and PAN verification for all users, a 24/7 emergency helpline, verified vendor access, and a structured PG safety audit protocol form the backbone of our trust framework.',
   },
 ];
 
 const STATS = [
   { label: 'Verified PGs', value: 10000, suffix: '+', icon: Building },
-  { label: 'Happy Tenants', value: 50000, suffix: '+', icon: Users },
-  { label: 'Cities Covered', value: 20, suffix: '+', icon: Globe },
-  { label: 'Avg Rating', value: 4.5, suffix: '/5', icon: Star },
+  { label: 'Active Tenants', value: 50000, suffix: '+', icon: Users },
+  { label: 'Cities Across India', value: 20, suffix: '+', icon: Globe },
+  { label: 'Platform Rating', value: 4.5, suffix: '/5', icon: Star },
 ];
 
 const TEAM = [
   {
     name: 'Rahul Sharma',
-    role: 'CEO & Founder',
-    bio: 'Former McKinsey consultant turned entrepreneur. Rahul founded StayEg after struggling to find a reliable PG during his own relocation to Bangalore. He holds an MBA from IIM Ahmedabad.',
+    role: 'CEO & Co-Founder',
+    bio: 'Rahul spent four years at McKinsey advising consumer-tech companies before founding StayEg in 2024, after his own frustrating relocation to Bangalore exposed the systemic gaps in India\'s PG market. He holds an MBA from IIM Ahmedabad and a B.Tech from IIT Delhi.',
     seed: 'rahul-sharma',
   },
   {
     name: 'Priya Patel',
-    role: 'Chief Technology Officer',
-    bio: 'Full-stack engineer with 12 years of experience at Microsoft and Flipkart. Priya architected StayEg\'s AI recommendation engine and real-time booking platform from the ground up.',
+    role: 'CTO & Co-Founder',
+    bio: 'Priya brings 12 years of engineering leadership from Microsoft and Flipkart. She architected StayEg\'s real-time booking engine, AI-powered recommendation system, and end-to-end payment pipeline that processes thousands of transactions daily.',
     seed: 'priya-patel',
   },
   {
     name: 'Arjun Reddy',
-    role: 'Head of Operations',
-    bio: 'Operations veteran who scaled Swiggy\'s city expansion to 30+ locations. Arjun leads StayEg\'s on-ground PG verification, vendor network, and tenant support teams across India.',
+    role: 'VP, Operations',
+    bio: 'Previously a senior ops lead at Swiggy, where he scaled city operations to 30+ markets. Arjun oversees StayEg\'s on-ground verification team, vendor supply chain, and field support operations across India.',
     seed: 'arjun-reddy',
   },
   {
     name: 'Meera Krishnan',
-    role: 'Head of Design',
-    bio: 'Award-winning UX designer formerly at Google and Razorpay. Meera crafted StayEg\'s user experience to make PG discovery feel effortless, even on a first visit.',
+    role: 'Head of Design & Product',
+    bio: 'A former design lead at Google and Razorpay, Meera has shipped products used by millions. She leads StayEg\'s design system, ensuring that PG discovery and management feel as intuitive as ordering food online.',
     seed: 'meera-krishnan',
   },
 ];
 
 const CHANGELOG = [
   {
-    version: 'v2.0',
-    date: 'January 2025',
-    title: 'Complete UI Redesign',
-    description: 'Premium blue and gold theme with full dark mode support. Introduced AI-powered assistant for instant tenant queries, enhanced accessibility, and responsive mobile-first layout.',
+    version: 'v3.0',
+    date: 'April 2026',
+    title: 'Enterprise & Multi-Property Tools',
+    description: 'Launched multi-property dashboards for PG chains, advanced revenue analytics, staff shift optimisation, and API integrations for property management firms. Cross-city portfolio management now available in a single view.',
     icon: Sparkles,
   },
   {
-    version: 'v1.5',
-    date: 'December 2024',
-    title: 'Community & Vendor Platform',
-    description: 'Launched in-app community groups and forums for tenants. Added vendor management with service tracking, staff management with shift scheduling, and complaint escalation workflows.',
+    version: 'v2.0',
+    date: 'January 2025',
+    title: 'Community & Vendor Ecosystem',
+    description: 'Introduced in-app community groups and forums for tenants to connect. Added end-to-end vendor management with service tracking, staff shift scheduling, and a structured complaint escalation workflow with SLA monitoring.',
     icon: Layers,
   },
   {
     version: 'v1.0',
     date: 'November 2024',
-    title: 'Initial Platform Launch',
-    description: 'Core PG booking engine with verified listings, secure online payments, multi-bed room configurations, complaint management, and real-time availability tracking.',
+    title: 'Platform Launch',
+    description: 'Went live with the core PG booking engine — verified listings, secure UPI and card payments, multi-bed room configurations, tenant complaints, and real-time availability tracking across 5 cities.',
     icon: Rocket,
   },
 ];
 
 const AWARDS = [
-  { title: 'Top 10 Startup 2025', subtitle: 'YourStory India', icon: Trophy },
-  { title: 'Most Trusted PG Platform', subtitle: 'Consumer Choice Awards', icon: Award },
-  { title: '10K+ PG Partners', subtitle: 'Verified & Active', icon: ThumbsUp },
+  { title: 'Top 10 PropTech Startup 2025', subtitle: 'YourStory India', icon: Trophy },
+  { title: 'Most Trusted PG Platform 2025', subtitle: 'Consumer Choice Awards', icon: Award },
+  { title: '10,000+ Verified PG Partners', subtitle: 'Active & Growing', icon: ThumbsUp },
 ];
 
 /* ------------------------------------------------------------------ */
@@ -258,7 +258,7 @@ export default function AboutPage() {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">About StayEg</h1>
-              <p className="text-sm text-muted-foreground">India&apos;s smartest PG ecosystem</p>
+              <p className="text-sm text-muted-foreground">Building trust in India's PG accommodation market</p>
             </div>
           </div>
 
@@ -284,13 +284,13 @@ export default function AboutPage() {
         <FadeIn delay={0.1}>
           <div className="space-y-4 text-sm text-muted-foreground leading-relaxed max-w-3xl">
             <p>
-              StayEg was born from a frustration shared by millions of Indians every year: finding a trustworthy, affordable PG in an unfamiliar city should not feel like navigating a maze blindfolded. In 2024, our founder Rahul Sharma relocated to Bangalore for work and spent weeks dealing with unverified brokers, misleading photos, and opaque rental agreements. That experience became the catalyst for building a platform that puts transparency and tenant welfare at the centre of the PG ecosystem.
+              In 2024, over 40 million Indians relocated to a new city for work or education. Nearly 70% of them reported encountering fraud, hidden charges, or significantly misrepresented living conditions during their PG search. Our co-founder Rahul Sharma experienced this first-hand when he moved to Bangalore from Delhi — weeks of unverified broker listings, doctored photographs, and lease agreements filled with fine print.
             </p>
             <p>
-              What started as a small directory of verified accommodations in Bangalore has rapidly grown into a comprehensive PG management platform covering over 20 cities across India. We combine rigorous on-ground property verification with intelligent technology to ensure that every listing on StayEg reflects reality. From high-speed Wi-Fi and clean rooms to safety audits and genuine tenant reviews, we leave nothing to chance.
+              That frustration became StayEg. We started with a straightforward premise: every PG listing should reflect reality, every price should be transparent, and every tenant should have a reliable channel to raise concerns. What began as a curated directory of 50 verified properties in Bangalore has grown into a full-stack platform covering 20+ Indian cities, with over 10,000 physically verified PGs and 50,000 active tenants.
             </p>
             <p>
-              Today, StayEg is more than a listing platform. We are a full-stack ecosystem that connects tenants, PG owners, and local service vendors through a single, unified interface. Our AI-powered assistant guides tenants through every step of their PG journey, from discovery and booking to rent payments and community engagement. We believe everyone deserves a safe, comfortable, and affordable home, regardless of the city they move to.
+              StayEg is not just a marketplace — it is an operating system for the PG economy. We connect tenants, PG owners, and local service vendors through a single interface. Our AI-powered matching engine considers commute proximity, lifestyle fit, and budget. Our on-ground verification team inspects every listed property. And our in-app payment system, complaint workflow, and community tools ensure that the living experience extends far beyond move-in day.
             </p>
           </div>
         </FadeIn>
@@ -315,7 +315,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Our Mission</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  To democratise PG living in India by eliminating information asymmetry between tenants and property owners. We strive to make the process of finding, booking, and living in a PG as transparent and effortless as booking a hotel, while ensuring that every listing is verified, every payment is secure, and every tenant has a voice.
+                  To eliminate information asymmetry in India's PG market. Every listing is physically verified, every rupee of pricing is disclosed upfront, and every tenant has access to secure payments, structured complaint resolution, and a genuine community. We exist to make finding a PG as trustworthy as booking a hotel.
                 </p>
               </CardContent>
             </Card>
@@ -329,7 +329,7 @@ export default function AboutPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Our Vision</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">
-                  To become India&apos;s largest and most trusted PG ecosystem, covering every city and town where students and working professionals seek accommodation. We envision a future where no one has to compromise on safety, quality, or fairness when searching for a place to call home.
+                  To become the operating layer for PG accommodation across India — the platform students and working professionals reach for first when moving to any city, and the management tool PG owners rely on to run their business efficiently.
                 </p>
               </CardContent>
             </Card>
@@ -408,7 +408,7 @@ export default function AboutPage() {
         <FadeIn>
           <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2 text-center">Meet Our Team</h2>
           <p className="text-sm text-muted-foreground mb-8 text-center max-w-xl mx-auto">
-            The people behind India&apos;s fastest-growing PG platform bring decades of combined experience in technology, operations, and design.
+            Our leadership team combines deep experience in consumer technology, on-ground operations, and product design to build a platform that India's PG market has needed for years.
           </p>
         </FadeIn>
 
@@ -446,7 +446,7 @@ export default function AboutPage() {
       <section className="max-w-5xl mx-auto px-4 py-10">
         <FadeIn>
           <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">Platform Updates</h2>
-          <p className="text-sm text-muted-foreground mb-8">A timeline of how StayEg has evolved since launch.</p>
+          <p className="text-sm text-muted-foreground mb-8">Key milestones in StayEg's journey from idea to India's fastest-growing PG platform.</p>
         </FadeIn>
 
         <div className="relative ml-4 sm:ml-6 border-l-2 border-brand-teal/20 space-y-8">

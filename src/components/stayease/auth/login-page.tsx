@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, Phone, User as UserIcon, Lock, Eye, EyeOff, ArrowRight,
-  Shield, ShieldCheck, Users, LogIn, ArrowLeft,
+  Shield, ShieldCheck, Users, LogIn, ArrowLeft, Mail, AlertCircle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -80,6 +80,7 @@ export default function LoginPage() {
 
   const [selectedRole, setSelectedRole] = useState<UserRole>('TENANT');
   const [phone, setPhone] = useState('');
+  const [email, setEmail] = useState('');
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState('');
   const [password, setPassword] = useState('');
@@ -87,7 +88,38 @@ export default function LoginPage() {
   const [loginMethod, setLoginMethod] = useState<'phone' | 'password'>('phone');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSendOTP = () => {
+  /** Try to fetch user from the real API, fall back to demo on failure */
+  const tryRealLogin = useCallback(async (identifier: string, field: 'email' | 'phone'): Promise<User | null> => {
+    try {
+      const res = await fetch(`/api/auth?${field}=${encodeURIComponent(identifier)}`);
+      const data = await res.json();
+
+      if (data.demo === true || !data.users || data.users.length === 0) {
+        return null; // No DB or user not found → fall back to demo
+      }
+
+      const raw = data.users[0];
+      const user: User = {
+        id: raw.id,
+        name: raw.name,
+        email: raw.email,
+        phone: raw.phone,
+        role: raw.role,
+        gender: raw.gender,
+        isVerified: raw.is_verified ?? false,
+        avatar: raw.avatar,
+        city: raw.city,
+        occupation: raw.occupation,
+        bio: raw.bio,
+        createdAt: raw.created_at,
+      };
+      return user;
+    } catch {
+      return null;
+    }
+  }, []);
+
+  const handleSendOTP = async () => {
     if (phone.length < 10) {
       showToast('Please enter a valid phone number');
       return;
@@ -96,32 +128,64 @@ export default function LoginPage() {
     showToast('OTP sent to ' + phone);
   };
 
-  const handleVerifyOTP = () => {
+  const handleVerifyOTP = async () => {
     if (otp.length !== 6) {
       showToast('Please enter the 6-digit OTP');
       return;
     }
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    // Try real auth first
+    const realUser = await tryRealLogin(phone, 'phone');
+
+    if (realUser) {
+      login(realUser);
+      showToast('Welcome back, ' + realUser.name + '!');
+    } else {
+      // Fall back to demo mode
       const user = DEMO_USERS[selectedRole];
       login(user);
-      showToast('Welcome back, ' + user.name + '!');
-      setIsSubmitting(false);
-    }, 800);
+      showToast('Welcome, ' + user.name + '! (Demo Mode)');
+    }
+
+    setIsSubmitting(false);
   };
 
-  const handlePasswordLogin = () => {
+  const handlePasswordLogin = async () => {
+    if (!email && !password) {
+      showToast('Please enter your email and password');
+      return;
+    }
+    if (email && !email.includes('@')) {
+      showToast('Please enter a valid email address');
+      return;
+    }
     if (!password) {
       showToast('Please enter your password');
       return;
     }
+
     setIsSubmitting(true);
-    setTimeout(() => {
-      const user = DEMO_USERS[selectedRole];
-      login(user);
-      showToast('Welcome back, ' + user.name + '!');
-      setIsSubmitting(false);
-    }, 800);
+
+    // Try real auth first (lookup by email)
+    if (email) {
+      const realUser = await tryRealLogin(email, 'email');
+
+      if (realUser) {
+        login(realUser);
+        showToast('Welcome back, ' + realUser.name + '!');
+        setIsSubmitting(false);
+        return;
+      }
+      // Email not found in DB → fall through to demo mode
+    }
+
+    // Fall back to demo mode
+    await new Promise((r) => setTimeout(r, 400));
+    const user = DEMO_USERS[selectedRole];
+    login(user);
+    showToast('Demo mode — no database connected');
+    setIsSubmitting(false);
   };
 
   const handleDemoLogin = (role: UserRole) => {
@@ -140,7 +204,7 @@ export default function LoginPage() {
   };
 
   const handleForgotPassword = () => {
-    showToast('Password reset link sent to your email/phone');
+    showToast('Coming soon in v2.0');
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -148,7 +212,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8 bg-gradient-to-br from-brand-teal/10 via-brand-sage/5 to-background">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8 bg-gradient-to-br from-brand-deep/5 via-brand-teal/8 to-background">
       <motion.div
         className="w-full max-w-md"
         initial={{ opacity: 0, scale: 0.95 }}
@@ -172,7 +236,7 @@ export default function LoginPage() {
         </motion.div>
 
         {/* Main Card */}
-        <Card className="shadow-xl shadow-brand-teal/10 border border-gold/30 shadow-gold-md bg-card">
+        <Card className="shadow-xl shadow-brand-teal/10 border border-border bg-card">
           <CardContent className="p-6">
             <AnimatePresence mode="wait">
               {!showOTP ? (
@@ -261,11 +325,13 @@ export default function LoginPage() {
                             Email
                           </Label>
                           <div className="relative">
-                            <UserIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
                             <Input
                               id="email"
                               type="email"
                               placeholder="you@example.com"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
                               className="pl-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20"
                             />
                           </div>
@@ -278,7 +344,7 @@ export default function LoginPage() {
                             </Label>
                             <button
                               onClick={handleForgotPassword}
-                              className="text-xs text-brand-teal hover:text-foreground font-medium"
+                              className="text-xs text-brand-teal hover:text-foreground font-medium transition-colors"
                             >
                               Forgot Password?
                             </button>
@@ -365,21 +431,22 @@ export default function LoginPage() {
                   </div>
 
                   {/* Demo Quick Access */}
-                  <div className="bg-gradient-to-r from-brand-teal/10 to-brand-sage/10 rounded-xl p-4 mb-5">
+                  <div className="bg-gradient-to-r from-brand-teal/8 to-brand-sage/8 rounded-xl p-4 mb-5 border border-brand-teal/10">
                     <div className="flex items-center gap-2 mb-3">
                       <ShieldCheck className="size-4 text-brand-teal" />
                       <span className="text-xs font-semibold text-foreground">Quick Demo Access</span>
+                      <span className="text-[10px] text-muted-foreground ml-auto">No account needed</span>
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                       {[
-                        { role: 'TENANT' as UserRole, label: 'Tenant', color: 'from-brand-deep to-brand-teal', shadow: 'shadow-blue-200' },
-                        { role: 'OWNER' as UserRole, label: 'PG Owner', color: 'from-brand-deep to-brand-teal', shadow: 'shadow-brand-teal/20' },
+                        { role: 'TENANT' as UserRole, label: 'Tenant', icon: UserIcon },
+                        { role: 'OWNER' as UserRole, label: 'PG Owner', icon: Building2 },
                       ].map((demo) => (
                         <button
                           key={demo.role}
                           onClick={() => handleDemoLogin(demo.role)}
                           disabled={isSubmitting}
-                          className={`flex items-center justify-center gap-1 h-9 rounded-lg bg-gradient-to-r ${demo.color} text-white text-xs font-semibold shadow-md ${demo.shadow} hover:opacity-90 transition-all disabled:opacity-50`}
+                          className="flex items-center justify-center gap-1.5 h-9 rounded-lg bg-gradient-to-r from-brand-deep to-brand-teal text-white text-xs font-semibold shadow-md shadow-brand-teal/20 hover:opacity-90 transition-all disabled:opacity-50"
                         >
                           <Users className="size-3" />
                           {demo.label}
@@ -481,9 +548,12 @@ export default function LoginPage() {
                     )}
                   </Button>
 
-                  <p className="text-center text-[11px] text-muted-foreground mt-4">
-                    Tip: Enter any 6 digits to proceed (demo mode)
-                  </p>
+                  <div className="flex items-center gap-2 mt-4 px-2">
+                    <AlertCircle className="size-3.5 text-muted-foreground shrink-0" />
+                    <p className="text-[11px] text-muted-foreground">
+                      Enter any 6 digits to proceed in demo mode
+                    </p>
+                  </div>
                 </motion.div>
               )}
             </AnimatePresence>

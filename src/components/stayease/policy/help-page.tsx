@@ -132,8 +132,8 @@ const QUICK_ACTIONS = [
     title: 'Report an Issue',
     description: 'Flag safety concerns, fraudulent activity, or bugs.',
     action: 'SAFE_USE' as const,
-    color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300',
-    hoverBorder: 'hover:border-red-200',
+    color: 'bg-destructive/15 text-destructive',
+    hoverBorder: 'hover:border-destructive/30',
   },
   {
     icon: BookOpen,
@@ -161,8 +161,8 @@ const GETTING_STARTED_STEPS = [
     title: 'For Tenants',
     description:
       'Search for PGs by city, locality, gender preference, budget, and amenities. View detailed listings with real photos, verified reviews, and transparent pricing. Select a bed, book instantly, and pay securely through the platform. Track bookings and raise complaints if needed.',
-    color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300',
-    accent: 'text-blue-600 dark:text-blue-400',
+    color: 'bg-brand-teal/15 text-brand-teal',
+    accent: 'text-brand-teal',
   },
   {
     step: 3,
@@ -188,65 +188,75 @@ const TENANT_FAQ = [
   {
     question: 'How do I find a PG on StayEg?',
     answer:
-      'Use the search bar on the homepage or navigate to the PG Listing page. Filter results by city, locality, gender preference (Male, Female, Unisex), price range, amenities, and rating. Click on any PG card to view full details including photos, room configurations, verified reviews, and pricing.',
+      'Use the search bar on the homepage or navigate to the Explore page. Filter by city, locality, gender preference (Male, Female, Unisex), monthly budget, amenities (Wi-Fi, AC, meals, laundry), and user rating. Each listing includes real photographs, verified reviews from current tenants, and a detailed amenities list. Click on any PG card to view room configurations and transparent pricing.',
   },
   {
     question: 'How do I book a room?',
     answer:
-      'Once you find a suitable PG, click "Book Now" on the detail page. Select a bed from the available options, upload a profile photo, fill in your personal details, and proceed to payment. You can apply a coupon code for discounts. After successful payment, your booking is confirmed and visible in "My Bookings."',
+      'On the PG detail page, select an available bed from the room options, then click "Book Now." You will be guided through a 3-step process: (1) confirm the bed and PG details, (2) fill in your personal information and upload a profile photo, and (3) review the cost breakdown and pay securely. You can apply a coupon code at the payment step for discounts. A confirmed booking appears instantly in "My Bookings."',
   },
   {
     question: 'What payment methods are accepted?',
     answer:
-      'StayEg supports multiple payment methods including UPI (Google Pay, PhonePe, Paytm), credit/debit cards, net banking, and wallets. All transactions are processed through secure, PCI-DSS compliant payment gateways. You can save payment methods for faster future payments.',
+      'StayEg supports UPI (Google Pay, PhonePe, Paytm), credit and debit cards (Visa, Mastercard, RuPay), net banking from all major Indian banks, and digital wallets. All transactions are processed through PCI-DSS Level 1 compliant payment gateways. You can save preferred payment methods for one-tap future payments.',
   },
   {
     question: 'How do I file a complaint?',
     answer:
-      'Go to the "My Bookings" section and select the relevant booking. Click on "Raise Complaint" and describe the issue. You can set the priority level (Low, Medium, High, Critical). The PG owner will be notified and can respond with updates. Track the resolution progress in real time.',
+      'Navigate to "My Bookings," select the relevant booking, and click "Raise Complaint." Describe the issue, attach photos if applicable, and set the priority level (Low, Medium, High, Critical). The PG owner receives an instant notification and can respond with status updates. You can track the resolution timeline in real time and escalate if needed.',
   },
   {
     question: 'How does KYC verification work?',
     answer:
-      'Navigate to your Profile page and click "Start KYC Verification." You will need to upload your Aadhaar card and PAN card images. The system extracts details automatically and matches them against your profile information. Verification typically completes within 24 hours. KYC is required for booking and payment features.',
+      'Go to your Profile page and tap "Start KYC Verification." Upload clear images of your Aadhaar card (front and back) and PAN card. StayEg\'s system auto-extracts the details and cross-verifies them against your profile. Verification typically completes within 24 hours. KYC is mandatory before you can make a booking or payment — this protects both you and the PG owner.',
   },
   {
     question: 'Can I cancel my booking?',
     answer:
-      'Yes, you can cancel a booking from "My Bookings" by selecting the booking and clicking the cancel option. Cancellation policies vary by PG and are mentioned on the listing page. Generally, cancellations made 48 hours before check-in receive a full refund minus processing fees. The security deposit refund timeline depends on the PG owner\'s policy.',
+      'Yes. Go to "My Bookings," select the booking, and choose "Cancel Booking." The refund depends on timing: full refund (minus processing fee) if cancelled 48+ hours before check-in, 75% refund if cancelled 24–48 hours before, and no refund within 24 hours. The specific policy for each PG is displayed on the listing page before you book.',
+  },
+  {
+    question: 'Is my personal information safe on StayEg?',
+    answer:
+      'Absolutely. StayEg uses 256-bit SSL encryption, bcrypt-hashed passwords, and role-based access controls. Your Aadhaar and PAN details are stored in encrypted format and are visible only to our verification team — never to other users or PG owners. We comply with India\'s Digital Personal Data Protection Act (DPDPA) and conduct regular security audits.',
+  },
+  {
+    question: 'Can I switch PGs during my stay?',
+    answer:
+      'Yes, you can initiate a PG transfer from "My Bookings." Check the current PG\'s notice period (typically 15–30 days), raise a formal move-out notice, and then search and book your next PG on StayEg. Your KYC is already verified, so the second booking is faster. Security deposit settlement from the current PG is handled as per its listed policy.',
   },
 ];
 
 const OWNER_FAQ = [
   {
-    question: 'How do I list my PG?',
+    question: 'How do I list my PG on StayEg?',
     answer:
-      'Go to "My PGs" from the owner dashboard and click "Add New PG." Fill in property details including name, address, gender type, description, amenities, and rules. Add high-quality photos and set room configurations with bed types and pricing. Your listing will go live after a quick review.',
+      'From your owner dashboard, click "My PGs" then "Add New PG." Fill in the property name, full address, gender type (Male, Female, Unisex), a detailed description, and all available amenities. Upload at least 5 high-resolution photographs covering the building exterior, rooms, common areas, and kitchen. Configure rooms with bed types and monthly pricing. Your listing goes live after our field team completes a quick review.',
   },
   {
-    question: 'How does rent management work?',
+    question: 'How does rent collection work?',
     answer:
-      'The rent management dashboard shows all tenants and their payment status. You can set monthly rent amounts, track overdue payments, send automated reminders, and record payments received both online and offline. The system maintains a complete payment history for each tenant with downloadable receipts.',
+      'The rent management module displays every tenant\'s payment status on a single dashboard. Set monthly rent per bed, track overdue amounts, and send automated reminders via in-app notification and WhatsApp. Record payments received both online and offline. The system generates downloadable receipts for every transaction and maintains a complete audit trail.',
   },
   {
-    question: 'How do I manage staff?',
+    question: 'How do I manage my staff?',
     answer:
-      'Navigate to "Staff Management" in your owner dashboard. Add staff members (cooks, cleaners, security guards, etc.) with their name, role, phone number, and assigned shift (Morning, Evening, Night). Track attendance, update staff details, and manage schedules from a single interface.',
+      'Navigate to "Staff Management" from the owner dashboard. Add each staff member with their full name, role (cook, cleaner, security guard, warden, etc.), phone number, and assigned shift (Morning, Evening, Night). The shift scheduler ensures no gaps in coverage. Update roles, deactivate departed staff, and maintain a single source of truth for your workforce.',
   },
   {
     question: 'How do vendor services work?',
     answer:
-      'In "Vendor Management," you can browse registered service providers by type (plumber, electrician, carpenter, etc.) and area. View vendor profiles, ratings, and reviews. Connect with vendors directly for maintenance and repair needs. Vendors can be assigned to specific PGs for recurring services.',
+      'StayEg\'s vendor marketplace connects you with pre-verified service providers — plumbers, electricians, carpenters, painters, pest control, and more. Browse by service type and area, review ratings from other PG owners, and connect directly. For recurring maintenance, you can assign a vendor to a specific PG so they are always a tap away.',
   },
   {
-    question: 'How do I track analytics?',
+    question: 'What analytics and reports are available?',
     answer:
-      'The analytics dashboard provides real-time insights including total occupancy rate, revenue trends, booking trends, complaint statistics, and tenant feedback. Visual charts help you understand performance patterns and make data-driven decisions about pricing, marketing, and operations.',
+      'The owner analytics dashboard provides real-time visibility into occupancy rates, monthly revenue, booking trends, complaint resolution times, and tenant feedback scores. Visual charts break down data by PG, by month, and by revenue stream. Export reports as CSV for accounting or investor updates.',
   },
   {
-    question: 'What pricing plans are available?',
+    question: 'What subscription plans are available for PG owners?',
     answer:
-      'StayEg offers three subscription plans for PG owners: a 1-year plan, a 2-year plan, and a 3-year plan. Longer plans offer better value per year. All plans include unlimited listings, tenant management, rent tracking, and vendor access. Check the Pricing page for detailed plan comparison and current offers.',
+      'StayEg offers three plans: Starter (1 year), Growth (2 years), and Enterprise (3 years). Longer commitments provide a lower effective monthly cost. All plans include unlimited PG listings, full tenant management, automated rent tracking, staff scheduling, vendor access, and priority support. Visit the Pricing page for a detailed feature comparison and current promotional offers.',
   },
 ];
 
@@ -254,22 +264,27 @@ const PAYMENT_FAQ = [
   {
     question: 'Is my payment secure?',
     answer:
-      'Absolutely. All payments on StayEg are processed through PCI-DSS Level 1 compliant payment gateways. We use industry-standard 256-bit SSL encryption to protect your financial data. StayEg never stores your full card details. Every transaction is logged and auditable from your payment history.',
+      'Every transaction on StayEg is processed through PCI-DSS Level 1 compliant payment gateways with 256-bit SSL encryption. StayEg does not store your full card details on its servers. Each payment generates a digital receipt stored in your payment history, and the entire transaction trail is auditable. If you ever notice an unauthorised charge, contact support@stayeg.in immediately.',
   },
   {
     question: 'How do coupons work?',
     answer:
-      'Coupons can be applied during the booking payment step. Enter a coupon code in the "Apply Coupon" field to see the discount. Coupons may offer flat discounts or percentage-based savings. Check the "Coupon Wallet" in the payment section to view available and saved coupons. Some coupons have minimum booking amount requirements.',
+      'During the payment step of a booking, enter the coupon code in the "Apply Coupon" field. The discount is reflected instantly in your cost breakdown. Coupons may be flat-amount or percentage-based, and some require a minimum booking value. Browse active coupons in the "Coupon Wallet" section. Each coupon has a clearly stated validity period and usage conditions.',
   },
   {
     question: 'What is the security deposit?',
     answer:
-      'The security deposit is a refundable amount collected at the time of booking, separate from the monthly rent. It serves as a safety net for PG owners against damages or unpaid dues. The exact deposit amount varies by PG and is displayed on the listing page. Refunds are processed when you vacate, subject to a room condition inspection.',
+      'The security deposit is a refundable amount — typically equal to one or two months\' rent — collected at the time of booking. It is held separately from your monthly rent and covers potential damages or outstanding dues. The exact amount is clearly displayed on each PG\'s listing page. When you vacate, the PG owner inspects the room and initiates the refund within 7 business days.',
   },
   {
     question: 'How do I get a refund?',
     answer:
-      'Refund requests can be initiated from "My Bookings" for eligible cancellations. Online payments are refunded to the original payment method within 5-7 business days. Refund policies depend on the cancellation timing and the PG owner\'s terms. For disputes, contact StayEg support with your booking ID for assistance.',
+      'For booking cancellations, go to "My Bookings," select the booking, and tap "Cancel." If you are eligible for a refund (per the cancellation policy), it is automatically initiated to your original payment method within 5–7 business days. For security deposit refunds, the PG owner initiates the process after checkout inspection. If you face delays, email support@stayeg.in with your booking ID.',
+  },
+  {
+    question: 'Are there any hidden charges?',
+    answer:
+      'No. StayEg is free for tenants — there are no booking fees, service charges, or convenience fees. The price shown on the listing page is the monthly rent you pay. Any applicable security deposit is stated upfront before you confirm the booking. PG owners pay a disclosed platform subscription fee; tenants are never charged.',
   },
 ];
 
@@ -308,7 +323,7 @@ export default function HelpPage() {
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Help &amp; Support</h1>
-              <p className="text-sm text-muted-foreground">Find answers and learn how to use StayEg</p>
+              <p className="text-sm text-muted-foreground">Answers to common questions, step-by-step guides, and support channels</p>
             </div>
           </div>
         </div>
@@ -363,7 +378,7 @@ export default function HelpPage() {
               <h2 className="text-lg sm:text-xl font-bold text-foreground">Getting Started Guide</h2>
             </div>
             <p className="text-sm text-muted-foreground mb-6">
-              Follow these steps to get the most out of StayEg.
+              Whether you are a tenant, PG owner, or service vendor — here is how to get started on StayEg.
             </p>
           </FadeIn>
 
@@ -404,16 +419,16 @@ export default function HelpPage() {
         <section>
           <FadeIn>
             <div className="flex items-center gap-2 mb-2">
-              <div className="size-8 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                <Users className="size-4 text-blue-700 dark:text-blue-300" />
+              <div className="size-8 rounded-lg bg-brand-teal/15 flex items-center justify-center">
+                <Users className="size-4 text-brand-teal" />
               </div>
               <h2 className="text-lg sm:text-xl font-bold text-foreground">Tenant FAQ</h2>
-              <Badge className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300 border-0 text-xs ml-1">
+              <Badge className="bg-brand-teal/15 text-brand-teal border-0 text-xs ml-1">
                 {TENANT_FAQ.length} questions
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Common questions from tenants about finding, booking, and living in PGs.
+              Everything tenants need to know — from searching and booking to payments and transfers.
             </p>
           </FadeIn>
 
@@ -454,7 +469,7 @@ export default function HelpPage() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Everything PG owners need to know about listing, managing, and growing their business.
+              Listing properties, managing tenants, collecting rent, and using analytics.
             </p>
           </FadeIn>
 
@@ -495,7 +510,7 @@ export default function HelpPage() {
               </Badge>
             </div>
             <p className="text-sm text-muted-foreground mb-4">
-              Answers about security, refunds, coupons, and deposits.
+              Payment security, refund timelines, coupon usage, and deposit policies.
             </p>
           </FadeIn>
 
@@ -536,7 +551,8 @@ export default function HelpPage() {
                     <h3 className="text-lg sm:text-xl font-bold text-foreground mb-1">Still Need Help?</h3>
                     <p className="text-sm text-muted-foreground leading-relaxed">
                       Our support team is available Monday to Saturday, 9:00 AM to 6:00 PM IST.
-                      Reach out through any of the channels below and we will get back to you promptly.
+                      For urgent safety concerns, our emergency helpline operates 24/7.
+                      Reach out through any channel below and we typically respond within 2 hours during business hours.
                     </p>
                   </div>
 

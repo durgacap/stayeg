@@ -59,6 +59,7 @@ import {
 } from '@/components/ui/select';
 
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { STATUSES, AVAILABLE_COUPONS, BADGE } from '@/lib/constants';
 import type { Payment, PaymentMethod } from '@/lib/types';
 
@@ -165,7 +166,7 @@ export default function PaymentSection() {
   const handlePayNow = async (payment: Payment) => {
     setPayingId(payment.id);
     try {
-      const res = await fetch('/api/payments', {
+      const res = await authFetch('/api/payments', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -319,12 +320,29 @@ export default function PaymentSection() {
         </motion.div>
 
         {/* Payment Stats */}
+        {isLoading ? (
+          <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <Card key={i} className="border-0 shadow-sm animate-pulse">
+                <CardContent className="p-5">
+                  <div className="flex items-center gap-3">
+                    <div className="size-10 bg-muted rounded-xl" />
+                    <div className="space-y-2 flex-1">
+                      <div className="h-4 w-20 bg-muted rounded" />
+                      <div className="h-6 w-28 bg-muted rounded" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </motion.div>
+        ) : (
         <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <Card className="border-0 shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center gap-3">
-                <div className="size-10 bg-green-50 rounded-xl flex items-center justify-center">
-                  <CheckCircle2 className="size-5 text-green-500" />
+                <div className="size-10 bg-brand-lime/15 rounded-xl flex items-center justify-center">
+                  <CheckCircle2 className="size-5 text-brand-lime" />
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Total Paid</div>
@@ -339,8 +357,8 @@ export default function PaymentSection() {
           <Card className="border-0 shadow-sm">
             <CardContent className="p-5">
               <div className="flex items-center gap-3">
-                <div className="size-10 bg-brand-sage-light rounded-xl flex items-center justify-center">
-                  <Clock className="size-5 text-amber-500" />
+                <div className="size-10 bg-brand-sage/10 rounded-xl flex items-center justify-center">
+                  <Clock className="size-5 text-brand-sage" />
                 </div>
                 <div>
                   <div className="text-sm text-muted-foreground">Pending</div>
@@ -368,6 +386,7 @@ export default function PaymentSection() {
             </CardContent>
           </Card>
         </motion.div>
+        )}
 
         {/* Main Content Tabs */}
         <motion.div variants={itemVariants}>
@@ -420,18 +439,27 @@ export default function PaymentSection() {
                 </CardHeader>
                 <CardContent>
                   {isLoading ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {Array.from({ length: 4 }).map((_, i) => (
-                        <Skeleton key={i} className="h-16 w-full rounded-xl" />
+                        <div key={i} className="flex items-center gap-4 animate-pulse px-2 py-3">
+                          <div className="h-4 w-28 bg-muted rounded" />
+                          <div className="h-4 w-16 bg-muted rounded" />
+                          <div className="h-4 w-24 bg-muted rounded" />
+                          <div className="h-4 w-20 bg-muted rounded" />
+                          <div className="flex-1" />
+                          <div className="h-4 w-20 bg-muted rounded" />
+                          <div className="h-5 w-16 bg-muted rounded-full" />
+                          <div className="h-7 w-20 bg-muted rounded-md" />
+                        </div>
                       ))}
                     </div>
                   ) : pastPayments.length === 0 ? (
-                    <div className="text-center py-12">
-                      <div className="size-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-3">
-                        <CreditCard className="size-8 text-muted-foreground" />
+                    <div className="flex flex-col items-center justify-center py-12 px-4">
+                      <div className="size-16 rounded-full bg-brand-teal/10 flex items-center justify-center mb-4">
+                        <CreditCard className="size-8 text-brand-teal" />
                       </div>
                       <h3 className="text-lg font-semibold text-foreground mb-1">No payments yet</h3>
-                      <p className="text-muted-foreground text-sm">Your payment history will appear here once you make a booking.</p>
+                      <p className="text-sm text-muted-foreground text-center max-w-sm">Your payment history will appear here once you make a booking.</p>
                     </div>
                   ) : (
                     <>
@@ -572,8 +600,8 @@ export default function PaymentSection() {
                 <CardContent>
                   {upcomingPayments.length === 0 ? (
                     <div className="text-center py-12">
-                      <div className="size-16 bg-green-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                        <CheckCircle className="size-8 text-green-300" />
+                      <div className="size-16 bg-brand-lime/15 rounded-full flex items-center justify-center mx-auto mb-3">
+                        <CheckCircle className="size-8 text-brand-lime" />
                       </div>
                       <h3 className="text-lg font-semibold text-foreground mb-1">All caught up!</h3>
                       <p className="text-muted-foreground text-sm">No pending payments at the moment.</p>
@@ -623,7 +651,7 @@ export default function PaymentSection() {
                                   ₹{Math.round(payment.amount).toLocaleString('en-IN')}
                                 </div>
                                 {payment.dueDate && (
-                                  <p className={`text-xs mt-0.5 ${isOverdue ? 'text-red-500 font-medium' : isDueSoon ? 'text-amber-600 font-medium' : 'text-muted-foreground'}`}>
+                                  <p className={`text-xs mt-0.5 ${isOverdue ? 'text-red-500 font-medium' : isDueSoon ? 'text-brand-sage font-medium' : 'text-muted-foreground'}`}>
                                     {isOverdue ? 'Overdue' : isDueSoon ? 'Due Soon' : 'Due'}: {format(new Date(payment.dueDate), 'dd MMM yyyy')}
                                   </p>
                                 )}
@@ -660,7 +688,7 @@ export default function PaymentSection() {
                               </p>
                             )}
                             {payCouponDiscount > 0 && (
-                              <div className="flex items-center gap-1.5 mb-3 text-xs text-green-600">
+                              <div className="flex items-center gap-1.5 mb-3 text-xs text-brand-lime">
                                 <CheckCircle2 className="size-3.5" />
                                 Coupon applied! You save ₹{payCouponDiscount.toLocaleString('en-IN')}
                               </div>
@@ -708,7 +736,7 @@ export default function PaymentSection() {
                                   variant="outline"
                                   onClick={() => handlePayNow(payment)}
                                   disabled={payingId === payment.id}
-                                  className="text-xs border-red-200 text-red-600 hover:bg-red-50"
+                                  className="text-xs border-destructive/20 text-destructive hover:bg-destructive/10"
                                 >
                                   <RefreshCcw className="size-3.5 mr-1" />
                                   Retry
@@ -767,7 +795,7 @@ export default function PaymentSection() {
                           transition={{ delay: index * 0.05 }}
                           className={`relative rounded-xl border overflow-hidden ${
                             isApplied
-                              ? 'border-green-300 bg-green-50/50'
+                              ? 'border-brand-lime/30 bg-brand-lime/15'
                               : isActive
                               ? 'border-brand-teal/20 bg-card'
                               : 'border-border bg-muted opacity-60'
@@ -809,7 +837,7 @@ export default function PaymentSection() {
                                 <button
                                   onClick={() => handleCopyCode(coupon.code)}
                                   disabled={!isActive}
-                                  className="shrink-0 size-7 rounded-lg bg-muted hover:bg-brand-teal/15 flex items-center justify-center transition-colors disabled:opacity-40"
+                                  className="shrink-0 size-7 rounded-lg bg-muted hover:bg-brand-teal/15 flex items-center justify-center transition-colors disabled:opacity-50"
                                 >
                                   {copiedCode === coupon.code ? (
                                     <CheckCircle2 className="size-3.5 text-green-500" />
@@ -887,7 +915,7 @@ export default function PaymentSection() {
                             <div className="text-sm font-medium text-foreground">{method.label}</div>
                             <div className="text-xs text-muted-foreground">{PAYMENT_METHOD_LABELS[method.type]}</div>
                           </div>
-                          <Badge variant="outline" className="text-xs text-green-600 border-green-200 bg-green-50">
+                          <Badge variant="outline" className="text-xs text-brand-lime border-brand-lime/20 bg-brand-lime/15">
                             Default
                           </Badge>
                           <Button
@@ -1109,7 +1137,7 @@ export default function PaymentSection() {
                     </span>
                   </div>
                   {payCouponDiscount > 0 && (
-                    <div className="text-xs text-green-600">
+                    <div className="text-xs text-brand-lime">
                       Coupon discount: -₹{payCouponDiscount.toLocaleString('en-IN')}
                     </div>
                   )}

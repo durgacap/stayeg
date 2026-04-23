@@ -14,11 +14,11 @@ const TERMS_SECTIONS = [
   {
     number: '1',
     title: 'Acceptance of Terms',
-    content: `By accessing or using StayEg ("the Platform"), you acknowledge that you have read, understood, and agree to be bound by these Terms of Service ("Terms"). If you do not agree to these Terms, you may not use the Platform.
+    content: `By accessing or using StayEg ("the Platform"), operated by StayEg Technologies Private Limited, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service ("Terms"). If you do not agree with any provision of these Terms, you must discontinue use of the Platform immediately.
 
-StayEg reserves the right to modify these Terms at any time. Continued use of the Platform after modifications constitutes acceptance of the updated Terms. We will notify users of significant changes via email or platform notifications.
+StayEg reserves the right to amend these Terms at any time. Material changes will be communicated via email to your registered address or through an in-app notification at least 15 days before they take effect. Your continued use of the Platform after the effective date constitutes acceptance of the revised Terms.
 
-These Terms apply to all users including tenants, PG owners, vendors, and visitors of the platform.`,
+These Terms govern the use of the Platform by all categories of users, including tenants, PG owners, service vendors, and casual visitors.`,
   },
   {
     number: '2',
@@ -38,43 +38,42 @@ StayEg reserves the right to suspend or terminate accounts that violate these Te
   {
     number: '3',
     title: 'PG Listings',
-    content: `PG owners are responsible for ensuring that all information provided in their property listings is accurate and up to date, including:
+    content: `PG owners are solely responsible for the accuracy and completeness of all information provided in their property listings, including but not limited to:
 
-• Property descriptions, amenities, and photographs
-• Pricing, availability, and room configurations
-• Safety features and compliance with local regulations
-• Rules regarding gender, lifestyle, and house policies
+• Property descriptions, amenities, and high-quality photographs that represent the current condition
+• Pricing, real-time availability, and detailed room configurations
+• Safety features and compliance with applicable local and state regulations
+• Rules regarding gender preference, lifestyle, visitor policy, and house rules
 
-StayEg does not guarantee the accuracy of listings and acts as an intermediary platform. We conduct basic verification but do not physically inspect properties unless explicitly stated.
+StayEg conducts a physical verification of listed properties through its field team; however, StayEg acts as an intermediary platform and does not assume responsibility for the condition, safety, or legality of any individual PG. Listings found to contain materially misleading information will be removed, and the PG owner's account may be suspended or terminated.
 
-Misleading or fraudulent listings will result in immediate removal and potential account termination.`,
+PG owners must update their listings within 48 hours of any material change (price revision, amenity removal, rule change, etc.).`,
   },
   {
     number: '4',
     title: 'Bookings',
-    content: `All bookings made through StayEg are subject to availability and confirmation by the PG owner. The booking process involves:
+    content: `All bookings made through StayEg are subject to bed availability and confirmation by the PG owner. The booking workflow is as follows:
 
-• Submission of a booking request by the tenant
-• Confirmation or rejection by the PG owner within 24 hours
-• Payment of advance amount upon confirmation
-• Generation of a digital booking confirmation
+• The tenant selects a bed and submits a booking request along with personal details and payment
+• Upon successful payment, the booking is confirmed instantly and a digital confirmation is generated
+• The tenant may visit the PG within 48 hours of check-in; if the property materially differs from the listing, the tenant is entitled to a full refund
 
-StayEg facilitates the booking process but is not a party to the landlord-tenant relationship. Disputes regarding bookings should first be addressed between the parties, with StayEg providing mediation support if needed.
+StayEg facilitates the booking process as an intermediary and is not a party to the landlord-tenant relationship. Disputes regarding bookings should first be raised through the in-app complaint system. If unresolved within 7 days, either party may request StayEg's formal mediation.
 
-Cancellation of confirmed bookings is subject to the cancellation policy outlined in Section 8.`,
+Cancellation of confirmed bookings is governed by the cancellation policy in Section 7.`,
   },
   {
     number: '5',
     title: 'Payments',
-    content: `StayEg facilitates payments between tenants and PG owners through secure payment gateways. Payment terms include:
+    content: `StayEg facilitates payments between tenants and PG owners through PCI-DSS Level 1 compliant payment gateways. Key payment terms:
 
 • All transactions are processed in Indian Rupees (INR)
-• StayEg charges a platform fee as specified during checkout
-• Rent payments are released to PG owners within 2-3 business days
-• Security deposits are held in escrow until checkout
-• Payment receipts are generated for all transactions
+• StayEg charges a platform subscription fee to PG owners as specified on the Pricing page; tenants are not charged any booking or service fee
+• Rent payments collected online are disbursed to PG owners within 2–3 business days
+• Security deposits are held in a designated escrow account and released to the PG owner only upon confirmed tenant checkout
+• Digital payment receipts are generated for every transaction and stored in the user's payment history
 
-Users agree not to circumvent the payment system or make direct payments outside the Platform for booked stays. Such actions may result in loss of platform protections and account suspension.`,
+Users must not circumvent the Platform's payment system by making direct cash or bank transfers for stays sourced through StayEg. Doing so voids all platform protections, including dispute mediation and refund eligibility.`,
   },
   {
     number: '6',
@@ -118,15 +117,15 @@ Users may not:
   {
     number: '9',
     title: 'Limitation of Liability',
-    content: `StayEg acts as an intermediary platform and does not guarantee the quality, safety, or legality of any PG listing, vendor service, or user interaction.
+    content: `StayEg acts as an intermediary platform and does not guarantee the quality, safety, legality, or habitability of any PG listing, vendor service, or user interaction.
 
-To the maximum extent permitted by law:
-• StayEg shall not be liable for any direct, indirect, incidental, or consequential damages arising from use of the Platform
-• StayEg is not responsible for disputes between users (tenants, owners, vendors)
-• StayEg does not guarantee the accuracy of information provided by users
-• Total liability shall not exceed the fees paid by the user in the preceding 12 months
+To the maximum extent permitted by applicable Indian law:
+• StayEg shall not be liable for any direct, indirect, incidental, special, or consequential damages arising from or related to use of the Platform
+• StayEg is not a party to the landlord-tenant relationship and is not responsible for disputes between users
+• StayEg does not independently verify every claim made in user-submitted listings, reviews, or vendor profiles
+• StayEg's total aggregate liability shall not exceed the platform fees paid by the claiming user in the 12 months preceding the claim
 
-Users are encouraged to verify all information independently before making decisions.`,
+Users are strongly advised to visit the PG in person before making any payment, verify all claims independently, and read the rental agreement thoroughly before signing.`,
   },
   {
     number: '10',
@@ -156,15 +155,16 @@ Users who do not agree with modifications may terminate their account before the
   {
     number: '12',
     title: 'Contact Information',
-    content: `For any questions, concerns, or notices regarding these Terms of Service, please contact us:
+    content: `For any questions, legal notices, or concerns regarding these Terms of Service, please contact us:
 
 StayEg Technologies Private Limited
+3rd Floor, Innovation Hub, Koramangala
+Bangalore 560034, Karnataka, India
 Email: legal@stayeg.in
-Phone: +91 80-XXXX-XXXX
-Address: Bangalore, Karnataka, India
+Phone: +91 80-4567-8900
 
-Business Hours: Monday to Saturday, 9:00 AM - 6:00 PM IST
-Response Time: We aim to respond to all inquiries within 48 hours.`,
+Business Hours: Monday to Saturday, 9:00 AM – 6:00 PM IST
+Response Time: We acknowledge all legal inquiries within 48 hours and provide a substantive response within 10 business days.`,
   },
 ];
 
@@ -204,7 +204,7 @@ export default function TermsPage() {
           </div>
 
           <Badge variant="outline" className="mt-2 text-xs text-muted-foreground">
-            Last Updated: January 2025
+            Last Updated: April 2026
           </Badge>
         </div>
       </section>

@@ -105,7 +105,7 @@ export default function PricingPage() {
             <Gift className="size-5 shrink-0" />
             <div className="text-left">
               <div className="font-bold text-sm">First 1000 PG Owners Get 1 Year FREE!</div>
-              <div className="text-brand-teal/50 text-xs">Use code FIRSTFREE at checkout</div>
+              <div className="text-white/80 text-xs">Use code FIRSTFREE at checkout</div>
             </div>
             <Badge variant="secondary" className="bg-white/20 text-white border-0 text-xs shrink-0">
               <Clock className="size-3 mr-1" />
@@ -150,7 +150,7 @@ export default function PricingPage() {
                     className={`mt-2 ${
                       plan.popular
                         ? 'bg-brand-teal text-white hover:bg-brand-deep'
-                        : 'bg-brand-sage/50 text-brand-sage'
+                        : 'bg-brand-sage/15 text-brand-sage'
                     }`}
                   >
                     {plan.badge}
@@ -183,8 +183,8 @@ export default function PricingPage() {
                   <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Includes</p>
                   {plan.features.map((feature) => (
                     <div key={feature} className="flex items-start gap-2.5">
-                      <div className="size-5 rounded-full bg-green-100 flex items-center justify-center shrink-0 mt-0.5">
-                        <Check className="size-3 text-green-600" />
+                      <div className="size-5 rounded-full bg-brand-lime/20 flex items-center justify-center shrink-0 mt-0.5">
+                        <Check className="size-3 text-brand-lime" />
                       </div>
                       <span className="text-sm text-muted-foreground">{feature}</span>
                     </div>
@@ -238,11 +238,11 @@ export default function PricingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {/* Tenants */}
-            <Card className="border-green-200 bg-gradient-to-br from-green-50 to-background">
+            <Card className="border-brand-lime/20 bg-gradient-to-br from-brand-lime/10 to-background">
               <CardContent className="pt-6">
                 <div className="flex items-start gap-4">
-                  <div className="size-12 rounded-xl bg-green-100 flex items-center justify-center shrink-0">
-                    <Users className="size-6 text-green-600" />
+                  <div className="size-12 rounded-xl bg-brand-lime/20 flex items-center justify-center shrink-0">
+                    <Users className="size-6 text-brand-lime" />
                   </div>
                   <div className="space-y-2">
                     <div className="flex items-center gap-2">
@@ -348,7 +348,7 @@ export default function PricingPage() {
                         variant={isApplied ? 'outline' : 'default'}
                         className={`shrink-0 text-xs ${
                           isApplied
-                            ? 'text-green-600 border-green-300 bg-green-50'
+                            ? 'text-brand-lime border-brand-lime/30 bg-brand-lime/15'
                             : 'bg-foreground hover:bg-foreground/80'
                         }`}
                         onClick={() => handleApplyCoupon(coupon.code)}

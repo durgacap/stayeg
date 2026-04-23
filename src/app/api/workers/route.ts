@@ -1,5 +1,6 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, isTableMissing } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +17,10 @@ export async function GET(request: NextRequest) {
     if (role) query = query.eq('role', role);
 
     const { data: workers, error } = await query;
-    if (error) throw error;
+    if (error) {
+      if (isTableMissing(error)) return NextResponse.json([]);
+      throw error;
+    }
 
     return NextResponse.json(workers || []);
   } catch (error) {
@@ -27,6 +31,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth guard: verify user session before creating worker
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
     const { data: worker, error } = await supabase
       .from('workers')
@@ -50,6 +58,10 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
+    // Auth guard: verify user session before updating worker
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
     const { id, ...data } = body;
 

@@ -428,31 +428,32 @@ export default function PGListing() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-20"
+            className="flex flex-col items-center justify-center py-16 px-4"
           >
-            <div className="size-20 bg-brand-teal/10 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Building2 className="size-10 text-brand-teal/50" />
+            <div className="size-16 rounded-full bg-brand-teal/10 flex items-center justify-center mb-4">
+              <Building2 className="size-8 text-brand-teal" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">
-              No PGs found
+            <h3 className="text-lg font-semibold text-foreground mb-1">
+              No PGs found in {searchFilters.city || 'Bangalore'}
             </h3>
-            <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-              We couldn&apos;t find any PGs matching your filters in{' '}
-              {searchFilters.city || 'Bangalore'}. Try adjusting your filters or searching in a different area.
+            <p className="text-sm text-muted-foreground mb-6 text-center max-w-sm">
+              Try adjusting your filters or searching in a different area to find more options.
             </p>
             <div className="flex gap-3 justify-center">
               <Button
                 variant="outline"
+                size="sm"
                 onClick={clearFilters}
                 className="border-brand-teal/30 text-brand-teal hover:bg-brand-teal/10"
               >
                 Clear Filters
               </Button>
               <Button
+                size="sm"
                 onClick={() => setCurrentView('LANDING')}
                 className="bg-brand-teal hover:bg-brand-deep"
               >
-                Go Home
+                Explore Other Cities
               </Button>
             </div>
           </motion.div>

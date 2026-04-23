@@ -1,5 +1,6 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, isTableMissing } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -20,7 +21,10 @@ export async function GET(request: NextRequest) {
     if (pgId) query = query.eq('pg_id', pgId);
 
     const { data: bookings, error } = await query;
-    if (error) throw error;
+    if (error) {
+      if (isTableMissing(error)) return NextResponse.json([]);
+      throw error;
+    }
 
     const formatted = (bookings || []).map((b: any) => ({
       ...b,
@@ -41,6 +45,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth guard: verify user session before creating booking
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
     const { userId, pgId, bedId, checkInDate, advancePaid } = body;
 
@@ -78,6 +86,10 @@ export async function POST(request: NextRequest) {
 
 export async function PATCH(request: NextRequest) {
   try {
+    // Auth guard: verify user session before updating booking
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
     const { bookingId, status } = body;
 

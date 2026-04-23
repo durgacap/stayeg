@@ -49,6 +49,8 @@ export type AppView =
   | 'ADMIN_DASHBOARD'
   | 'ADMIN_VERIFICATION'
   | 'ADMIN_USERS'
+  // Setup
+  | 'DATABASE_SETUP_V2'
   // Policy & Info pages
   | 'TERMS'
   | 'PRIVACY'
@@ -93,6 +95,8 @@ export interface PG {
   totalReviews: number;
   status: PGStatus;
   isVerified: boolean;
+  createdAt?: string;
+  updatedAt?: string;
   owner?: User;
   rooms?: Room[];
 }

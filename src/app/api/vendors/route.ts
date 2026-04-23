@@ -1,5 +1,6 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, isTableMissing } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,7 +17,10 @@ export async function GET(request: NextRequest) {
     if (city) query = query.eq('city', city);
 
     const { data: vendors, error } = await query;
-    if (error) throw error;
+    if (error) {
+      if (isTableMissing(error)) return NextResponse.json([]);
+      throw error;
+    }
 
     return NextResponse.json(vendors || []);
   } catch (error) {
@@ -27,6 +31,10 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
+    // Auth guard: verify user session before creating vendor
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
 
     if (!body.name || !body.type || !body.phone) {

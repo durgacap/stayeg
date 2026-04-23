@@ -136,7 +136,7 @@ export default function OwnerDashboard() {
           type: 'booking',
           message: `${b.user?.name || 'Tenant'} booked at ${b.pg?.name || 'PG'}`,
           time: new Date(b.createdAt).toLocaleDateString('en-IN'),
-          icon: <CalendarDays className="size-4 text-blue-500" />,
+          icon: <CalendarDays className="size-4 text-brand-teal" />,
         });
       });
     }
@@ -159,15 +159,82 @@ export default function OwnerDashboard() {
 
   if (isLoading) {
     return (
-      <div className="p-4 md:p-6 space-y-6">
+      <div className="p-4 md:p-6 space-y-6 animate-pulse">
+        {/* Header Skeleton */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div className="space-y-2">
+            <div className="h-8 w-48 bg-muted rounded" />
+            <div className="h-4 w-72 bg-muted rounded" />
+          </div>
+          <div className="h-7 w-28 bg-muted rounded-full" />
+        </div>
+
+        {/* KPI Cards Skeleton */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse">
-              <CardContent className="p-6">
-                <div className="h-20 bg-muted rounded" />
+            <Card key={i}>
+              <CardContent className="p-4 md:p-5 space-y-3">
+                <div className="flex items-start justify-between">
+                  <div className="space-y-2">
+                    <div className="h-4 w-20 bg-muted rounded" />
+                    <div className="h-7 w-24 bg-muted rounded" />
+                  </div>
+                  <div className="size-10 bg-muted rounded-xl" />
+                </div>
               </CardContent>
             </Card>
           ))}
+        </div>
+
+        {/* Charts Row Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="h-5 w-32 bg-muted rounded" />
+            </CardHeader>
+            <CardContent>
+              <div className="h-56 bg-muted rounded-lg" />
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="h-5 w-40 bg-muted rounded" />
+            </CardHeader>
+            <CardContent>
+              <div className="h-56 bg-muted rounded-lg" />
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Bottom Row Skeleton */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card>
+            <CardHeader className="pb-2">
+              <div className="h-5 w-24 bg-muted rounded" />
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="h-12 bg-muted rounded-xl" />
+              ))}
+            </CardContent>
+          </Card>
+          <Card className="lg:col-span-2">
+            <CardHeader className="pb-2">
+              <div className="h-5 w-36 bg-muted rounded" />
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {[...Array(4)].map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-3">
+                  <div className="size-7 bg-muted rounded-lg" />
+                  <div className="flex-1 space-y-1.5">
+                    <div className="h-4 w-48 bg-muted rounded" />
+                    <div className="h-3 w-24 bg-muted rounded" />
+                  </div>
+                  <div className="h-5 w-14 bg-muted rounded-full" />
+                </div>
+              ))}
+            </CardContent>
+          </Card>
         </div>
       </div>
     );
@@ -223,18 +290,18 @@ export default function OwnerDashboard() {
           transition={{ delay: 0.4 }}
         >
           <Card
-            className="border-red-200 bg-gradient-to-r from-red-50 to-brand-teal/10 cursor-pointer hover:shadow-md transition-shadow"
+            className="border-destructive/20 bg-gradient-to-r from-destructive/10 to-brand-teal/10 cursor-pointer hover:shadow-md transition-shadow"
             onClick={() => setCurrentView('OWNER_COMPLAINTS')}
           >
             <CardContent className="p-4 flex items-center gap-4">
-              <div className="bg-red-100 p-3 rounded-xl">
-                <AlertTriangle className="size-5 text-red-600" />
+              <div className="bg-destructive/15 p-3 rounded-xl">
+                <AlertTriangle className="size-5 text-destructive" />
               </div>
               <div className="flex-1">
-                <p className="font-semibold text-red-800">{openComplaints} Open Complaints</p>
-                <p className="text-sm text-red-600">Requires your attention. Click to view details.</p>
+                <p className="font-semibold text-destructive">{openComplaints} Open Complaints</p>
+                <p className="text-sm text-destructive/80">Requires your attention. Click to view details.</p>
               </div>
-              <Badge className="bg-red-500 text-white hover:opacity-80">{openComplaints}</Badge>
+              <Badge className="bg-destructive text-white hover:opacity-80">{openComplaints}</Badge>
             </CardContent>
           </Card>
         </motion.div>
@@ -251,7 +318,7 @@ export default function OwnerDashboard() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <IndianRupee className="size-4 text-green-600" />
+                <IndianRupee className="size-4 text-brand-lime" />
                 Revenue Trend
               </CardTitle>
             </CardHeader>
@@ -285,7 +352,7 @@ export default function OwnerDashboard() {
           <Card>
             <CardHeader className="pb-2">
               <CardTitle className="text-base font-semibold flex items-center gap-2">
-                <Users className="size-4 text-purple-600" />
+                <Users className="size-4 text-chart-3" />
                 PG Gender Distribution
               </CardTitle>
             </CardHeader>
@@ -401,7 +468,7 @@ export default function OwnerDashboard() {
                         className={`text-xs shrink-0 ${
                           item.type === 'complaint'
                             ? 'text-red-600 border-red-200'
-                            : 'text-blue-600 border-blue-200'
+                            : 'text-brand-teal border-brand-teal/20'
                         }`}
                       >
                         {item.type}

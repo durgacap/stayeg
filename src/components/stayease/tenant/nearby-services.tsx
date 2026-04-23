@@ -30,19 +30,19 @@ const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 const SERVICE_COLORS: Record<string, { bg: string; text: string; iconBg: string }> = {
-  'Metro Station': { bg: 'bg-blue-50', text: 'text-blue-600', iconBg: 'bg-blue-100' },
-  Hospitals: { bg: 'bg-red-50', text: 'text-red-600', iconBg: 'bg-red-100' },
+  'Metro Station': { bg: 'bg-brand-teal/10', text: 'text-brand-teal', iconBg: 'bg-brand-teal/15' },
+  Hospitals: { bg: 'bg-destructive/10', text: 'text-destructive', iconBg: 'bg-destructive/15' },
   Restaurants: { bg: 'bg-brand-teal/10', text: 'text-brand-teal', iconBg: 'bg-brand-teal/15' },
-  'Shopping Malls': { bg: 'bg-purple-50', text: 'text-purple-600', iconBg: 'bg-purple-100' },
-  Parks: { bg: 'bg-green-50', text: 'text-green-600', iconBg: 'bg-green-100' },
+  'Shopping Malls': { bg: 'bg-chart-3/10', text: 'text-chart-3', iconBg: 'bg-chart-3/15' },
+  Parks: { bg: 'bg-brand-lime/15', text: 'text-brand-lime', iconBg: 'bg-brand-lime/20' },
   Gyms: { bg: 'bg-brand-sage/10', text: 'text-brand-sage', iconBg: 'bg-brand-sage/15' },
-  'Banks & ATMs': { bg: 'bg-teal-50', text: 'text-teal-600', iconBg: 'bg-teal-100' },
-  Pharmacies: { bg: 'bg-pink-50', text: 'text-pink-600', iconBg: 'bg-pink-100' },
+  'Banks & ATMs': { bg: 'bg-brand-teal/10', text: 'text-brand-teal', iconBg: 'bg-brand-teal/15' },
+  Pharmacies: { bg: 'bg-chart-5/10', text: 'text-chart-5', iconBg: 'bg-chart-5/15' },
 };
 
 function BangaloreMapPlaceholder() {
   return (
-    <div className="relative w-full bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 rounded-2xl overflow-hidden border border-green-200/50 min-h-[400px]">
+    <div className="relative w-full bg-gradient-to-br from-brand-lime/10 via-brand-teal-light to-brand-teal/10 rounded-2xl overflow-hidden border border-brand-lime/20 min-h-[400px]">
       {/* Grid pattern to simulate map */}
       <svg className="absolute inset-0 w-full h-full opacity-10" xmlns="http://www.w3.org/2000/svg">
         <defs>
@@ -222,7 +222,7 @@ export default function NearbyServices() {
                   distance: '0.8 km',
                   rating: 4.5,
                   icon: TrainFront,
-                  color: 'text-blue-500 bg-blue-50',
+                  color: 'text-brand-teal bg-brand-teal/10',
                 },
                 {
                   name: 'Apollo Hospital',
@@ -230,7 +230,7 @@ export default function NearbyServices() {
                   distance: '1.2 km',
                   rating: 4.3,
                   icon: Hospital,
-                  color: 'text-red-500 bg-red-50',
+                  color: 'text-destructive bg-destructive/10',
                 },
                 {
                   name: 'Truffles Restaurant',
@@ -246,7 +246,7 @@ export default function NearbyServices() {
                   distance: '2.1 km',
                   rating: 4.4,
                   icon: ShoppingBag,
-                  color: 'text-purple-500 bg-purple-50',
+                  color: 'text-chart-3 bg-chart-3/10',
                 },
                 {
                   name: 'Cubbon Park',
@@ -254,7 +254,7 @@ export default function NearbyServices() {
                   distance: '1.5 km',
                   rating: 4.7,
                   icon: TreePine,
-                  color: 'text-green-500 bg-green-50',
+                  color: 'text-brand-lime bg-brand-lime/15',
                 },
               ].map((place, i) => {
                 const PlaceIcon = place.icon;

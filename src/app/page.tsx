@@ -48,6 +48,7 @@ import AboutPage from '@/components/stayease/policy/about-page';
 import HelpPage from '@/components/stayease/policy/help-page';
 import OwnerGuide from '@/components/stayease/owner/owner-guide';
 import CursorFollower from '@/components/ui/cursor-follower';
+import DatabaseSetupV2 from '@/components/stayease/setup/database-setup-v2';
 
 // Navigation items
 const PUBLIC_NAV = [
@@ -94,7 +95,7 @@ const OWNER_MOBILE_NAV = [
 ];
 
 const HIDE_HEADER_VIEWS = ['LOGIN', 'SIGNUP'] as const;
-const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'PROFILE'] as const;
+const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'PROFILE', 'DATABASE_SETUP_V2'] as const;
 
 function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV | typeof OWNER_MOBILE_NAV }) {
   const { currentView, setCurrentView } = useAppStore();
@@ -295,6 +296,11 @@ function TopHeader() {
                 <div className="px-3 space-y-1">
                   <button onClick={() => { setCurrentView('ABOUT'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">About StayEg</button>
                   <button onClick={() => { setCurrentView('HELP'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Help & Support</button>
+                  {!isLoggedIn && (
+                    <button onClick={() => { setCurrentView('DATABASE_SETUP_V2'); setMobileMenuOpen(false); }} className="block text-xs text-brand-teal hover:text-brand-teal/80 font-medium">
+                      ⚙️ Setup Database
+                    </button>
+                  )}
                   <button onClick={() => { setCurrentView('TERMS'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Terms of Service</button>
                   <button onClick={() => { setCurrentView('PRIVACY'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Privacy Policy</button>
                   <button onClick={() => { setCurrentView('SAFE_USE'); setMobileMenuOpen(false); }} className="block text-xs text-muted-foreground hover:text-foreground">Safe Use Guidelines</button>
@@ -316,6 +322,9 @@ function MainContent() {
     // Auth views
     if (currentView === 'LOGIN') return <LoginPage />;
     if (currentView === 'SIGNUP') return <SignupPage />;
+
+    // Setup view
+    if (currentView === 'DATABASE_SETUP_V2') return <DatabaseSetupV2 />;
 
     // Policy & pricing views (accessible to all)
     if (currentView === 'PRICING') return <PricingPage />;

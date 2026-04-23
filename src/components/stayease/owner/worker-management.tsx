@@ -18,6 +18,7 @@ import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { BADGE, BADGE_BORDER } from '@/lib/constants';
 
 const ROLE_COLORS: Record<string, string> = {
@@ -75,7 +76,7 @@ export default function WorkerManagement() {
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof form) => {
-      const res = await fetch('/api/workers', {
+      const res = await authFetch('/api/workers', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

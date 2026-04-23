@@ -37,6 +37,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { STATUSES, BADGE } from '@/lib/constants';
 import type { Complaint } from '@/lib/types';
 
@@ -58,7 +59,7 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const PRIORITY_COLORS: Record<string, string> = {
   LOW: BADGE.blue,
-  MEDIUM: 'bg-brand-sage-light text-brand-sage',
+  MEDIUM: 'bg-brand-sage/10 text-brand-sage',
   HIGH: 'bg-brand-teal/15 text-brand-teal',
   URGENT: BADGE.red,
 };
@@ -113,7 +114,7 @@ export default function ComplaintSection() {
 
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/complaints', {
+      const res = await authFetch('/api/complaints', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -281,9 +282,9 @@ export default function ComplaintSection() {
         {!isLoading && complaints.length > 0 && (
           <div className="grid grid-cols-3 gap-3 mb-6">
             {[
-              { label: 'Open', count: stats.open, color: 'text-red-500', bg: 'bg-red-50' },
-              { label: 'In Progress', count: stats.inProgress, color: 'text-brand-sage', bg: 'bg-brand-sage-light' },
-              { label: 'Resolved', count: stats.resolved, color: 'text-green-500', bg: 'bg-green-50' },
+              { label: 'Open', count: stats.open, color: 'text-destructive', bg: 'bg-destructive/10' },
+              { label: 'In Progress', count: stats.inProgress, color: 'text-brand-sage', bg: 'bg-brand-sage/10' },
+              { label: 'Resolved', count: stats.resolved, color: 'text-brand-lime', bg: 'bg-brand-lime/15' },
             ].map((stat) => (
               <motion.div
                 key={stat.label}
@@ -306,22 +307,27 @@ export default function ComplaintSection() {
             ))}
           </div>
         ) : complaints.length === 0 && !showForm ? (
-          <div className="text-center py-16">
-            <div className="size-20 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="size-10 text-muted-foreground" />
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="flex flex-col items-center justify-center py-16 px-4"
+          >
+            <div className="size-16 rounded-full bg-brand-lime/15 flex items-center justify-center mb-4">
+              <MessageSquare className="size-8 text-brand-lime" />
             </div>
-            <h3 className="text-lg font-semibold text-foreground mb-2">No complaints yet</h3>
-            <p className="text-muted-foreground mb-4">
+            <h3 className="text-lg font-semibold text-foreground mb-1">No complaints. Everything looks good!</h3>
+            <p className="text-sm text-muted-foreground mb-6 text-center max-w-sm">
               Facing an issue? Let us know and we&apos;ll help resolve it quickly.
             </p>
             <Button
+              size="sm"
               onClick={() => setShowForm(true)}
-              className="bg-brand-teal/100 hover:bg-brand-deep text-white"
+              className="bg-brand-teal hover:bg-brand-deep text-white"
             >
               <Plus className="size-4" />
               Raise Complaint
             </Button>
-          </div>
+          </motion.div>
         ) : (
           <div className="space-y-3">
             <AnimatePresence>
@@ -406,11 +412,11 @@ export default function ComplaintSection() {
 
                                 {/* Resolution */}
                                 {complaint.resolution && (
-                                  <div className="bg-green-50 rounded-lg p-3">
-                                    <h4 className="text-xs font-semibold text-green-700 uppercase tracking-wider mb-1">
+                                  <div className="bg-brand-lime/15 rounded-lg p-3">
+                                    <h4 className="text-xs font-semibold text-brand-lime uppercase tracking-wider mb-1">
                                       Resolution
                                     </h4>
-                                    <p className="text-sm text-green-800">{complaint.resolution}</p>
+                                    <p className="text-sm text-foreground">{complaint.resolution}</p>
                                   </div>
                                 )}
 
@@ -429,7 +435,7 @@ export default function ComplaintSection() {
                                             <div
                                               className={`size-8 rounded-full flex items-center justify-center ${
                                                 stepState === 'completed'
-                                                  ? 'bg-green-100 text-green-600'
+                                                  ? 'bg-brand-lime/20 text-brand-lime'
                                                   : 'bg-muted text-muted-foreground'
                                               }`}
                                             >
@@ -438,7 +444,7 @@ export default function ComplaintSection() {
                                             <span
                                               className={`text-[10px] mt-1 ${
                                                 stepState === 'completed'
-                                                  ? 'text-green-600 font-medium'
+                                                  ? 'text-brand-lime font-medium'
                                                   : 'text-muted-foreground'
                                               }`}
                                             >
@@ -449,7 +455,7 @@ export default function ComplaintSection() {
                                             <div
                                               className={`flex-1 h-0.5 mx-1 mb-4 ${
                                                 getStepStatus(complaint, TIMELINE_STEPS[i + 1].status) === 'completed'
-                                                  ? 'bg-green-300'
+                                                  ? 'bg-brand-lime/30'
                                                   : 'bg-muted'
                                               }`}
                                             />

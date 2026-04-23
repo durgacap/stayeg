@@ -1,21 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
-import pg from 'pg';
 
-const SUPABASE_PROJECT_ID = 'sbwmecxkbfijanwwuvvt';
+const SUPABASE_PROJECT_ID = 'rgkbkdxfekslaygvjngm';
 
 function buildConnectionStrings(dbPassword: string): string[] {
   const pw = encodeURIComponent(dbPassword);
   return [
-    // Format 1: Direct connection (most reliable)
     `postgresql://postgres:${pw}@db.${SUPABASE_PROJECT_ID}.supabase.co:5432/postgres`,
-    // Format 2: Pooler with project ID as user
     `postgresql://postgres.${SUPABASE_PROJECT_ID}:${pw}@aws-0-ap-south-1.pooler.supabase.com:6543/postgres`,
-    // Format 3: Pooler alternative port
     `postgresql://postgres.${SUPABASE_PROJECT_ID}:${pw}@aws-0-ap-south-1.pooler.supabase.com:5432/postgres`,
   ];
 }
 
-async function tryConnect(connectionString: string): Promise<{ client: pg.PoolClient; pool: pg.Pool } | null> {
+async function tryConnect(connectionString: string): Promise<{ client: any; pool: any } | null> {
+  const pg = (await import('pg')).default;
   const pool = new pg.Pool({
     connectionString,
     ssl: { rejectUnauthorized: false },
@@ -33,11 +30,10 @@ async function tryConnect(connectionString: string): Promise<{ client: pg.PoolCl
   }
 }
 
-const ADMIN_SECRET = process.env.ADMIN_SECRET || 'stayeg-admin-2024';
+const ADMIN_SECRET = process.env.ADMIN_SECRET || 'stayeg-v1.2-secure-2025';
 
 export async function POST(request: NextRequest) {
   try {
-    // CRITICAL: Validate admin secret before any destructive operations
     const adminSecret = request.headers.get('x-admin-secret');
     if (adminSecret !== ADMIN_SECRET) {
       return NextResponse.json({ error: 'Forbidden: Invalid or missing admin secret' }, { status: 403 });
@@ -46,27 +42,24 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { dbPassword, connectionString: userConnStr } = body;
 
-    // If user provided a full connection string, use it
     let connectionStrings: string[] = [];
 
     if (userConnStr && typeof userConnStr === 'string' && userConnStr.trim().startsWith('postgresql')) {
-      // Insert password into user's connection string
       const connStr = userConnStr.trim().replace(/\[YOUR-PASSWORD\]/g, dbPassword || '');
       connectionStrings = [connStr];
     } else if (dbPassword && typeof dbPassword === 'string') {
       connectionStrings = buildConnectionStrings(dbPassword);
     } else {
       return NextResponse.json(
-        { error: 'Database password is required', code: 'NO_PASSWORD' },
+        { error: 'Database password is required. Find it in Supabase Dashboard → Settings → Database.', code: 'NO_PASSWORD' },
         { status: 400 }
       );
     }
 
-    // Try each connection string
     let lastError = '';
     let connected = false;
-    let client: pg.PoolClient | null = null;
-    let pool: pg.Pool | null = null;
+    let client: any = null;
+    let pool: any = null;
 
     for (const connStr of connectionStrings) {
       const result = await tryConnect(connStr);
@@ -82,15 +75,15 @@ export async function POST(request: NextRequest) {
     if (!connected || !client || !pool) {
       return NextResponse.json(
         {
-          error: 'Could not connect to Supabase. Please try the Connection String method below.',
+          error: 'Could not connect to Supabase database.',
           code: 'CONNECTION_FAILED',
           details: lastError,
+          hint: 'Use your Supabase project database password from Settings → Database',
         },
         { status: 500 }
       );
     }
 
-    // SQL to create all tables
     const createTablesSQL = `
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -101,11 +94,12 @@ CREATE TABLE IF NOT EXISTS users (
   name TEXT NOT NULL,
   email TEXT UNIQUE NOT NULL,
   phone TEXT,
-  role TEXT DEFAULT 'TENANT' CHECK (role IN ('TENANT', 'OWNER', 'ADMIN')),
+  role TEXT DEFAULT 'TENANT' CHECK (role IN ('TENANT', 'OWNER', 'ADMIN', 'VENDOR')),
   avatar TEXT,
   gender TEXT CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
   is_verified BOOLEAN DEFAULT false,
   kyc_doc TEXT,
+  city TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
@@ -165,7 +159,7 @@ CREATE TABLE IF NOT EXISTS bookings (
   bed_id UUID REFERENCES beds(id) ON DELETE SET NULL,
   check_in_date TIMESTAMPTZ,
   check_out_date TIMESTAMPTZ,
-  status TEXT DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
+  status TEXT DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'CONFIRMED', 'ACTIVE', 'COMPLETED', 'CANCELLED')),
   advance_paid INTEGER DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -245,7 +239,7 @@ CREATE INDEX IF NOT EXISTS idx_bookings_user_id ON bookings(user_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_pg_id ON bookings(pg_id);
 CREATE INDEX IF NOT EXISTS idx_bookings_status ON bookings(status);
 CREATE INDEX IF NOT EXISTS idx_payments_user_id ON payments(user_id);
-CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(booking_id);
+CREATE INDEX IF NOT EXISTS idx_payments_booking_id ON payments(bookings_id);
 CREATE INDEX IF NOT EXISTS idx_payments_status ON payments(status);
 CREATE INDEX IF NOT EXISTS idx_payments_due_date ON payments(due_date);
 CREATE INDEX IF NOT EXISTS idx_complaints_user_id ON complaints(user_id);
@@ -257,7 +251,7 @@ CREATE INDEX IF NOT EXISTS idx_vendors_type ON vendors(type);
 CREATE INDEX IF NOT EXISTS idx_vendors_city ON vendors(city);
 
 -- ============================================
--- ROW LEVEL SECURITY
+-- ROW LEVEL SECURITY (permissive for MVP)
 -- ============================================
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pgs ENABLE ROW LEVEL SECURITY;
@@ -276,29 +270,13 @@ DO $$ BEGIN CREATE POLICY "Public read pgs" ON pgs FOR SELECT USING (true); EXCE
 DO $$ BEGIN CREATE POLICY "Public insert pgs" ON pgs FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE POLICY "Public update pgs" ON pgs FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE POLICY "Public delete pgs" ON pgs FOR DELETE USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public read rooms" ON rooms FOR SELECT USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public insert rooms" ON rooms FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public update rooms" ON rooms FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public delete rooms" ON rooms FOR DELETE USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public read beds" ON beds FOR SELECT USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public insert beds" ON beds FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public update beds" ON beds FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public delete beds" ON beds FOR DELETE USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public read bookings" ON bookings FOR SELECT USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public insert bookings" ON bookings FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public update bookings" ON bookings FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public read payments" ON payments FOR SELECT USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public insert payments" ON payments FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public update payments" ON payments FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public read complaints" ON complaints FOR SELECT USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public insert complaints" ON complaints FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public update complaints" ON complaints FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public read vendors" ON vendors FOR SELECT USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public insert vendors" ON vendors FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public update vendors" ON vendors FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public read workers" ON workers FOR SELECT USING (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public insert workers" ON workers FOR INSERT WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
-DO $$ BEGIN CREATE POLICY "Public update workers" ON workers FOR UPDATE USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all rooms" ON rooms FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all beds" ON beds FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all bookings" ON bookings FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all payments" ON payments FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all complaints" ON complaints FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all vendors" ON vendors FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all workers" ON workers FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- ============================================
 -- UPDATED_AT TRIGGERS
@@ -322,7 +300,6 @@ DO $$ BEGIN CREATE TRIGGER vendors_updated_at BEFORE UPDATE ON vendors FOR EACH 
 DO $$ BEGIN CREATE TRIGGER workers_updated_at BEFORE UPDATE ON workers FOR EACH ROW EXECUTE FUNCTION update_updated_at(); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 `;
 
-    // Execute table creation
     try {
       await client.query(createTablesSQL);
     } catch (sqlErr) {
@@ -335,7 +312,6 @@ DO $$ BEGIN CREATE TRIGGER workers_updated_at BEFORE UPDATE ON workers FOR EACH 
       );
     }
 
-    // Verify tables were created
     const { rows: tables } = await client.query(
       `SELECT table_name FROM information_schema.tables WHERE table_schema = 'public' AND table_type = 'BASE TABLE' ORDER BY table_name`
     );

@@ -102,22 +102,22 @@ const KYC_CONFIG: Record<KYCStatus, {
   },
   PENDING: {
     label: 'Pending Review',
-    color: 'text-amber-600',
-    bgColor: 'bg-amber-50',
+    color: 'text-brand-sage',
+    bgColor: 'bg-brand-sage/10',
     icon: Clock,
     description: 'Your documents are being reviewed. This usually takes 24-48 hours.',
   },
   VERIFIED: {
     label: 'Verified',
-    color: 'text-green-600',
-    bgColor: 'bg-green-50',
+    color: 'text-brand-lime',
+    bgColor: 'bg-brand-lime/15',
     icon: ShieldCheck,
     description: 'Your identity has been verified successfully.',
   },
   REJECTED: {
     label: 'Rejected',
-    color: 'text-red-600',
-    bgColor: 'bg-red-50',
+    color: 'text-destructive',
+    bgColor: 'bg-destructive/10',
     icon: ShieldX,
     description: 'Your verification was rejected. Please resubmit with correct documents.',
   },
@@ -126,27 +126,27 @@ const KYC_CONFIG: Record<KYCStatus, {
 const STATS_CONFIG: Record<UserRole, { label: string; icon: typeof CreditCard; value: number; color: string }[]> = {
   TENANT: [
     { label: 'Total Bookings', icon: BookOpen, value: 3, color: 'bg-brand-teal/10 text-brand-teal' },
-    { label: 'Active Stay', icon: Building2, value: 1, color: 'bg-green-50 text-green-600' },
+    { label: 'Active Stay', icon: Building2, value: 1, color: 'bg-brand-lime/15 text-brand-lime' },
     { label: 'Reviews Given', icon: Star, value: 5, color: 'bg-brand-sage/10 text-brand-sage' },
-    { label: 'Payments', icon: CreditCard, value: 8, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Payments', icon: CreditCard, value: 8, color: 'bg-brand-teal/10 text-brand-teal' },
   ],
   OWNER: [
     { label: 'My PGs', icon: Building2, value: 3, color: 'bg-brand-teal/10 text-brand-teal' },
-    { label: 'Total Rooms', icon: Briefcase, value: 24, color: 'bg-green-50 text-green-600' },
+    { label: 'Total Rooms', icon: Briefcase, value: 24, color: 'bg-brand-lime/15 text-brand-lime' },
     { label: 'Active Tenants', icon: UserIcon, value: 42, color: 'bg-brand-sage/10 text-brand-sage' },
-    { label: 'Revenue', icon: CreditCard, value: 186400, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Revenue', icon: CreditCard, value: 186400, color: 'bg-brand-teal/10 text-brand-teal' },
   ],
   VENDOR: [
     { label: 'Services Done', icon: Wrench, value: 56, color: 'bg-brand-teal/10 text-brand-teal' },
     { label: 'Rating', icon: Star, value: 4.8, color: 'bg-brand-sage/10 text-brand-sage' },
-    { label: 'Earnings', icon: CreditCard, value: 74500, color: 'bg-green-50 text-green-600' },
-    { label: 'Pending Jobs', icon: Clock, value: 2, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Earnings', icon: CreditCard, value: 74500, color: 'bg-brand-lime/15 text-brand-lime' },
+    { label: 'Pending Jobs', icon: Clock, value: 2, color: 'bg-brand-teal/10 text-brand-teal' },
   ],
   ADMIN: [
     { label: 'Total Users', icon: UserIcon, value: 2840, color: 'bg-brand-teal/10 text-brand-teal' },
-    { label: 'Active PGs', icon: Building2, value: 156, color: 'bg-green-50 text-green-600' },
+    { label: 'Active PGs', icon: Building2, value: 156, color: 'bg-brand-lime/15 text-brand-lime' },
     { label: 'Revenue', icon: CreditCard, value: 2400000, color: 'bg-brand-sage/10 text-brand-sage' },
-    { label: 'Pending KYC', icon: ShieldAlert, value: 23, color: 'bg-blue-50 text-blue-600' },
+    { label: 'Pending KYC', icon: ShieldAlert, value: 23, color: 'bg-brand-teal/10 text-brand-teal' },
   ],
 };
 
@@ -768,7 +768,7 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-3">
                         <div className="size-10 bg-brand-teal/10 rounded-lg flex items-center justify-center">
                           {aadhaarFront ? (
-                            <Check className="size-5 text-green-600" />
+                            <Check className="size-5 text-brand-lime" />
                           ) : (
                             <Upload className="size-5 text-brand-teal" />
                           )}
@@ -796,7 +796,7 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-3">
                         <div className="size-10 bg-brand-teal/10 rounded-lg flex items-center justify-center">
                           {aadhaarBack ? (
-                            <Check className="size-5 text-green-600" />
+                            <Check className="size-5 text-brand-lime" />
                           ) : (
                             <Upload className="size-5 text-brand-teal" />
                           )}
@@ -824,7 +824,7 @@ export default function ProfilePage() {
                       <div className="flex items-center gap-3">
                         <div className="size-10 bg-brand-teal/10 rounded-lg flex items-center justify-center">
                           {panDoc ? (
-                            <Check className="size-5 text-green-600" />
+                            <Check className="size-5 text-brand-lime" />
                           ) : (
                             <Upload className="size-5 text-brand-teal" />
                           )}
@@ -861,8 +861,8 @@ export default function ProfilePage() {
                 </>
               ) : kycStatus === 'PENDING' ? (
                 <div className="text-center py-6">
-                  <div className="size-16 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <Clock className="size-8 text-amber-600 animate-pulse" />
+                  <div className="size-16 bg-brand-sage/10 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <Clock className="size-8 text-brand-sage animate-pulse" />
                   </div>
                   <h3 className="font-semibold text-foreground mb-1">Verification in Progress</h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">
@@ -877,8 +877,8 @@ export default function ProfilePage() {
                 </div>
               ) : kycStatus === 'VERIFIED' ? (
                 <div className="text-center py-6">
-                  <div className="size-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <ShieldCheck className="size-8 text-green-600" />
+                  <div className="size-16 bg-brand-lime/20 rounded-full flex items-center justify-center mx-auto mb-3">
+                    <ShieldCheck className="size-8 text-brand-lime" />
                   </div>
                   <h3 className="font-semibold text-foreground mb-1">Identity Verified</h3>
                   <p className="text-sm text-muted-foreground max-w-md mx-auto">

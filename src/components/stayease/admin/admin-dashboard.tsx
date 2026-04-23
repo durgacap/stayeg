@@ -21,6 +21,7 @@ import {
 } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { STATUSES, CARD_BG, BADGE, TEXT_COLOR } from '@/lib/constants';
 
 export default function AdminDashboard() {
@@ -51,7 +52,7 @@ export default function AdminDashboard() {
 
   const updatePGMutation = useMutation({
     mutationFn: async ({ id, status, isVerified }: { id: string; status: string; isVerified: boolean }) => {
-      const res = await fetch('/api/pgs', {
+      const res = await authFetch('/api/pgs', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id, status, isVerified }),

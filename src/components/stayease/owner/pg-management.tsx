@@ -21,6 +21,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { AMENITIES_LIST, STATUSES, BADGE } from '@/lib/constants';
 import type { PG } from '@/lib/types';
 
@@ -58,7 +59,7 @@ export default function PGManagement() {
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof form) => {
-      const res = await fetch('/api/pgs', {
+      const res = await authFetch('/api/pgs', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -83,7 +84,7 @@ export default function PGManagement() {
 
   const updateMutation = useMutation({
     mutationFn: async (data: typeof form & { id: string }) => {
-      const res = await fetch('/api/pgs', {
+      const res = await authFetch('/api/pgs', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -309,7 +310,7 @@ export default function PGManagement() {
                           </div>
                           <div className="flex items-center gap-4 mt-3 text-sm">
                             <span className="text-muted-foreground"><BedDouble className="size-3.5 inline mr-1" />{occupancy.total} beds</span>
-                            <span className="text-green-600 font-medium">{occupancy.rate}% occupied</span>
+                            <span className="text-brand-lime font-medium">{occupancy.rate}% occupied</span>
                           </div>
                           {/* Occupancy bar */}
                           <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
@@ -372,8 +373,8 @@ export default function PGManagement() {
                                       <Badge variant="outline" className="font-mono text-xs">{room.roomCode}</Badge>
                                       <span className="text-muted-foreground">{room.roomType}</span>
                                       <span className="text-muted-foreground">F{room.floor}</span>
-                                      {room.hasAC && <span className="text-blue-500 text-xs">AC</span>}
-                                      {room.hasAttachedBath && <span className="text-green-500 text-xs">Bath</span>}
+                                      {room.hasAC && <span className="text-brand-teal text-xs">AC</span>}
+                                      {room.hasAttachedBath && <span className="text-brand-lime text-xs">Bath</span>}
                                     </div>
                                     <div className="flex items-center gap-1">
                                       <span className="text-muted-foreground">{occupiedBeds}/{totalBeds}</span>

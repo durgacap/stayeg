@@ -50,8 +50,10 @@ export default function CursorFollower() {
   useEffect(() => {
     // Don't render on touch devices or if user prefers reduced motion
     if (!shouldAnimate()) return;
-    // Also check for touch device
+    // Check for touch device
     if (typeof window !== 'undefined' && 'ontouchstart' in window) return;
+    // Check for fine pointer (mouse/trackpad) vs coarse (touch)
+    if (typeof window !== 'undefined' && window.matchMedia('(pointer: coarse)').matches) return;
 
     window.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseover', handleMouseOver, { passive: true });
@@ -64,6 +66,21 @@ export default function CursorFollower() {
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
   }, [handleMouseMove, handleMouseOver, handleMouseOut]);
+
+  // Also add a matchMedia listener for pointer changes (e.g., connecting/disconnecting mouse)
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const mql = window.matchMedia('(pointer: fine)');
+    const handler = (e: MediaQueryListEvent) => {
+      if (!e.matches) {
+        setVisible(false);
+        cursorX.set(-100);
+        cursorY.set(-100);
+      }
+    };
+    mql.addEventListener('change', handler);
+    return () => mql.removeEventListener('change', handler);
+  }, [cursorX, cursorY]);
 
   return (
     <motion.div

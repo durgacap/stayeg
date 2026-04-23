@@ -126,15 +126,15 @@ function PostCard({ post, isGuest }: { post: CommunityPost; isGuest: boolean }) 
         <div className="flex items-center gap-1 px-4 sm:px-6 py-3 border-t border-border">
           {isGuest ? (
             <div className="flex items-center gap-4 flex-1">
-              <button className="flex items-center gap-1.5 text-muted-foreground/40 cursor-not-allowed">
+              <button className="flex items-center gap-1.5 text-muted-foreground/70 cursor-not-allowed">
                 <Heart className="size-4.5" />
                 <span className="text-xs">{likeCount}</span>
               </button>
-              <button className="flex items-center gap-1.5 text-muted-foreground/40 cursor-not-allowed">
+              <button className="flex items-center gap-1.5 text-muted-foreground/70 cursor-not-allowed">
                 <MessageCircle className="size-4.5" />
                 <span className="text-xs">{post.comments}</span>
               </button>
-              <button className="flex items-center gap-1.5 text-muted-foreground/40 cursor-not-allowed">
+              <button className="flex items-center gap-1.5 text-muted-foreground/70 cursor-not-allowed">
                 <Share2 className="size-4.5" />
               </button>
             </div>
@@ -438,7 +438,7 @@ function EmptyState({ icon: Icon, title, description, children }: { icon: React.
       className="flex flex-col items-center justify-center py-16 text-center"
     >
       <div className="size-16 rounded-2xl bg-brand-teal/10 flex items-center justify-center mb-4">
-        <Icon className="size-8 text-brand-teal/60" />
+        <Icon className="size-8 text-brand-teal" />
       </div>
       <h3 className="font-semibold text-foreground mb-1">{title}</h3>
       <p className="text-sm text-muted-foreground max-w-xs">{description}</p>

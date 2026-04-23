@@ -300,7 +300,7 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
                 <span className="truncate">{pg.address}</span>
               </div>
             </div>
-            <div className="flex items-center gap-1 bg-brand-sage-light px-2 py-1 rounded-lg shrink-0">
+            <div className="flex items-center gap-1 bg-brand-sage/10 px-2 py-1 rounded-lg shrink-0">
               <Star className="size-4 text-brand-sage fill-brand-sage" />
               <span className="font-semibold text-sm text-foreground">{pg.rating?.toFixed(1) ?? 'N/A'}</span>
               <span className="text-xs text-muted-foreground">({(pg.totalReviews ?? 0)})</span>
@@ -333,10 +333,10 @@ export default function PGCard({ pg, index = 0 }: PGCardProps) {
           {/* Available Beds & Book Button — staggered entrance */}
           <motion.div className="flex items-center justify-between pt-1" variants={staggerItem}>
             <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-              <BedDouble className="size-4 text-green-600" />
+              <BedDouble className="size-4 text-brand-lime" />
               <span>
                 {availableBeds > 0 ? (
-                  <span className="text-green-600 font-medium">{availableBeds} beds available</span>
+                  <span className="text-brand-lime font-medium">{availableBeds} beds available</span>
                 ) : (
                   <span className="text-red-500 font-medium">No beds available</span>
                 )}

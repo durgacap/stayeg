@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { BADGE, BADGE_BORDER } from '@/lib/constants';
 
 export default function RoomManagement() {
@@ -72,7 +73,7 @@ export default function RoomManagement() {
 
   const createRoomMutation = useMutation({
     mutationFn: async (data: typeof roomForm) => {
-      const createRes = await fetch(`/api/pgs/${selectedPgId}`, {
+      const createRes = await authFetch(`/api/pgs/${selectedPgId}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -129,7 +130,7 @@ export default function RoomManagement() {
       case 'AVAILABLE': return 'bg-green-500';
       case 'OCCUPIED': return 'bg-red-500';
       case 'MAINTENANCE': return 'bg-yellow-500';
-      default: return 'bg-muted-foreground';
+      default: return 'bg-gray-400';
     }
   };
 
@@ -273,12 +274,12 @@ export default function RoomManagement() {
                           </div>
                           <div className="flex items-center gap-3 mt-2">
                             {room.hasAC && (
-                              <div className="flex items-center gap-1 text-blue-600 text-sm">
+                              <div className="flex items-center gap-1 text-brand-teal text-sm">
                                 <Snowflake className="size-3.5" /> AC
                               </div>
                             )}
                             {room.hasAttachedBath && (
-                              <div className="flex items-center gap-1 text-green-600 text-sm">
+                              <div className="flex items-center gap-1 text-brand-lime text-sm">
                                 <Bath className="size-3.5" /> Attached Bath
                               </div>
                             )}

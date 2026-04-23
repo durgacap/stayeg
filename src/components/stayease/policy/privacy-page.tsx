@@ -16,109 +16,105 @@ const PRIVACY_SECTIONS = [
     number: '1',
     title: 'Information We Collect',
     icon: Database,
-    content: `At StayEg, we collect information to provide and improve our services. The types of information we collect include:
+    content: `At StayEg, we collect information solely to provide, secure, and improve our platform. The categories of data we collect are:
 
 Personal Information:
-• Name, email address, phone number, and date of birth
-• Government-issued ID numbers (Aadhaar, PAN) for KYC verification
-• Profile photos, bio, and preferences
-• Occupation and employer information (optional)
+• Full name, email address, mobile number, and date of birth
+• Government-issued ID numbers (Aadhaar, PAN) — collected only for KYC verification and stored in encrypted format
+• Profile photograph, bio, city, age, and occupation
 
 Property Information (PG Owners):
-• Property addresses, photographs, and descriptions
-• Room configurations, amenities, and pricing details
-• Safety compliance documents and certificates
+• Property address, geo-coordinates, photographs, and written descriptions
+• Room configurations, amenity list, pricing, and occupancy rules
+• Safety compliance documents and local registration certificates
 
 Usage Information:
-• Log data including IP address, browser type, and device information
-• Pages visited, features used, and interaction patterns
-• Location data (with your consent) for nearby services
+• Device information (IP address, browser type, operating system, device model)
+• Pages visited, features used, search queries, and interaction patterns
+• Precise location data — collected only with your explicit consent for nearby-services features
 
 Financial Information:
-• Payment method details (processed securely by payment partners)
-• Transaction history, receipts, and billing information`,
+• Payment instrument details are tokenised and processed by our PCI-DSS compliant payment partner; StayEg does not store full card numbers
+• Transaction history, digital receipts, and billing records are retained for 7 years as required by Indian tax law`,
   },
   {
     number: '2',
     title: 'How We Use Your Information',
     icon: Eye,
-    content: `We use the information we collect for the following purposes:
+    content: `We use collected data strictly for the purposes outlined below:
 
-Service Delivery:
-• Create and manage your account
-• Facilitate bookings, payments, and communications
-• Verify your identity and KYC documents
-• Provide customer support and resolve disputes
+Core Service Delivery:
+• Account creation, authentication, and profile management
+• Facilitating PG discovery, bookings, payments, and complaint resolution
+• Verifying user identity through our KYC system
+• Providing customer support and mediating disputes between users
 
 Platform Improvement:
-• Analyze usage patterns to improve features
-• Personalize your experience and recommendations
-• Develop new features and services
-• Conduct research and analytics (anonymized)
+• Analysing anonymised usage patterns to improve features and performance
+• Personalising PG recommendations based on your stated preferences and search behaviour
+• Developing new features and services based on aggregate demand signals
 
 Communication:
-• Send booking confirmations, receipts, and notifications
-• Deliver important service announcements
-• Respond to your inquiries and support requests
-• Send promotional communications (with opt-out option)
+• Transactional messages: booking confirmations, payment receipts, rent reminders, and complaint updates
+• Service announcements: planned maintenance, policy changes, or security advisories
+• Marketing communications: sent only if you have explicitly opted in; you can unsubscribe at any time from your profile settings
 
-Safety & Security:
-• Detect and prevent fraud and unauthorized activities
-• Verify users and properties
-• Enforce our Terms of Service
-• Comply with legal obligations`,
+Safety, Security & Compliance:
+• Detecting and preventing fraud, fake listings, and unauthorised account access
+• Enforcing our Terms of Service and community guidelines
+• Complying with applicable Indian laws, including the Digital Personal Data Protection Act (DPDPA), IT Act, and GST regulations`,
   },
   {
     number: '3',
     title: 'Data Sharing & Disclosure',
     icon: Globe,
-    content: `We do not sell your personal information. We may share your information in the following circumstances:
+    content: `StayEg does not sell, rent, or trade your personal information to third parties for their marketing purposes. We may share data only in the following narrowly defined circumstances:
 
 With Other Users:
-• PG owners can see tenant profiles relevant to bookings
-• Tenants can see PG details and owner contact information
-• Reviews and ratings are visible to all users
+• A PG owner may view a tenant's name, profile photo, and contact number after a confirmed booking
+• A tenant may view PG details, owner name, and contact information from the listing page
+• Reviews and ratings are publicly visible to all platform users
 
 With Service Partners:
-• Payment processors for transaction handling (Razorpay)
-• KYC verification partners for identity verification
-• Analytics tools to improve platform performance
+• Razorpay — for payment processing under PCI-DSS compliance; only tokenised transaction data is shared
+• KYC verification partner — encrypted ID documents are shared solely for identity verification and purged after processing
+• Google Analytics — receives anonymised, aggregated usage data; no personally identifiable information is shared
 
-Legal Requirements:
-• In response to valid legal processes (court orders, subpoenas)
-• To comply with applicable laws and regulations
-• To protect the rights, safety, and property of StayEg and users
-• To report suspected illegal activities
+Legal & Regulatory Requirements:
+• In response to a valid court order, subpoena, or government directive under applicable Indian law
+• To comply with the DPDPA, IT Act, GST regulations, or any other statutory obligation
+• To protect the rights, safety, and property of StayEg, its users, or the public
 
 Business Transfers:
-• In connection with mergers, acquisitions, or asset sales
-• We will notify you of any change in ownership of your data`,
+• In the event of a merger, acquisition, or sale of assets, your data may be transferred to the acquiring entity. We will notify you via email before such a transfer takes effect.`,
   },
   {
     number: '4',
     title: 'Data Security',
     icon: Lock,
-    content: `We implement industry-standard security measures to protect your information:
+    content: `StayEg implements a defence-in-depth security posture to protect your personal information:
 
 Technical Safeguards:
-• End-to-end encryption for sensitive data transmission
-• Secure hash storage for passwords (bcrypt)
-• Regular security audits and penetration testing
-• Firewall and intrusion detection systems
+• All data in transit is encrypted using TLS 1.3
+• Passwords are hashed using bcrypt with a cost factor of 12
+• KYC documents are encrypted at rest using AES-256
+• Regular third-party penetration testing and bug bounty programmes
+• Web application firewall (WAF) and DDoS mitigation
 
 Operational Safeguards:
-• Access controls based on role and need-to-know
-• Regular employee security training
-• Vendor security assessments and monitoring
-• Incident response procedures and breach notification
+• Role-based access control (RBAC) — employees access data only on a need-to-know basis
+• All internal data access is logged and auditable
+• Annual security awareness training for all employees
+• Vendor security assessments before onboarding any third-party service
+• Documented incident response plan with a 72-hour breach notification commitment
 
 Data Retention:
-• Active account data is retained while your account is active
-• Deleted account data is purged within 30 days
-• Anonymized analytics data may be retained for research
-• Transaction records are retained for 7 years (legal requirement)
+• Active account data is retained for the duration your account is open
+• Upon account deletion, personal data is purged from primary systems within 30 days and from backups within 90 days
+• Anonymised, aggregated analytics data may be retained indefinitely for platform improvement
+• Financial transaction records are retained for 7 years as mandated by Indian tax law
 
-While we strive to protect your information, no method of electronic transmission or storage is 100% secure. We encourage you to use strong passwords and notify us of any security concerns.`,
+No system is immune to risk. We encourage you to use a strong, unique password and enable two-factor authentication where available. Report any suspected security incident to security@stayeg.in immediately.`,
   },
   {
     number: '5',
@@ -151,27 +147,26 @@ Managing Cookies:
     number: '6',
     title: 'Your Rights & Choices',
     icon: UserCheck,
-    content: `You have the following rights regarding your personal information:
+    content: `Under India's Digital Personal Data Protection Act (DPDPA) 2023 and applicable regulations, you have the following rights:
 
 Access & Portability:
-• Request a copy of your personal data
-• Download your data in a portable format
-• Request data correction or updates
+• Request a complete copy of all personal data StayEg holds about you
+• Download your data in a structured, machine-readable format (JSON/CSV)
+• Request correction of any inaccurate or outdated personal information
 
-Control:
-• Update your profile information at any time
-• Control email notification preferences
-• Opt out of marketing communications
-• Delete your account and associated data
+Control & Deletion:
+• Update or delete your profile information at any time from your account settings
+• Manage email and push notification preferences granularly
+• Opt out of all marketing communications with a single toggle
+• Request full account deletion; we purge your data within 30 days (financial records excepted per legal requirements)
 
-Specific Rights Under Indian Data Protection Law (DPDPA):
-• Right to know what personal data is collected
-• Right to correct inaccurate personal data
-• Right to erasure of personal data
-• Right to withdraw consent for data processing
-• Right to lodge a complaint with the Data Protection Board
+DPDPA-Specific Rights:
+• Right to obtain confirmation of whether your personal data is being processed
+• Right to access the specific categories of personal data and the purposes of processing
+• Right to withdraw consent for any non-essential data processing activity
+• Right to lodge a complaint with the Data Protection Board of India at dpb.gov.in
 
-To exercise any of these rights, contact us at privacy@stayeg.in. We will respond to your request within 30 days.`,
+To exercise any of these rights, email privacy@stayeg.in with your registered email address and the specific request. We acknowledge all requests within 72 hours and resolve them within 30 calendar days as required by law.`,
   },
   {
     number: '7',
@@ -237,19 +232,21 @@ If you disagree with any changes, you may:
     number: '10',
     title: 'Contact Us',
     icon: Shield,
-    content: `For privacy-related questions, concerns, or requests, please contact:
+    content: `For privacy-related questions, data access requests, or concerns, please contact:
 
 StayEg Data Protection Officer
+StayEg Technologies Private Limited
+3rd Floor, Innovation Hub, Koramangala
+Bangalore 560034, Karnataka, India
 Email: privacy@stayeg.in
-Phone: +91 80-XXXX-XXXX
-Address: Bangalore, Karnataka, India
+Phone: +91 80-4567-8900
 
 For general support:
 Email: support@stayeg.in
-Phone: +91 80-XXXX-XXXX
-Business Hours: Monday to Saturday, 9:00 AM - 6:00 PM IST
+Phone: +91 80-4567-8900
+Business Hours: Monday to Saturday, 9:00 AM – 6:00 PM IST
 
-We aim to respond to all privacy-related inquiries within 30 days as required by applicable data protection laws.`,
+We acknowledge all privacy-related inquiries within 72 hours and provide a substantive response within 30 calendar days, in compliance with the Digital Personal Data Protection Act 2023.`,
   },
 ];
 
@@ -280,7 +277,7 @@ export default function PrivacyPage() {
 
           <div className="flex items-center gap-3 mb-2">
             <div className={`size-10 rounded-xl ${BADGE.blue} flex items-center justify-center`}>
-              <Shield className="size-5 text-blue-600" />
+              <Shield className="size-5 text-brand-teal" />
             </div>
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold text-foreground">Privacy Policy</h1>
@@ -289,7 +286,7 @@ export default function PrivacyPage() {
           </div>
 
           <Badge variant="outline" className="mt-2 text-xs text-muted-foreground">
-            Last Updated: January 2025
+            Last Updated: April 2026
           </Badge>
         </div>
       </section>

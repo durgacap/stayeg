@@ -153,7 +153,7 @@ export default function HeroSection() {
           >
             <span className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-primary/10 text-primary rounded-full text-xs font-semibold">
               <span className="size-1.5 rounded-full bg-primary" />
-              India&apos;s Most Trusted PG Platform
+              Trusted by 50,000+ Tenants &bull; 10,000+ Verified PGs
             </span>
           </motion.div>
 
@@ -165,11 +165,11 @@ export default function HeroSection() {
             className="text-center max-w-3xl mx-auto mb-8"
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold tracking-tight text-foreground mb-4 leading-snug">
-              Find Your Perfect{' '}
-              <span className="text-primary">PG Home</span>
+              Your Next PG Home is{' '}
+              <span className="text-primary">One Search Away</span>
             </h1>
             <p className="text-sm sm:text-base text-muted-foreground max-w-xl mx-auto leading-relaxed">
-              Verified, affordable PGs across India. Book instantly with zero brokerage.
+              10,000+ verified PGs across 20+ cities. Zero brokerage, real photos, instant booking. Join 50,000+ tenants who found their home through StayEg.
             </p>
           </motion.div>
 
@@ -271,14 +271,14 @@ export default function HeroSection() {
             badge="Simple & Quick"
             title="How StayEg"
             highlight="Works"
-            description="Find and book your perfect PG in 3 simple steps."
+            description="From search to move-in in under 5 minutes. No broker, no hassle, no guesswork."
           />
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 max-w-4xl mx-auto">
             {[
-              { step: '01', icon: Search, title: 'Search & Discover', desc: 'Browse verified PGs by city, area, amenities, and budget.' },
-              { step: '02', icon: CheckCircle2, title: 'Book Instantly', desc: 'Book your room with zero brokerage and instant confirmation.' },
-              { step: '03', icon: Building2, title: 'Move In', desc: 'Complete KYC, pay securely, and move in stress-free.' },
+              { step: '01', icon: Search, title: 'Search & Discover', desc: 'Filter by city, locality, budget, amenities, and gender preference. Every listing has real photos and verified reviews.' },
+              { step: '02', icon: CheckCircle2, title: 'Book Instantly', desc: 'Select your bed, confirm details, and pay securely. Get instant booking confirmation — no broker involved.' },
+              { step: '03', icon: Building2, title: 'Move In Stress-Free', desc: 'Complete digital KYC, track your booking, and move in with confidence. Raise complaints in-app anytime.' },
             ].map((item, idx) => (
               <FadeInSection key={item.step} delay={idx * 0.1}>
                 <Card className="border border-gold/20 shadow-gold-sm hover:shadow-gold transition-shadow group bg-card">
@@ -286,7 +286,7 @@ export default function HeroSection() {
                     <div className="size-11 rounded-xl bg-primary flex items-center justify-center mb-4">
                       <item.icon className="size-5 text-white" />
                     </div>
-                    <div className="text-xs font-bold text-muted-foreground/50 mb-1">STEP {item.step}</div>
+                    <div className="text-xs font-bold text-muted-foreground mb-1">STEP {item.step}</div>
                     <h3 className="text-base font-bold text-foreground mb-1.5">{item.title}</h3>
                     <p className="text-muted-foreground text-sm leading-relaxed">{item.desc}</p>
                   </CardContent>
@@ -300,23 +300,23 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 3. WHY CHOOSE STAYEG  */}
       {/* ===================== */}
-      <section className="py-12 md:py-16 bg-muted/40">
+      <section className="py-12 md:py-16 bg-section-muted">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionHeading
             badge="Why StayEg"
             title="The StayEg"
             highlight="Advantage"
-            description="Everything you need for a perfect PG living experience."
+            description="India's only full-stack PG platform — for tenants, owners, and service vendors."
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
-              { icon: Shield, title: 'Verified Properties', desc: 'Every PG is personally verified. Photos, amenities, and prices are 100% accurate.', color: 'bg-emerald-50 text-emerald-600' },
-              { icon: Banknote, title: 'Zero Brokerage', desc: 'No middlemen, no hidden charges. Find and book directly.', color: 'bg-primary/10 text-primary' },
-              { icon: Smartphone, title: 'Smart Management', desc: 'PG Owners: Manage rent, staff, complaints, and analytics from your phone.', color: 'bg-blue-50 text-blue-600' },
-              { icon: UsersRound, title: 'Community', desc: 'Join local communities, find roommates, attend events.', color: 'bg-violet-50 text-violet-600' },
-              { icon: Lock, title: 'Secure Payments', desc: 'All payments encrypted. Track every transaction.', color: 'bg-amber-50 text-amber-600' },
-              { icon: Headphones, title: '24/7 Support', desc: 'Our team is available round the clock via chat, call, or email.', color: 'bg-rose-50 text-rose-600' },
+              { icon: Shield, title: 'Physically Verified PGs', desc: 'Our field team inspects every property. Real photos, genuine reviews, and accurate pricing — always.', color: 'bg-brand-lime/15 text-brand-lime' },
+              { icon: Banknote, title: 'Zero Brokerage, Ever', desc: 'No middlemen, no booking fees, no convenience charges. The price you see is the price you pay.', color: 'bg-primary/10 text-primary' },
+              { icon: Smartphone, title: 'Complete PG Management', desc: 'PG Owners: Automate rent collection, track occupancy, manage staff, and monitor complaints — all from your phone.', color: 'bg-brand-teal/10 text-brand-teal' },
+              { icon: UsersRound, title: 'Built-In Community', desc: 'Connect with fellow tenants, find roommates, join local events, and never feel alone in a new city.', color: 'bg-chart-3/10 text-chart-3' },
+              { icon: Lock, title: 'Bank-Grade Security', desc: '256-bit encrypted payments, Aadhaar/PAN KYC for all users, and PCI-DSS compliant gateways.', color: 'bg-brand-sage/10 text-brand-sage' },
+              { icon: Headphones, title: 'Dedicated Support', desc: 'Mon–Sat, 9 AM–6 PM IST with a 2-hour response SLA. Emergency helpline available 24/7.', color: 'bg-destructive/10 text-destructive' },
             ].map((item, idx) => (
               <FadeInSection key={item.title} delay={idx * 0.05}>
                 <Card className="border border-gold/20 shadow-gold-sm hover:shadow-gold hover:-translate-y-0.5 transition-all bg-card">
@@ -340,7 +340,7 @@ export default function HeroSection() {
       <section className="py-12 md:py-16 bg-background">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <FadeInSection>
-            <div className="rounded-2xl bg-gray-900 dark:bg-gray-950 p-8 md:p-12">
+            <div className="rounded-2xl bg-section-dark p-8 md:p-12">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
                 <div>
                   <Badge className="mb-4 bg-primary/20 text-primary border-primary/30">
@@ -351,16 +351,16 @@ export default function HeroSection() {
                     The Future of PG Management is{' '}
                     <span className="text-primary">Here</span>
                   </h2>
-                  <p className="text-gray-400 mb-6 text-sm">
-                    Transform how you run your PG business with our all-in-one digital platform.
+                  <p className="text-gray-300 mb-6 text-sm">
+                    Run your PG business like a pro — automate rent, manage staff, track occupancy, and delight tenants. All from one dashboard.
                   </p>
 
                   <ul className="space-y-3 mb-8">
                     {[
-                      'Manage everything from your phone',
-                      'Automatic rent collection & reminders',
-                      'Staff attendance & task management',
-                      'Real-time analytics & occupancy tracking',
+                      'Accept bookings & manage beds from your phone',
+                      'Automated rent reminders with UPI & card collection',
+                      'Staff shift scheduling & attendance tracking',
+                      'Real-time occupancy analytics & revenue dashboards',
                     ].map((item) => (
                       <li key={item} className="flex items-center gap-2.5">
                         <CheckCircle2 className="size-4 text-primary shrink-0" />
@@ -386,15 +386,15 @@ export default function HeroSection() {
                 {/* Feature cards */}
                 <div className="hidden lg:grid grid-cols-2 gap-3">
                   {[
-                    { icon: Smartphone, label: 'Mobile First', value: 'Manage on the go' },
-                    { icon: Banknote, label: 'Rent Tracking', value: 'Auto collection' },
-                    { icon: Users, label: 'Staff Management', value: 'Attendance & tasks' },
-                    { icon: Star, label: 'Analytics', value: 'Real-time insights' },
+                    { icon: Smartphone, label: 'Mobile-First', value: 'Manage from anywhere' },
+                    { icon: Banknote, label: 'Rent Collection', value: 'UPI, cards & auto reminders' },
+                    { icon: Users, label: 'Staff Management', value: 'Shifts, attendance & tasks' },
+                    { icon: Star, label: 'Smart Analytics', value: 'Revenue & occupancy insights' },
                   ].map((item) => (
                     <div key={item.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
                       <item.icon className="size-6 text-primary mb-2" />
                       <h4 className="text-white font-semibold text-sm mb-0.5">{item.label}</h4>
-                      <p className="text-gray-400 text-xs">{item.value}</p>
+                      <p className="text-gray-300 text-xs">{item.value}</p>
                     </div>
                   ))}
                 </div>
@@ -407,29 +407,29 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 5. FOR VENDORS        */}
       {/* ===================== */}
-      <section className="py-12 md:py-16 bg-muted/40">
+      <section className="py-12 md:py-16 bg-section-muted">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <FadeInSection>
             <div className="rounded-2xl overflow-hidden border border-border bg-card shadow-sm">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-                <div className="bg-primary p-8 md:p-10 flex flex-col justify-center min-h-[240px]">
-                  <Badge className="mb-4 bg-white/20 text-white border-white/30 self-start">
+                <div className="bg-gradient-to-br from-blue-800 to-blue-700 p-8 md:p-10 flex flex-col justify-center min-h-[240px]">
+                  <Badge className="mb-4 bg-white/15 backdrop-blur-sm text-white border-white/25 self-start">
                     For Service Providers
                   </Badge>
                   <h2 className="text-2xl sm:text-3xl font-bold text-white mb-2 leading-snug">
-                    Grow Your Service Business
+                    Grow Your Service Business with StayEg
                   </h2>
-                  <p className="text-white/80 text-sm">
-                    Join India&apos;s largest PG service network.
+                  <p className="text-white text-sm">
+                    Get verified leads from 10,000+ PGs. No marketing spend needed.
                   </p>
                 </div>
 
                 <div className="p-8 md:p-10">
                   <ul className="space-y-4 mb-6">
                     {[
-                      { icon: UsersRound, title: 'Verified Leads', desc: 'Genuine service requests from verified PG owners.' },
-                      { icon: Building2, title: 'Manage Bookings', desc: 'Track bookings, set availability, manage schedule.' },
-                      { icon: Star, title: 'Build Reputation', desc: 'Earn ratings & reviews. Higher ratings = more business.' },
+                      { icon: UsersRound, title: 'Pre-Qualified Leads', desc: 'Receive genuine service requests only from verified PG owners in your area — no cold calling.' },
+                      { icon: Building2, title: 'Smart Scheduling', desc: 'Set your availability, accept jobs on your terms, and manage your calendar from the app.' },
+                      { icon: Star, title: 'Build Your Reputation', desc: 'Every completed job earns you ratings and reviews. Higher ratings mean more visibility and bookings.' },
                     ].map((item) => (
                       <li key={item.title} className="flex items-start gap-3">
                         <div className="size-9 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
@@ -467,9 +467,9 @@ export default function HeroSection() {
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-5">
               {[
                 { icon: Building2, value: '10,000+', label: 'Verified PGs', color: 'bg-primary/10 text-primary' },
-                { icon: Users, value: '50,000+', label: 'Happy Tenants', color: 'bg-emerald-50 text-emerald-600' },
-                { icon: MapPin, value: '20+', label: 'Cities', color: 'bg-blue-50 text-blue-600' },
-                { icon: Star, value: '4.5+', label: 'Avg Rating', color: 'bg-amber-50 text-amber-600' },
+                { icon: Users, value: '50,000+', label: 'Happy Tenants', color: 'bg-brand-lime/15 text-brand-lime' },
+                { icon: MapPin, value: '20+', label: 'Cities', color: 'bg-brand-teal/10 text-brand-teal' },
+                { icon: Star, value: '4.5+', label: 'Avg Rating', color: 'bg-brand-sage/10 text-brand-sage' },
               ].map((stat, index) => (
                 <motion.div
                   key={stat.label}
@@ -496,14 +496,14 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 7. TRUST BADGES       */}
       {/* ===================== */}
-      <section className="py-8 bg-muted/40 border-y border-border">
+      <section className="py-8 bg-section-muted border-y border-border">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <FadeInSection>
             <div className="flex flex-wrap justify-center gap-6 md:gap-12">
               {[
-                { icon: Shield, label: 'Verified Properties', desc: 'Personally inspected', color: 'bg-emerald-50 text-emerald-600' },
+                { icon: Shield, label: 'Verified Properties', desc: 'Personally inspected', color: 'bg-brand-lime/15 text-brand-lime' },
                 { icon: Banknote, label: 'Zero Brokerage', desc: 'No hidden charges', color: 'bg-primary/10 text-primary' },
-                { icon: Lock, label: 'Secure Payments', desc: '256-bit encrypted', color: 'bg-blue-50 text-blue-600' },
+                { icon: Lock, label: 'Secure Payments', desc: '256-bit encrypted', color: 'bg-brand-teal/10 text-brand-teal' },
               ].map((item) => (
                 <div key={item.label} className="flex items-center gap-2.5">
                   <div className={`size-10 rounded-lg ${item.color} flex items-center justify-center`}>
@@ -529,7 +529,7 @@ export default function HeroSection() {
             badge="Testimonials"
             title="What Our Users"
             highlight="Say"
-            description="Real stories from real people who found their perfect PG home."
+            description="Don't take our word for it — hear from tenants and PG owners who've experienced StayEg firsthand."
           />
 
           <FadeInSection>
@@ -557,7 +557,7 @@ export default function HeroSection() {
 
                 <div className="flex items-center justify-center gap-3 mt-4">
                   <button onClick={() => setTestimonialIdx((prev) => Math.max(0, prev - 1))} disabled={testimonialIdx === 0}
-                    className="size-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center disabled:opacity-30 hover:bg-primary/10 hover:text-primary transition-colors">
+                    className="size-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center disabled:opacity-50 hover:bg-primary/10 hover:text-primary transition-colors">
                     <ChevronLeft className="size-4" />
                   </button>
                   <div className="flex gap-1.5">
@@ -567,7 +567,7 @@ export default function HeroSection() {
                     ))}
                   </div>
                   <button onClick={() => setTestimonialIdx((prev) => Math.min(testimonials.length - 1, prev + 1))} disabled={testimonialIdx === testimonials.length - 1}
-                    className="size-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center disabled:opacity-30 hover:bg-primary/10 hover:text-primary transition-colors">
+                    className="size-8 rounded-full bg-muted text-muted-foreground flex items-center justify-center disabled:opacity-50 hover:bg-primary/10 hover:text-primary transition-colors">
                     <ChevronRight className="size-4" />
                   </button>
                 </div>
@@ -584,10 +584,10 @@ export default function HeroSection() {
         <div className="max-w-3xl mx-auto px-4 sm:px-6 text-center">
           <FadeInSection>
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-3">
-              Ready to Find Your PG Home?
+              Stop Searching. Start Living.
             </h2>
-            <p className="text-white/80 text-sm mb-6 max-w-lg mx-auto">
-              Join 50,000+ tenants who found their perfect accommodation. Free, fast, and reliable.
+            <p className="text-white text-sm mb-6 max-w-lg mx-auto">
+              50,000+ tenants have already found their home on StayEg. Zero brokerage, verified listings, and instant booking. Why wait?
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
@@ -598,13 +598,13 @@ export default function HeroSection() {
               </Button>
               <Button onClick={() => setCurrentView('PRICING')}
                 variant="outline"
-                className="border-2 border-white/40 text-white hover:bg-white/10 rounded-lg px-6 h-10 text-sm font-semibold bg-transparent">
+                className="border-2 border-white/70 text-white hover:bg-white/15 rounded-lg px-6 h-10 text-sm font-semibold bg-transparent">
                 <Building2 className="size-4 mr-1.5" />
                 List Your PG
               </Button>
             </div>
 
-            <div className="inline-flex items-center gap-1.5 text-white/90 text-xs">
+            <div className="inline-flex items-center gap-1.5 text-white text-xs">
               <CheckCircle2 className="size-3.5" />
               100% Free for Tenants
             </div>
@@ -615,13 +615,13 @@ export default function HeroSection() {
       {/* ===================== */}
       {/* 10. CITIES            */}
       {/* ===================== */}
-      <section className="py-12 md:py-16 bg-muted/40">
+      <section className="py-12 md:py-16 bg-section-muted">
         <div className="max-w-6xl mx-auto px-4 sm:px-6">
           <SectionHeading
             badge="Our Presence"
-            title="Cities We're"
-            highlight="In"
-            description="Click on your city to find PGs near you."
+            title="Find a PG in"
+            highlight="Your City"
+            description="StayEg is live in 20+ cities with 10,000+ verified properties. Tap your city to start exploring."
           />
 
           <FadeInSection>
@@ -654,9 +654,9 @@ export default function HeroSection() {
 // Testimonials
 // ============================
 const testimonials = [
-  { name: 'Priya Sharma', role: 'Software Engineer, Bangalore', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Priya', quote: 'StayEg made my move to Bangalore so easy! Found a verified PG near my office in just 2 days.', rating: 5 },
-  { name: 'Arjun Patel', role: 'MBA Student, Delhi', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Arjun', quote: 'Zero brokerage was a game-changer. The PG I found is clean, affordable, and near my college.', rating: 5 },
-  { name: 'Meera Krishnan', role: 'Content Writer, Pune', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Meera', quote: 'The community connected me with so many people. Now I have friends and a lovely PG home!', rating: 4 },
+  { name: 'Priya Sharma', role: 'SDE at Infosys, Bangalore', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Priya', quote: 'I relocated from Jaipur to Bangalore and had just 3 days to find a PG. StayEg showed me verified options near Electronic City with real photos. I booked a single room with AC and meals in under 10 minutes. No broker, no surprise charges.', rating: 5 },
+  { name: 'Arjun Patel', role: 'MBA Student, Delhi University', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Arjun', quote: 'As a student, saving on brokerage was a big deal. StayEg helped me find a boys PG in Vijay Nagar for ₹8,000/month with WiFi and meals. The complaint feature is genuinely useful — my geyser was fixed within 24 hours.', rating: 5 },
+  { name: 'Sneha Iyer', role: 'PG Owner, Pune (12 properties)', avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Sneha', quote: 'Before StayEg, managing rent collection for 12 PGs was a nightmare. Now I track occupancy, send automated reminders, and onboard tenants digitally. My vacancy rate dropped from 18% to 4% in just 6 months.', rating: 5 },
 ];
 
 function TestimonialCard({ testimonial: { name, role, avatar, quote, rating } }: {
@@ -667,7 +667,7 @@ function TestimonialCard({ testimonial: { name, role, avatar, quote, rating } }:
       <CardContent className="p-5">
         <div className="flex gap-0.5 mb-3">
           {Array.from({ length: 5 }).map((_, i) => (
-            <Star key={i} className={`size-3.5 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-gray-300 dark:text-gray-200'}`} />
+            <Star key={i} className={`size-3.5 ${i < rating ? 'text-amber-400 fill-amber-400' : 'text-muted-foreground'}`} />
           ))}
         </div>
         <p className="text-muted-foreground text-sm leading-relaxed mb-4">&ldquo;{quote}&rdquo;</p>

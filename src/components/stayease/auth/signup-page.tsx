@@ -1,10 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Building2, Phone, User as UserIcon, Lock, Eye, EyeOff, ArrowRight, ArrowLeft,
-  Mail, MapPin, Briefcase, FileText, Camera, Check, Users,
+  Mail, MapPin, Briefcase, FileText, Camera, Check, Users, ShieldCheck, ShieldAlert,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -66,6 +66,27 @@ const GENDER_OPTIONS = [
   { value: 'OTHER', label: 'Other' },
 ];
 
+/** Basic email format check */
+function isValidEmail(email: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+/** Password strength: returns 0–4 */
+function getPasswordStrength(pw: string): { score: number; label: string; color: string } {
+  if (!pw) return { score: 0, label: '', color: '' };
+  let score = 0;
+  if (pw.length >= 6) score++;
+  if (pw.length >= 10) score++;
+  if (/[A-Z]/.test(pw) && /[a-z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+
+  if (score <= 1) return { score, label: 'Weak', color: 'bg-red-500' };
+  if (score <= 2) return { score, label: 'Fair', color: 'bg-yellow-500' };
+  if (score <= 3) return { score, label: 'Good', color: 'bg-brand-teal' };
+  return { score, label: 'Strong', color: 'bg-green-500' };
+}
+
 export default function SignupPage() {
   const { login, setCurrentView, showToast } = useAppStore();
   const [step, setStep] = useState(1);
@@ -79,9 +100,11 @@ export default function SignupPage() {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
+  const passwordStrength = useMemo(() => getPasswordStrength(form.password), [form.password]);
+
   const validateStep1 = (): boolean => {
     if (!form.fullName.trim()) { showToast('Please enter your full name'); return false; }
-    if (!form.email.trim() || !form.email.includes('@')) { showToast('Please enter a valid email'); return false; }
+    if (!isValidEmail(form.email)) { showToast('Please enter a valid email address'); return false; }
     if (form.phone.length < 10) { showToast('Please enter a valid phone number'); return false; }
     if (form.password.length < 6) { showToast('Password must be at least 6 characters'); return false; }
     if (form.password !== form.confirmPassword) { showToast('Passwords do not match'); return false; }
@@ -105,7 +128,6 @@ export default function SignupPage() {
   };
 
   const handleAvatarUpload = () => {
-    // Simulate avatar upload - pick a random dicebear avatar
     const seed = form.fullName.replace(/\s/g, '') + Date.now();
     const url = `https://api.dicebear.com/9.x/avataaars/svg?seed=${seed}`;
     setAvatarPreview(url);
@@ -117,36 +139,91 @@ export default function SignupPage() {
     showToast(provider + ' signup coming soon!');
   };
 
-  const handleSignup = () => {
+  const handleSignup = async () => {
     if (!form.agreeTerms) {
       showToast('Please agree to the Terms & Conditions');
       return;
     }
 
     setIsSubmitting(true);
-    setTimeout(() => {
-      const user: User = {
-        id: `user-${Date.now()}`,
-        name: form.fullName,
-        email: form.email,
-        phone: form.phone,
-        role: form.role,
-        gender: form.gender,
-        city: form.city,
-        occupation: form.occupation || undefined,
-        bio: form.bio || undefined,
-        avatar: form.avatarUrl || `https://api.dicebear.com/9.x/avataaars/svg?seed=${form.fullName}`,
-        isVerified: false,
-        kycStatus: 'NOT_STARTED',
-        createdAt: new Date().toISOString(),
-      };
-      login(user);
-      showToast('Account created successfully! Welcome, ' + form.fullName + '!');
-    }, 1000);
+
+    // Try real signup via API first
+    try {
+      const res = await fetch('/api/auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: form.fullName,
+          email: form.email,
+          phone: form.phone,
+          password: form.password,
+          role: form.role,
+          gender: form.gender,
+          city: form.city,
+          bio: form.bio,
+          occupation: form.occupation,
+          avatarUrl: form.avatarUrl,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.user && !data.demo) {
+        // Real signup succeeded
+        const raw = data.user;
+        const user: User = {
+          id: raw.id,
+          name: raw.name,
+          email: raw.email,
+          phone: raw.phone,
+          role: raw.role,
+          gender: raw.gender,
+          isVerified: raw.is_verified ?? false,
+          avatar: form.avatarUrl || `https://api.dicebear.com/9.x/avataaars/svg?seed=${form.fullName}`,
+          city: raw.city || form.city,
+          occupation: raw.occupation || form.occupation || undefined,
+          bio: raw.bio || form.bio || undefined,
+          createdAt: raw.created_at,
+        };
+        login(user);
+        showToast('Account created! Welcome, ' + form.fullName + '!');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (res.status === 409) {
+        showToast(data.error || 'An account with this email already exists');
+        setIsSubmitting(false);
+        return;
+      }
+    } catch {
+      // API call failed — fall through to demo mode
+    }
+
+    // Demo mode fallback
+    await new Promise((r) => setTimeout(r, 600));
+    const user: User = {
+      id: `user-${Date.now()}`,
+      name: form.fullName,
+      email: form.email,
+      phone: form.phone,
+      role: form.role,
+      gender: form.gender,
+      city: form.city,
+      occupation: form.occupation || undefined,
+      bio: form.bio || undefined,
+      avatar: form.avatarUrl || `https://api.dicebear.com/9.x/avataaars/svg?seed=${form.fullName}`,
+      isVerified: false,
+      kycStatus: 'NOT_STARTED',
+      createdAt: new Date().toISOString(),
+    };
+    login(user);
+    showToast('Demo mode — account created locally');
+    setIsSubmitting(false);
   };
 
   return (
-    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8 bg-gradient-to-br from-brand-teal/10 via-brand-sage/5 to-background">
+    <div className="min-h-[calc(100vh-64px)] flex items-center justify-center px-4 py-8 bg-gradient-to-br from-brand-deep/5 via-brand-teal/8 to-background">
       <motion.div
         className="w-full max-w-md"
         initial={{ opacity: 0, scale: 0.95 }}
@@ -208,7 +285,7 @@ export default function SignupPage() {
         </div>
 
         {/* Main Card */}
-        <Card className="shadow-xl shadow-brand-teal/10 border border-gold/30 shadow-gold-md bg-card">
+        <Card className="shadow-xl shadow-brand-teal/10 border border-border bg-card">
           <CardContent className="p-6">
             <AnimatePresence mode="wait">
               {/* STEP 1: Basic Info */}
@@ -242,9 +319,14 @@ export default function SignupPage() {
                         placeholder="you@example.com"
                         value={form.email}
                         onChange={(e) => updateForm('email', e.target.value)}
-                        className="pl-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20"
+                        className={`pl-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20 ${
+                          form.email && !isValidEmail(form.email) ? 'border-red-400' : ''
+                        }`}
                       />
                     </div>
+                    {form.email && !isValidEmail(form.email) && (
+                      <p className="text-[11px] text-red-500">Please enter a valid email address</p>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -286,6 +368,29 @@ export default function SignupPage() {
                         {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </button>
                     </div>
+                    {/* Password Strength Indicator */}
+                    {form.password && (
+                      <div className="space-y-1">
+                        <div className="flex gap-1">
+                          {[1, 2, 3, 4].map((level) => (
+                            <div
+                              key={level}
+                              className={`h-1 flex-1 rounded-full transition-colors ${
+                                passwordStrength.score >= level ? passwordStrength.color : 'bg-muted'
+                              }`}
+                            />
+                          ))}
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <p className={`text-[11px] font-medium ${passwordStrength.score <= 1 ? 'text-red-500' : passwordStrength.score <= 2 ? 'text-yellow-600' : passwordStrength.score <= 3 ? 'text-brand-teal' : 'text-green-600'}`}>
+                            {passwordStrength.label}
+                          </p>
+                          <p className="text-[11px] text-muted-foreground">
+                            {form.password.length}/6 min
+                          </p>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-1.5">
@@ -300,7 +405,9 @@ export default function SignupPage() {
                         placeholder="Re-enter password"
                         value={form.confirmPassword}
                         onChange={(e) => updateForm('confirmPassword', e.target.value)}
-                        className="pl-10 pr-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20"
+                        className={`pl-10 pr-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20 ${
+                          form.confirmPassword && form.confirmPassword !== form.password ? 'border-red-400' : ''
+                        }`}
                       />
                       <button
                         type="button"
@@ -310,6 +417,9 @@ export default function SignupPage() {
                         {showConfirmPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                       </button>
                     </div>
+                    {form.confirmPassword && form.confirmPassword !== form.password && (
+                      <p className="text-[11px] text-red-500">Passwords do not match</p>
+                    )}
                   </div>
 
                   <Button

@@ -3,13 +3,19 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    // Check Supabase connectivity
     const { error } = await supabase.from('users').select('id').limit(1);
     if (error) {
-      return NextResponse.json({ message: 'Hello, world!', supabase: 'disconnected', error: error.message });
+      const msg = String(error.message ?? '');
+      const isMissing = msg.includes('does not exist') || msg.includes('not find') || msg.includes('PGRST205');
+      return NextResponse.json({
+        status: 'ok',
+        version: '1.2.0',
+        database: isMissing ? 'demo_mode' : 'error',
+        message: isMissing ? 'Running in demo mode — database tables not yet created' : 'Database connection issue',
+      });
     }
-    return NextResponse.json({ message: 'Hello, world!', supabase: 'connected' });
+    return NextResponse.json({ status: 'ok', version: '1.2.0', database: 'connected' });
   } catch {
-    return NextResponse.json({ message: 'Hello, world!', supabase: 'error' });
+    return NextResponse.json({ status: 'ok', version: '1.2.0', database: 'demo_mode' });
   }
 }
