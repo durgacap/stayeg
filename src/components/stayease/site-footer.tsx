@@ -5,6 +5,7 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import type { AppView } from '@/lib/types';
 import { slideUp, hoverScale, tapScale } from '@/lib/animations';
 
 const footerSections = [
@@ -56,13 +57,13 @@ export default function SiteFooter() {
   const footerRef = useRef<HTMLElement>(null);
   const isInView = useInView(footerRef, { once: true, margin: '-80px' });
 
-  const handleLinkClick = (view: string, authRequired?: boolean) => {
+  const handleLinkClick = (view: AppView, authRequired?: boolean) => {
     if (authRequired && !isLoggedIn) {
-      setCurrentView('LOGIN' as any);
+      setCurrentView('LOGIN');
       window.scrollTo({ top: 0, behavior: 'smooth' });
       return;
     }
-    setCurrentView(view as any);
+    setCurrentView(view);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 

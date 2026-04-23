@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -31,6 +31,13 @@ export default function RoomManagement() {
   const [roomForm, setRoomForm] = useState({
     roomCode: '', roomType: 'DOUBLE', floor: '1', hasAC: false, hasAttachedBath: false, bedCount: '2',
   });
+
+  // Sync selectedPgId when selectedPG changes from store
+  useEffect(() => {
+    if (selectedPG?.id && selectedPG.id !== selectedPgId) {
+      setSelectedPgId(selectedPG.id);
+    }
+  }, [selectedPG?.id, selectedPgId]);
 
   const { data: ownerUser } = useQuery({
     queryKey: ['owner-user'],

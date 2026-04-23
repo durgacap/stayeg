@@ -43,36 +43,41 @@ export default function OwnerDashboard() {
     refetchInterval: 30000,
   });
 
-  const { data: recentBookings } = useQuery({
-    queryKey: ['owner-recent-bookings', ownerId],
+  // Shared PGs query — avoids redundant fetches in bookings & complaints
+  const { data: ownerPGs } = useQuery({
+    queryKey: ['owner-pgs', ownerId],
     queryFn: async () => {
-      const pgsRes = await fetch(`/api/pgs?ownerId=${ownerId}`);
-      if (!pgsRes.ok) throw new Error('Failed to fetch PGs');
-      const pgs = await pgsRes.json();
-      const pgIds = pgs.map((p: { id: string }) => p.id);
-      if (pgIds.length === 0) return [];
-      const results = await Promise.all(
-        pgIds.map((id: string) => fetch(`/api/bookings?pgId=${id}`).then(r => r.json()).catch(() => []))
-      );
-      return results.flat();
+      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      if (!res.ok) throw new Error('Failed to fetch PGs');
+      return res.json();
     },
     enabled: !!ownerId,
   });
 
-  const { data: complaints } = useQuery({
-    queryKey: ['owner-complaints', ownerId],
+  const ownerPgIds = useMemo(() => ownerPGs?.map((p: { id: string }) => p.id) || [], [ownerPGs]);
+
+  const { data: recentBookings } = useQuery({
+    queryKey: ['owner-recent-bookings', ownerPgIds],
     queryFn: async () => {
-      const pgsRes = await fetch(`/api/pgs?ownerId=${ownerId}`);
-      if (!pgsRes.ok) throw new Error('Failed to fetch PGs');
-      const pgs = await pgsRes.json();
-      const pgIds = pgs.map((p: { id: string }) => p.id);
-      if (pgIds.length === 0) return [];
+      if (ownerPgIds.length === 0) return [];
       const results = await Promise.all(
-        pgIds.map((id: string) => fetch(`/api/complaints?pgId=${id}`).then(r => r.json()))
+        ownerPgIds.map((id: string) => fetch(`/api/bookings?pgId=${id}`).then(r => r.json()).catch(() => []))
       );
       return results.flat();
     },
-    enabled: !!ownerId,
+    enabled: ownerPgIds.length > 0,
+  });
+
+  const { data: complaints } = useQuery({
+    queryKey: ['owner-complaints', ownerPgIds],
+    queryFn: async () => {
+      if (ownerPgIds.length === 0) return [];
+      const results = await Promise.all(
+        ownerPgIds.map((id: string) => fetch(`/api/complaints?pgId=${id}`).then(r => r.json()))
+      );
+      return results.flat();
+    },
+    enabled: ownerPgIds.length > 0,
   });
 
   const statCards = useMemo(() => {

@@ -329,9 +329,9 @@ export default function PricingPage() {
                               {coupon.discountPercent}% OFF
                             </Badge>
                           )}
-                          {coupon.discountPercent === 0 && (coupon as any).flatDiscount && (
+                          {coupon.discountPercent === 0 && coupon.flatDiscount && (
                             <Badge className={`${BADGE.green} border-0 text-xs`}>
-                              ₹{(coupon as any).flatDiscount} OFF
+                              ₹{coupon.flatDiscount} OFF
                             </Badge>
                           )}
                         </div>

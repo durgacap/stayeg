@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { useAppStore } from '@/store/use-app-store';
+import type { AppView } from '@/lib/types';
 import { BADGE_BORDER } from '@/lib/constants';
 
 interface Message {
@@ -124,8 +125,8 @@ export default function AIAssistant() {
     return "I'd be happy to help you with that! Here are some things I can assist with:\n\n• Managing rooms and beds\n• Checking rent payment status\n• Reviewing complaints\n• Dashboard analytics\n• PG property management\n\nTry asking about any of these topics or use the quick actions below.";
   };
 
-  const navigateTo = (view: string) => {
-    setCurrentView(view as any);
+  const navigateTo = (view: AppView) => {
+    setCurrentView(view);
     setAIChatOpen(false);
   };
 
