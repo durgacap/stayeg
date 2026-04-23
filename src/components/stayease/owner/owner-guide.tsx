@@ -94,7 +94,7 @@ function StepIcon({ icon: Icon, step }: { icon: React.ElementType; step: number 
         />
         <Icon className="size-12 md:size-14 text-white relative z-10" />
         {/* Step number */}
-        <div className="absolute -top-2 -right-2 w-8 h-8 bg-white rounded-full flex items-center justify-center shadow-md">
+        <div className="absolute -top-2 -right-2 w-8 h-8 bg-background rounded-full flex items-center justify-center shadow-md">
           <span className="text-sm font-bold text-brand-deep">{step + 1}</span>
         </div>
       </div>

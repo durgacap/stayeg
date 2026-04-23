@@ -122,9 +122,9 @@ function BangaloreMapPlaceholder() {
       {/* Scale */}
       <div className="absolute bottom-4 left-4 bg-card/90 rounded-lg px-2 py-1 shadow-sm">
         <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
-          <div className="w-12 h-0.5 bg-gray-400 relative">
-            <div className="absolute left-0 -top-1 w-px h-2 bg-gray-400" />
-            <div className="absolute right-0 -top-1 w-px h-2 bg-gray-400" />
+          <div className="w-12 h-0.5 bg-muted-foreground/50 relative">
+            <div className="absolute left-0 -top-1 w-px h-2 bg-muted-foreground/50" />
+            <div className="absolute right-0 -top-1 w-px h-2 bg-muted-foreground/50" />
           </div>
           500m
         </div>

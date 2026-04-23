@@ -130,7 +130,7 @@ export default function RoomManagement() {
       case 'AVAILABLE': return 'bg-green-500';
       case 'OCCUPIED': return 'bg-red-500';
       case 'MAINTENANCE': return 'bg-yellow-500';
-      default: return 'bg-gray-400';
+      default: return 'bg-muted-foreground';
     }
   };
 
