@@ -210,15 +210,15 @@ export default function PGDetail() {
               />
               <button
                 onClick={() => setSelectedImageIndex((p) => (p === 0 ? images.length - 1 : p - 1))}
-                className="absolute left-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg"
+                className="absolute left-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background backdrop-blur-sm rounded-full p-2 shadow-lg"
               >
-                <ChevronLeft className="size-5 text-gray-700" />
+                <ChevronLeft className="size-5 text-foreground" />
               </button>
               <button
                 onClick={() => setSelectedImageIndex((p) => (p === images.length - 1 ? 0 : p + 1))}
-                className="absolute right-3 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg"
+                className="absolute right-3 top-1/2 -translate-y-1/2 bg-background/90 hover:bg-background backdrop-blur-sm rounded-full p-2 shadow-lg"
               >
-                <ChevronRight className="size-5 text-gray-700" />
+                <ChevronRight className="size-5 text-foreground" />
               </button>
               <div className="absolute bottom-3 left-3 bg-black/60 text-white px-3 py-1 rounded-full text-sm">
                 {selectedImageIndex + 1} / {images.length}

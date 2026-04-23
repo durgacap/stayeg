@@ -351,7 +351,7 @@ export default function HeroSection() {
                     The Future of PG Management is{' '}
                     <span className="text-primary">Here</span>
                   </h2>
-                  <p className="text-gray-300 mb-6 text-sm">
+                  <p className="text-gray-300 dark:text-gray-400 eye-comfort:text-stone-300 mb-6 text-sm">
                     Run your PG business like a pro — automate rent, manage staff, track occupancy, and delight tenants. All from one dashboard.
                   </p>
 
@@ -364,7 +364,7 @@ export default function HeroSection() {
                     ].map((item) => (
                       <li key={item} className="flex items-center gap-2.5">
                         <CheckCircle2 className="size-4 text-primary shrink-0" />
-                        <span className="text-gray-300 text-sm">{item}</span>
+                        <span className="text-gray-300 dark:text-gray-400 eye-comfort:text-stone-300 text-sm">{item}</span>
                       </li>
                     ))}
                   </ul>
@@ -394,7 +394,7 @@ export default function HeroSection() {
                     <div key={item.label} className="bg-white/5 border border-white/10 rounded-xl p-4">
                       <item.icon className="size-6 text-primary mb-2" />
                       <h4 className="text-white font-semibold text-sm mb-0.5">{item.label}</h4>
-                      <p className="text-gray-300 text-xs">{item.value}</p>
+                      <p className="text-gray-300 dark:text-gray-400 eye-comfort:text-stone-300 text-xs">{item.value}</p>
                     </div>
                   ))}
                 </div>
@@ -592,7 +592,7 @@ export default function HeroSection() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mb-4">
               <Button onClick={() => setCurrentView('PG_LISTING')}
-                className="bg-white text-primary hover:bg-muted rounded-lg px-6 h-10 text-sm font-semibold">
+                className="bg-background text-primary hover:bg-muted rounded-lg px-6 h-10 text-sm font-semibold">
                 <Search className="size-4 mr-1.5" />
                 Find PG Now
               </Button>

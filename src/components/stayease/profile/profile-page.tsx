@@ -334,7 +334,7 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-muted/50 pb-24 md:pb-8">
       {/* Profile Header */}
-      <div className="bg-gradient-to-br from-[#0f172a] via-[#1e40af] to-[#2563eb] relative overflow-hidden">
+      <div className="bg-gradient-to-br from-brand-deep via-primary to-brand-teal relative overflow-hidden">
         {/* Background Pattern */}
         <div className="absolute inset-0 opacity-[0.04]" style={{
           backgroundImage: 'radial-gradient(circle, white 1px, transparent 1px)',
@@ -385,7 +385,7 @@ export default function ProfilePage() {
                 </Badge>
               </div>
               <p className="text-white/80 text-sm">{email}</p>
-              {bio && <p className="text-white/70 text-sm mt-1 line-clamp-1">{bio}</p>}
+              {bio && <p className="text-white/90 text-sm mt-1 line-clamp-1">{bio}</p>}
             </div>
 
             {/* Edit Button */}
