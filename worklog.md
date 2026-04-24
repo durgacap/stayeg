@@ -1,36 +1,23 @@
 ---
 Task ID: 1
 Agent: Main Agent
-Task: Complete PG Owner Dashboard System - Full Rebuild
+Task: Check database status and implement PG Owner approval system
 
 Work Log:
-- Analyzed entire existing codebase (40+ files, owner components, API routes, DB schema)
-- Updated Prisma schema: added Tenant, RentRecord, ActivityLog models with proper relations
-- Pushed schema to SQLite database (db push successful)
-- Created 5 new backend API routes:
-  - /api/tenants (GET, POST, PUT, DELETE) - full CRUD with bed assignment
-  - /api/tenants/[id] - single tenant operations
-  - /api/rent-records (GET, POST, PUT) - rent record management
-  - /api/activity-log (GET, POST) - owner activity tracking
-  - /api/beds (PUT, POST) - direct bed status management with persistence
-- Rewrote /api/analytics - comprehensive analytics with Tenant/RentRecord queries
-- Rebuilt 5 major frontend components:
-  1. dashboard-analytics.tsx - Quick Actions, stat cards, alerts, rent due list, activity log, benefits section, pricing info
-  2. tenant-management.tsx - Add tenant manually, assign bed, search/filter, WhatsApp, notes, move tenant, remove, rent history
-  3. room-management.tsx - Mark Bed Available ONE CLICK with backend persistence, bed status cycling, quick action buttons
-  4. rent-management.tsx - Due date tracking, WhatsApp reminders, month filter, CSV export, payment receipt, paid status
-  5. rent-management.tsx - Due date tracking, WhatsApp reminders, month filter, CSV export, payment receipt
-- Created 2 new components:
-  - qr-onboarding.tsx - QR code generation per PG, download, share
-  - contact-support.tsx - Contact form for owner support
-- Updated types.ts with OWNER_QR, OWNER_SUPPORT views
-- Updated page.tsx navigation (OWNER_NAV, OWNER_MOBILE_NAV, imports, routes)
-- Installed qrcode.react package
-- All lint checks passing
-- Dev server running successfully, all APIs responding
+- Checked Supabase database connection — tables do NOT exist (API returns demo: true)
+- Tried connecting to Supabase PostgreSQL with password BizMeals@1998 — failed (wrong password, this is account password not DB password)
+- Updated supabase-schema.sql with is_approved column, rejection_reason column, and composite index
+- Updated setup-db API route with is_approved, tenant_notes, activity_log tables
+- Updated 001_create_all_tables.sql migration with is_approved column
+- Created /api/admin/approve-owner API endpoint (GET: list owners, PUT: approve/reject)
+- Updated auth API: signup sets is_approved=false for OWNER role, login returns is_approved field
+- Updated login-page.tsx: blocks unapproved owners with "pending approval" message
+- Updated signup-page.tsx: OWNER signups redirect to login with pending message (no auto-login)
+- Created owner-approval.tsx component with stats cards, tab switcher, approve/reject functionality
+- Integrated OwnerApproval component into AdminDashboard with tab navigation
+- All lint checks pass
 
 Stage Summary:
-- Database: 12 models (User, PG, Room, Bed, Booking, Payment, Complaint, Vendor, Worker, Tenant, RentRecord, ActivityLog)
-- Backend: 7 new/updated API routes
-- Frontend: 7 owner components rebuilt/created
-- Features added: Quick actions, Add tenant, WhatsApp integration, Notes per tenant, Move tenant, Bed persistence, Rent due tracking, CSV export, Receipt download, QR code, Contact support, Benefits section, Activity log, Empty states
+- Owner approval system fully implemented in code
+- Database tables need to be created in Supabase (requires DB password from Supabase Dashboard → Settings → Database)
+- Once tables are created, the approval flow will work: signup → pending → admin approve → can login

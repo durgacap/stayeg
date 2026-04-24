@@ -179,7 +179,7 @@ export async function GET(request: NextRequest) {
     if (email || phone) {
       let query = supabase
         .from('users')
-        .select('id,name,email,phone,role,avatar,gender,is_verified,city,occupation,bio,created_at');
+        .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at');
 
       if (email) query = query.eq('email', email);
       if (phone) query = query.eq('phone', phone);
@@ -315,7 +315,8 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Create user
+    // Create user — OWNER role requires admin approval
+    const isApproved = (role || 'TENANT') === 'OWNER' ? false : true;
     const { data: user, error } = await supabase
       .from('users')
       .insert({
@@ -324,7 +325,8 @@ export async function POST(request: NextRequest) {
         phone: phone || '',
         role: role || 'TENANT',
         gender: gender || null,
-        is_verified: false,
+        is_verified: isApproved,
+        is_approved: isApproved,
         bio: bio || null,
         city: city || null,
         occupation: occupation || null,

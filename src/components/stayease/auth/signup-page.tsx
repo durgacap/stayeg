@@ -171,6 +171,16 @@ export default function SignupPage() {
       if (res.ok && data.user && !data.demo) {
         // Real signup succeeded
         const raw = data.user;
+
+        // OWNER accounts require admin approval — don't auto-login
+        if (raw.role === 'OWNER') {
+          showToast('Account created! Your PG Owner account is pending admin approval.');
+          setCurrentView('LOGIN');
+          setIsSubmitting(false);
+          return;
+        }
+
+        // Non-OWNER roles: auto-login as before
         const user: User = {
           id: raw.id,
           name: raw.name,

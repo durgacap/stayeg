@@ -89,7 +89,7 @@ export default function LoginPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   /** Try to fetch user from the real API, fall back to demo on failure */
-  const tryRealLogin = useCallback(async (identifier: string, field: 'email' | 'phone'): Promise<User | null> => {
+  const tryRealLogin = useCallback(async (identifier: string, field: 'email' | 'phone'): Promise<{ user: User; isApproved: boolean } | null> => {
     try {
       const res = await fetch(`/api/auth?${field}=${encodeURIComponent(identifier)}`);
       const data = await res.json();
@@ -113,7 +113,7 @@ export default function LoginPage() {
         bio: raw.bio,
         createdAt: raw.created_at,
       };
-      return user;
+      return { user, isApproved: raw.is_approved !== false };
     } catch {
       return null;
     }
@@ -136,11 +136,19 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     // Try real auth first
-    const realUser = await tryRealLogin(phone, 'phone');
+    const result = await tryRealLogin(phone, 'phone');
 
-    if (realUser) {
-      login(realUser);
-      showToast('Welcome back, ' + realUser.name + '!');
+    if (result) {
+      // Check if OWNER account is pending approval
+      if (result.user.role === 'OWNER' && !result.isApproved) {
+        showToast('Your PG Owner account is pending approval. Please wait for admin verification.');
+        setShowOTP(false);
+        setOtp('');
+        setIsSubmitting(false);
+        return;
+      }
+      login(result.user);
+      showToast('Welcome back, ' + result.user.name + '!');
     } else {
       // Fall back to demo mode
       const user = DEMO_USERS[selectedRole];
@@ -169,11 +177,17 @@ export default function LoginPage() {
 
     // Try real auth first (lookup by email)
     if (email) {
-      const realUser = await tryRealLogin(email, 'email');
+      const result = await tryRealLogin(email, 'email');
 
-      if (realUser) {
-        login(realUser);
-        showToast('Welcome back, ' + realUser.name + '!');
+      if (result) {
+        // Check if OWNER account is pending approval
+        if (result.user.role === 'OWNER' && !result.isApproved) {
+          showToast('Your PG Owner account is pending approval. Please wait for admin verification.');
+          setIsSubmitting(false);
+          return;
+        }
+        login(result.user);
+        showToast('Welcome back, ' + result.user.name + '!');
         setIsSubmitting(false);
         return;
       }

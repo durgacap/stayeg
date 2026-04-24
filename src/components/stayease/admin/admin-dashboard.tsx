@@ -5,8 +5,9 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion } from 'framer-motion';
 import {
   Shield, Check, X, AlertTriangle, Building2, Users, BarChart3, Search,
-  Eye, Loader2, Star, MapPin, BadgeCheck,
+  Eye, Loader2, Star, MapPin, BadgeCheck, UserCheck,
 } from 'lucide-react';
+import OwnerApproval from './owner-approval';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +28,7 @@ import { STATUSES, CARD_BG, BADGE, TEXT_COLOR } from '@/lib/constants';
 export default function AdminDashboard() {
   const { showToast } = useAppStore();
   const queryClient = useQueryClient();
+  const [activeSection, setActiveSection] = useState<'overview' | 'owner-approval'>('overview');
   const [filterStatus, setFilterStatus] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [detailPG, setDetailPG] = useState<any>(null);
@@ -105,6 +107,34 @@ export default function AdminDashboard() {
         <p className="text-muted-foreground mt-1">Monitor and manage the StayEg platform</p>
       </div>
 
+      {/* Section Tabs */}
+      <div className="flex bg-muted rounded-xl p-1">
+        {([
+          { key: 'overview' as const, label: 'PG Verification', icon: BadgeCheck },
+          { key: 'owner-approval' as const, label: 'Owner Approvals', icon: UserCheck },
+        ]).map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveSection(tab.key)}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-sm font-medium transition-all ${
+              activeSection === tab.key
+                ? 'bg-card text-brand-teal shadow-sm'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <tab.icon className="size-4" />
+            <span className="hidden sm:inline">{tab.label}</span>
+            <span className="sm:hidden">{tab.label.split(' ')[0]}</span>
+          </button>
+        ))}
+      </div>
+
+      {/* Owner Approval Section */}
+      {activeSection === 'owner-approval' && <OwnerApproval />}
+
+      {/* PG Verification Section */}
+      {activeSection === 'overview' && (
+        <>
       {/* Stat Cards */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {[
@@ -277,6 +307,11 @@ export default function AdminDashboard() {
           )}
         </CardContent>
       </Card>
+
+      </>
+
+      )}
+      {/* End PG Verification Section */}
 
       {/* PG Detail Dialog */}
       <Dialog open={detailOpen} onOpenChange={setDetailOpen}>

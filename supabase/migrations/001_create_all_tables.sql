@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS users (
   avatar      TEXT,
   gender      TEXT CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
   is_verified BOOLEAN DEFAULT FALSE,
+  is_approved BOOLEAN DEFAULT FALSE,
+  rejection_reason TEXT,
   kyc_doc     TEXT,
   bio         TEXT,
   city        TEXT,
@@ -193,6 +195,8 @@ CREATE TABLE IF NOT EXISTS workers (
 
 CREATE INDEX IF NOT EXISTS idx_workers_pg ON workers(pg_id);
 CREATE INDEX IF NOT EXISTS idx_workers_role ON workers(role);
+
+CREATE INDEX IF NOT EXISTS idx_users_role_approved ON users(role, is_approved);
 
 -- ===========================================
 -- ROW LEVEL SECURITY (RLS) POLICIES

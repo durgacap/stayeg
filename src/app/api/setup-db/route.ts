@@ -98,6 +98,8 @@ CREATE TABLE IF NOT EXISTS users (
   avatar TEXT,
   gender TEXT CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
   is_verified BOOLEAN DEFAULT false,
+  is_approved BOOLEAN DEFAULT false,
+  rejection_reason TEXT,
   kyc_doc TEXT,
   city TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -298,6 +300,59 @@ DO $$ BEGIN CREATE TRIGGER payments_updated_at BEFORE UPDATE ON payments FOR EAC
 DO $$ BEGIN CREATE TRIGGER complaints_updated_at BEFORE UPDATE ON complaints FOR EACH ROW EXECUTE FUNCTION update_updated_at(); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TRIGGER vendors_updated_at BEFORE UPDATE ON vendors FOR EACH ROW EXECUTE FUNCTION update_updated_at(); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE TRIGGER workers_updated_at BEFORE UPDATE ON workers FOR EACH ROW EXECUTE FUNCTION update_updated_at(); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ============================================
+-- 10. TENANT NOTES TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS tenant_notes (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  tenant_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  booking_id UUID REFERENCES bookings(id) ON DELETE SET NULL,
+  pg_id UUID NOT NULL REFERENCES pgs(id) ON DELETE CASCADE,
+  note TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
+-- 11. ACTIVITY LOG TABLE
+-- ============================================
+CREATE TABLE IF NOT EXISTS activity_log (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  owner_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  pg_id UUID REFERENCES pgs(id) ON DELETE SET NULL,
+  action TEXT NOT NULL,
+  details TEXT,
+  entity_type TEXT,
+  entity_id TEXT,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- ============================================
+-- ADDITIONAL INDEXES
+-- ============================================
+CREATE INDEX IF NOT EXISTS idx_users_role_approved ON users(role, is_approved);
+CREATE INDEX IF NOT EXISTS idx_tenant_notes_owner ON tenant_notes(owner_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_notes_tenant ON tenant_notes(tenant_id);
+CREATE INDEX IF NOT EXISTS idx_tenant_notes_pg ON tenant_notes(pg_id);
+CREATE INDEX IF NOT EXISTS idx_activity_log_owner ON activity_log(owner_id);
+CREATE INDEX IF NOT EXISTS idx_activity_log_pg ON activity_log(pg_id);
+
+-- ============================================
+-- RLS FOR NEW TABLES
+-- ============================================
+ALTER TABLE tenant_notes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+
+DO $$ BEGIN CREATE POLICY "Public all tenant_notes" ON tenant_notes FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "Public all activity_log" ON activity_log FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+
+-- ============================================
+-- UPDATED_AT TRIGGERS FOR NEW TABLES
+-- ============================================
+DO $$ BEGIN CREATE TRIGGER tenant_notes_updated_at BEFORE UPDATE ON tenant_notes FOR EACH ROW EXECUTE FUNCTION update_updated_at(); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE TRIGGER activity_log_updated_at BEFORE UPDATE ON activity_log FOR EACH ROW EXECUTE FUNCTION update_updated_at(); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 `;
 
     try {

@@ -21,6 +21,8 @@ CREATE TABLE IF NOT EXISTS users (
   avatar        TEXT,
   gender        TEXT CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
   is_verified   BOOLEAN NOT NULL DEFAULT false,
+  is_approved   BOOLEAN NOT NULL DEFAULT false,
+  rejection_reason TEXT,
   kyc_doc       TEXT,
   bio           TEXT,
   city          TEXT,
@@ -186,6 +188,7 @@ CREATE TABLE IF NOT EXISTS workers (
 -- Users
 CREATE INDEX IF NOT EXISTS idx_users_email       ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role        ON users(role);
+CREATE INDEX IF NOT EXISTS idx_users_role_approved ON users(role, is_approved);
 
 -- PGs
 CREATE INDEX IF NOT EXISTS idx_pgs_owner_id      ON pgs(owner_id);
