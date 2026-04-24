@@ -29,6 +29,7 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
 import { authFetch } from '@/lib/api-client';
+import { toast } from '@/lib/toast';
 import { BADGE, TEXT_COLOR } from '@/lib/constants';
 
 const formatCurrency = (amount: number) =>
@@ -60,7 +61,7 @@ interface TenantRecord {
   rentRecords?: { id: string; month: string; amount: number; status: string; paidDate?: string; method?: string }[];
 }
 
-interface PGData { id: string; name: string; rooms?: { id: string; roomCode: string; roomType: string; beds?: { id: string; bedNumber: number; status: string }[] }[] }
+interface PGData { id: string; name: string; rooms?: { id: string; roomCode: string; roomType: string; floor?: number; beds?: { id: string; bedNumber: number; status: string }[] }[] }
 
 export default function TenantManagement() {
   const { showToast, currentUser } = useAppStore();
@@ -235,7 +236,7 @@ export default function TenantManagement() {
                 {form.pgId && <div className="space-y-2"><Label>Room</Label>
                   <Select value={form.roomId} onValueChange={v => setForm(p => ({ ...p, roomId: v, bedId: '' }))}>
                     <SelectTrigger><SelectValue placeholder="Select Room" /></SelectTrigger>
-                    <SelectContent>{roomsInPG.map(room => <SelectItem key={room.id} value={room.id}>{room.roomCode} - {room.roomType} (F{room.floor})</SelectItem>)}</SelectContent>
+                    <SelectContent>{roomsInPG.map(room => <SelectItem key={room.id} value={room.id}>{room.roomCode} - {room.roomType}{room.floor != null ? ` (F${room.floor})` : ''}</SelectItem>)}</SelectContent>
                   </Select>
                 </div>}
                 {form.roomId && <div className="space-y-2"><Label>Available Bed</Label>

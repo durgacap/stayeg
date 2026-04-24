@@ -21,6 +21,7 @@ import PGListing from '@/components/stayease/tenant/pg-listing';
 import PGDetail from '@/components/stayease/tenant/pg-detail';
 import BookingModal from '@/components/stayease/tenant/booking-modal';
 import MyBookings from '@/components/stayease/tenant/my-bookings';
+import TenantMyStay from '@/components/stayease/tenant/tenant-my-stay';
 import PaymentSection from '@/components/stayease/tenant/payment-section';
 import ComplaintSection from '@/components/stayease/tenant/complaint-section';
 import NearbyServices from '@/components/stayease/tenant/nearby-services';
@@ -37,6 +38,7 @@ import QROnboarding from '@/components/stayease/owner/qr-onboarding';
 import OwnerContactSupport from '@/components/stayease/owner/contact-support';
 import AdminDashboard from '@/components/stayease/admin/admin-dashboard';
 import ProfilePage from '@/components/stayease/profile/profile-page';
+import TenantProfile from '@/components/stayease/tenant/tenant-profile';
 import SiteFooter from '@/components/stayease/site-footer';
 import CommunityPage from '@/components/stayease/community/community-page';
 import LoginPage from '@/components/stayease/auth/login-page';
@@ -56,6 +58,9 @@ import RefundPolicyPage from '@/components/stayease/policy/refund-policy-page';
 import TenantOnboarding from '@/components/stayease/guidance/tenant-onboarding';
 import TenantAIAssistant from '@/components/stayease/guidance/tenant-ai-assistant';
 import OwnerSetupWizard from '@/components/stayease/owner/setup-wizard';
+import TenantHome from '@/components/stayease/tenant/tenant-home';
+import TenantExplore from '@/components/stayease/tenant/tenant-explore';
+import TenantSupport from '@/components/stayease/tenant/tenant-support';
 
 // Navigation items
 const PUBLIC_NAV = [
@@ -66,21 +71,19 @@ const PUBLIC_NAV = [
 ];
 
 const TENANT_NAV = [
-  { view: 'LANDING' as const, label: 'Home', icon: Home },
-  { view: 'PG_LISTING' as const, label: 'Explore PGs', icon: Search },
-  { view: 'COMMUNITY' as const, label: 'Community', icon: UsersRound },
-  { view: 'MY_BOOKINGS' as const, label: 'My Bookings', icon: CalendarDays },
-  { view: 'PAYMENTS' as const, label: 'Payments', icon: CreditCard },
-  { view: 'COMPLAINTS' as const, label: 'Complaints', icon: MessageSquare },
-  { view: 'NEARBY' as const, label: 'Nearby', icon: MapPin },
+  { view: 'TENANT_HOME' as const, label: 'Home', icon: Home },
+  { view: 'TENANT_EXPLORE' as const, label: 'Explore', icon: Search },
+  { view: 'TENANT_MY_STAY' as const, label: 'My Stay', icon: CalendarDays },
+  { view: 'TENANT_SUPPORT' as const, label: 'Support', icon: MessageSquare },
+  { view: 'TENANT_PROFILE' as const, label: 'Profile', icon: User },
 ];
 
 const TENANT_MOBILE_NAV = [
-  { view: 'LANDING' as const, label: 'Home', icon: Home },
-  { view: 'PG_LISTING' as const, label: 'Explore', icon: Search },
-  { view: 'COMMUNITY' as const, label: 'Community', icon: UsersRound },
-  { view: 'MY_BOOKINGS' as const, label: 'Bookings', icon: BookOpen },
-  { view: 'NEARBY' as const, label: 'Nearby', icon: MapPin },
+  { view: 'TENANT_HOME' as const, label: 'Home', icon: Home },
+  { view: 'TENANT_EXPLORE' as const, label: 'Explore', icon: Search },
+  { view: 'TENANT_MY_STAY' as const, label: 'My Stay', icon: CalendarDays },
+  { view: 'TENANT_SUPPORT' as const, label: 'Support', icon: MessageSquare },
+  { view: 'TENANT_PROFILE' as const, label: 'Profile', icon: User },
 ];
 
 const OWNER_NAV = [
@@ -104,7 +107,7 @@ const OWNER_MOBILE_NAV = [
 ];
 
 const HIDE_HEADER_VIEWS = ['LOGIN', 'SIGNUP'] as const;
-const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'PROFILE', 'DATABASE_SETUP_V2', 'HOW_IT_WORKS', 'CONTACT', 'REFUND_POLICY'] as const;
+const HIDE_MOBILE_NAV_VIEWS = ['LOGIN', 'SIGNUP', 'PRICING', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'PROFILE', 'DATABASE_SETUP_V2', 'HOW_IT_WORKS', 'CONTACT', 'REFUND_POLICY', 'TENANT_PROFILE', 'PG_DETAIL', 'BOOKING'] as const;
 
 function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV | typeof OWNER_MOBILE_NAV }) {
   const { currentView, setCurrentView } = useAppStore();
@@ -142,7 +145,9 @@ function TopHeader() {
     ? PUBLIC_NAV
     : currentRole === 'OWNER'
       ? OWNER_NAV
-      : TENANT_NAV;
+      : currentRole === 'ADMIN'
+        ? [] // admin uses its own nav
+        : TENANT_NAV;
 
   const hideHeader = (HIDE_HEADER_VIEWS as readonly string[]).includes(currentView);
 
@@ -330,6 +335,20 @@ function MainContent() {
     // Setup view
     if (currentView === 'DATABASE_SETUP_V2') return <DatabaseSetupV2 />;
 
+    // Tenant new views (mobile-first)
+    if (currentRole === 'TENANT' || currentRole === 'VENDOR') {
+      switch (currentView) {
+        case 'TENANT_HOME': return <TenantHome />;
+        case 'TENANT_EXPLORE': return <TenantExplore />;
+        case 'TENANT_MY_STAY': return <TenantMyStay />;
+        case 'TENANT_SUPPORT': return <TenantSupport />;
+        case 'TENANT_PROFILE': return <TenantProfile />;
+        case 'PG_DETAIL': return <PGDetail />;
+        case 'BOOKING': return null;
+        case 'COMMUNITY': return <CommunityPage />;
+      }
+    }
+
     // Policy & pricing views (accessible to all)
     if (currentView === 'PRICING') return <PricingPage />;
     if (currentView === 'TERMS') return <TermsPage />;
@@ -342,7 +361,7 @@ function MainContent() {
     if (currentView === 'REFUND_POLICY') return <RefundPolicyPage />;
 
     // Route protection: redirect unauthenticated users from protected views
-    const PROTECTED_VIEWS = new Set(['BOOKING', 'MY_BOOKINGS', 'PAYMENTS', 'COMPLAINTS', 'NEARBY', 'PROFILE', 'OWNER_DASHBOARD', 'OWNER_PGS', 'OWNER_ROOMS', 'OWNER_TENANTS', 'OWNER_RENT', 'OWNER_VENDORS', 'OWNER_WORKERS', 'OWNER_COMPLAINTS', 'OWNER_QR', 'OWNER_SUPPORT', 'ADMIN_DASHBOARD', 'ADMIN_VERIFICATION', 'ADMIN_USERS']);
+    const PROTECTED_VIEWS = new Set(['BOOKING', 'MY_BOOKINGS', 'PAYMENTS', 'COMPLAINTS', 'NEARBY', 'PROFILE', 'OWNER_DASHBOARD', 'OWNER_PGS', 'OWNER_ROOMS', 'OWNER_TENANTS', 'OWNER_RENT', 'OWNER_VENDORS', 'OWNER_WORKERS', 'OWNER_COMPLAINTS', 'OWNER_QR', 'OWNER_SUPPORT', 'ADMIN_DASHBOARD', 'ADMIN_VERIFICATION', 'ADMIN_USERS', 'TENANT_HOME', 'TENANT_EXPLORE', 'TENANT_MY_STAY', 'TENANT_SUPPORT', 'TENANT_PROFILE', 'MY_STAY']);
 
     if (!isLoggedIn && PROTECTED_VIEWS.has(currentView)) {
       return (
@@ -420,12 +439,13 @@ function MainContent() {
       case 'LANDING': return <HeroSection />;
       case 'PG_LISTING': return <PGListing />;
       case 'PG_DETAIL': return <PGDetail />;
+      case 'MY_STAY': return <TenantMyStay />;
       case 'MY_BOOKINGS': return <MyBookings />;
       case 'PAYMENTS': return <PaymentSection />;
       case 'COMPLAINTS': return <ComplaintSection />;
       case 'NEARBY': return <NearbyServices />;
       case 'COMMUNITY': return <CommunityPage />;
-      case 'PROFILE': return <ProfilePage />;
+      case 'PROFILE': return currentRole === 'TENANT' ? <TenantProfile /> : <ProfilePage />;
       case 'BOOKING': return null;
       default: return <HeroSection />;
     }
@@ -486,7 +506,11 @@ export default function StayeGApp() {
     }
   }, [isLoggedIn, currentRole, currentView]);
 
-  const mobileNav = currentRole === 'OWNER' ? OWNER_MOBILE_NAV : TENANT_MOBILE_NAV;
+  const mobileNav = !isLoggedIn
+    ? [] // No mobile nav for guests
+    : currentRole === 'OWNER'
+      ? OWNER_MOBILE_NAV
+      : TENANT_MOBILE_NAV;
   const hideMobileNav = (HIDE_MOBILE_NAV_VIEWS as readonly string[]).includes(currentView);
   const FOOTER_VIEWS = ['LANDING', 'PG_LISTING', 'PRICING', 'COMMUNITY', 'TERMS', 'PRIVACY', 'SAFE_USE', 'ABOUT', 'HELP', 'HOW_IT_WORKS', 'CONTACT', 'REFUND_POLICY'] as const;
   const showFooter = (FOOTER_VIEWS as readonly string[]).includes(currentView);
@@ -498,7 +522,7 @@ export default function StayeGApp() {
         <MainContent />
       </main>
       {showFooter && <SiteFooter />}
-      {!hideMobileNav && <MobileNav items={mobileNav} />}
+      {isLoggedIn && !hideMobileNav && <MobileNav items={mobileNav} />}
       <OwnerGuide open={showOwnerGuide} onClose={handleGuideClose} />
       <TenantOnboarding />
       <OwnerSetupWizard open={showSetupWizard} onClose={handleSetupWizardClose} />

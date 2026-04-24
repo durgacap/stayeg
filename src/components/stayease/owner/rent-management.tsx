@@ -239,10 +239,10 @@ export default function RentManagement() {
                   <span className="font-semibold text-sm shrink-0">{formatCurrency(r.amount)}</span>
                   <div className="flex items-center gap-1 shrink-0">
                     {r.status !== 'PAID' && r.tenant?.phone && (
-                      <button onClick={() => sendWhatsAppReminder(r.tenant?.name || '', r.tenant.phone, r.amount)} className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors" title="WhatsApp Reminder"><Phone className="size-3" /></button>
+                      <button onClick={() => sendWhatsAppReminder(r.tenant?.name ?? '', r.tenant?.phone ?? '', r.amount)} className="p-1.5 rounded-lg bg-emerald-100 text-emerald-700 hover:bg-emerald-200 transition-colors" title="WhatsApp Reminder"><Phone className="size-3" /></button>
                     )}
                     {r.status !== 'PAID' && (
-                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-2" onClick={() => handleMarkPaid(r)}>
+                      <Button size="sm" className="bg-emerald-600 hover:bg-emerald-700 text-white text-xs h-7 px-2" onClick={() => handleMarkPaid({ ...r, method: r.method || 'UPI' })}>
                         <Check className="size-3 mr-1" /> Pay
                       </Button>
                     )}

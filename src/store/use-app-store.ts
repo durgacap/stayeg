@@ -100,7 +100,7 @@ export const useAppStore = create<AppState>()(
         isGuest: false, 
         currentUser: user, 
         currentRole: user.role || 'TENANT',
-        currentView: user.role === 'OWNER' ? 'OWNER_DASHBOARD' : user.role === 'VENDOR' ? 'VENDOR_DASHBOARD' : 'LANDING',
+        currentView: user.role === 'OWNER' ? 'OWNER_DASHBOARD' : user.role === 'VENDOR' ? 'VENDOR_DASHBOARD' : 'TENANT_HOME',
         viewHistory: []
       }),
       logout: () => set({ 

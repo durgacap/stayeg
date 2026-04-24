@@ -24,8 +24,15 @@ export type AppView =
   | 'PRICING'
   | 'LOGIN'
   | 'SIGNUP'
+  // Tenant (new mobile-first views)
+  | 'TENANT_HOME'
+  | 'TENANT_EXPLORE'
+  | 'TENANT_MY_STAY'
+  | 'TENANT_SUPPORT'
+  | 'TENANT_PROFILE'
   // Customer (requires login)
   | 'BOOKING'
+  | 'MY_STAY'
   | 'MY_BOOKINGS'
   | 'PAYMENTS'
   | 'COMPLAINTS'

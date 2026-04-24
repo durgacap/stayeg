@@ -160,7 +160,7 @@ export async function POST(request: NextRequest) {
       await supabase.from('activity_log').insert({
         owner_id: body.ownerId,
         action: 'TENANT_ADDED',
-        details: `Added tenant to bed #${bed.bed_number}`,
+        details: `Added tenant to bed #${(bed as Record<string, unknown>)?.bed_number || bedId}`,
       });
     } catch { /* ignore log failures */ }
 
