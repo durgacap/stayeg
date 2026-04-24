@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Check,
@@ -8,7 +8,6 @@ import {
   User,
   Mail,
   Phone,
-  IndianRupee,
   BedDouble,
   AlertCircle,
   Shield,
@@ -29,6 +28,7 @@ import {
   LogIn,
   Sparkles,
   Zap,
+  IndianRupee,
 } from 'lucide-react';
 import { format } from 'date-fns';
 import {

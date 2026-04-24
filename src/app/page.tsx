@@ -36,7 +36,7 @@ const SignupPage = dynamic(() => import('@/components/stayease/auth/signup-page'
 const SiteFooter = dynamic(() => import('@/components/stayease/site-footer'), { ssr: false });
 const PGListing = dynamic(() => import('@/components/stayease/tenant/pg-listing'), { ssr: false, loading: () => <ViewLoader /> });
 const PGDetail = dynamic(() => import('@/components/stayease/tenant/pg-detail'), { ssr: false, loading: () => <ViewLoader /> });
-const BookingModal = dynamic(() => import('@/components/stayease/tenant/booking-modal'), { ssr: false });
+const BookingModal = dynamic(() => import('@/components/stayease/tenant/booking-modal').catch(() => () => null), { ssr: false, loading: () => <ViewLoader /> });
 const MyBookings = dynamic(() => import('@/components/stayease/tenant/my-bookings'), { ssr: false, loading: () => <ViewLoader /> });
 const TenantMyStay = dynamic(() => import('@/components/stayease/tenant/tenant-my-stay'), { ssr: false, loading: () => <ViewLoader /> });
 const PaymentSection = dynamic(() => import('@/components/stayease/tenant/payment-section'), { ssr: false, loading: () => <ViewLoader /> });
