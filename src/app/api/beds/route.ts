@@ -145,7 +145,7 @@ export async function PUT(request: NextRequest) {
       // No active tenants — clear any inactive/evicted tenant bed assignments
       await db.tenant.updateMany({
         where: { bedId: id, status: { in: ['INACTIVE', 'EVICTED'] } },
-        data: { bedId: null },
+        data: { bedId: "" },
       });
     }
 
