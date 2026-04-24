@@ -129,3 +129,26 @@ Stage Summary:
 - Fix: Client-safe JWT decode without crypto, server-only dynamic import for real verification
 - Production deployment: https://stayeg.vercel.app - ALL GREEN
 - All 3 user roles verified working (Admin, Tenant, Owner)
+
+---
+Task ID: 2
+Agent: Main Agent
+Task: Fix OOM crash and "Something went wrong" — lazy loading + production deployment
+
+Work Log:
+- Diagnosed dev server OOM: page.tsx imported 64+ components causing Turbopack/Webpack to exhaust memory during compilation
+- Rewrote page.tsx using Next.js `dynamic()` imports with `ssr: false` for all non-essential views
+- HeroSection (landing page) eagerly imported for SSR, all other views lazy-loaded on-demand
+- Each lazy component shows a pulse loading placeholder during chunk compilation
+- Removed deprecated middleware.ts (Next.js 16 warns about middleware→proxy migration)
+- Tested with Webpack mode (more stable than Turbopack in memory-constrained environment)
+- Local dev confirmed working: Homepage (183KB), Admin login, PGs API all HTTP 200
+- Pushed fixes to GitHub (commit 9263939)
+- Deployed to Vercel production twice — both successful builds
+
+Stage Summary:
+- Root cause: 64 synchronous component imports in page.tsx caused bundler OOM
+- Fix: All views except HeroSection use dynamic() with ssr: false
+- Production: https://stayeg.vercel.app — ALL GREEN
+- Verified: Homepage 200 (110KB), Admin/Owner/Tenant login, 6 PGs, 8 vendors, 6 complaints
+- Local dev has memory limitations (server dies after ~5 requests) but production works perfectly
