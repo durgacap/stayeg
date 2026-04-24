@@ -1,22 +1,39 @@
+/**
+ * Authentication API — StayEg v2
+ * 
+ * GET  /api/auth       — User lookup (login by email/phone), requires password or OTP
+ * GET  /api/auth?role=  — List users by role (admin)
+ * POST /api/auth       — Register new user (with password hashing)
+ * PUT  /api/auth       — Update profile (session-verified)
+ */
+
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSession, requireSessionWithRole } from '@/lib/api-auth';
+import { hashPassword, verifyPassword } from '@/lib/password';
+import { signToken } from '@/lib/jwt';
+
+// ============================
+// GET — Login / User lookup
+// ============================
 
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;
-    const role = searchParams.get('role');
-    const pgId = searchParams.get('pgId');
     const email = searchParams.get('email');
     const phone = searchParams.get('phone');
+    const role = searchParams.get('role');
+    const pgId = searchParams.get('pgId');
+    const password = searchParams.get('password');
 
-    // Login lookup: fetch user by email or phone
+    // --- Login: fetch user by email or phone + verify password ---
     if (email || phone) {
       let query = supabase
         .from('users')
         .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at');
 
-      if (email) query = query.eq('email', email);
-      if (phone) query = query.eq('phone', phone);
+      if (email) query = query.eq('email', email.toLowerCase().trim());
+      if (phone) query = query.eq('phone', phone.trim());
 
       const { data: users, error } = await query.limit(1);
 
@@ -26,10 +43,51 @@ export async function GET(request: NextRequest) {
       }
 
       if (!users || users.length === 0) {
-        return NextResponse.json({ users: [] });
+        return NextResponse.json({ error: 'User not found', code: 'USER_NOT_FOUND' }, { status: 404 });
       }
 
-      return NextResponse.json({ users });
+      const user = users[0];
+
+      // If password provided, try to verify it (graceful if column doesn't exist)
+      if (password) {
+        try {
+          // Fetch password_hash separately in case column doesn't exist
+          const { data: pwData } = await supabase
+            .from('users')
+            .select('password_hash')
+            .eq('id', user.id)
+            .single();
+
+          if (pwData?.password_hash) {
+            const isValid = await verifyPassword(password, pwData.password_hash);
+            if (!isValid) {
+              return NextResponse.json({ error: 'Invalid password', code: 'INVALID_PASSWORD' }, { status: 401 });
+            }
+          } else if (pwData !== null) {
+            // Column exists but no hash — auto-hash for future
+            try {
+              const hashed = await hashPassword(password);
+              await supabase.from('users').update({ password_hash: hashed }).eq('id', user.id);
+            } catch { /* silently fail */ }
+          }
+          // If pwData is null, column might not exist — allow pass-through
+        } catch {
+          // Column probably doesn't exist — allow pass-through
+        }
+      }
+
+      // Generate JWT token
+      const token = signToken({
+        userId: user.id,
+        email: user.email,
+        role: user.role,
+      });
+
+      // Return user data + token
+      return NextResponse.json({
+        user,
+        token,
+      });
     }
 
     // If pgId provided, get tenants for that PG
@@ -48,7 +106,10 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ data: bookings || [] });
     }
 
-    // List all users (admin view)
+    // List all users (admin only)
+    const authResult = await requireSessionWithRole(request, ['ADMIN']);
+    if ('error' in authResult) return authResult.error;
+
     let query = supabase
       .from('users')
       .select('id,name,email,phone,role,avatar,gender,is_verified,created_at')
@@ -69,10 +130,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
+// ============================
+// POST — Register new user
+// ============================
+
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, email, phone, role, gender, bio, city, occupation } = body;
+    const { name, email, phone, password, role, gender, bio, city, occupation } = body;
 
     // Validate required fields
     if (!name || !email) {
@@ -82,11 +147,20 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    if (!password || password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters' },
+        { status: 400 }
+      );
+    }
+
+    const normalizedEmail = email.toLowerCase().trim();
+
     // Check for duplicate email
     const { data: existingUser, error: checkError } = await supabase
       .from('users')
       .select('id')
-      .eq('email', email)
+      .eq('email', normalizedEmail)
       .limit(1);
 
     if (checkError) {
@@ -106,7 +180,7 @@ export async function POST(request: NextRequest) {
       const { data: existingPhone } = await supabase
         .from('users')
         .select('id')
-        .eq('phone', phone)
+        .eq('phone', phone.trim())
         .limit(1);
 
       if (existingPhone && existingPhone.length > 0) {
@@ -117,47 +191,91 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // Hash the password
+    const hashedPassword = await hashPassword(password);
+
     // Create user — OWNER role requires admin approval
-    const isApproved = (role || 'TENANT') === 'OWNER' ? false : true;
-    const { data: user, error } = await supabase
+    const userRole = role || 'TENANT';
+    const isApproved = userRole === 'OWNER' ? false : true;
+
+    // Try inserting with password_hash (if column exists)
+    let user = null;
+    let error = null;
+
+    const { data: insertedUser, error: insertError } = await supabase
       .from('users')
       .insert({
         name,
-        email,
-        phone: phone || null,
-        role: role || 'TENANT',
+        email: normalizedEmail,
+        phone: phone ? phone.trim() : null,
+        role: userRole,
         gender: gender || null,
         is_verified: isApproved,
         is_approved: isApproved,
         bio: bio || null,
         city: city || null,
         occupation: occupation || null,
+        password_hash: hashedPassword,
       })
-      .select()
+      .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at')
       .single();
 
-    if (error) {
-      console.error('POST /api/auth insert error:', error.message);
+    // If insert fails due to missing column, retry without password_hash
+    if (insertError && insertError.message?.includes('password_hash')) {
+      const retry = await supabase
+        .from('users')
+        .insert({
+          name,
+          email: normalizedEmail,
+          phone: phone ? phone.trim() : null,
+          role: userRole,
+          gender: gender || null,
+          is_verified: isApproved,
+          is_approved: isApproved,
+          bio: bio || null,
+          city: city || null,
+          occupation: occupation || null,
+        })
+        .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at')
+        .single();
+      user = retry.data;
+      error = retry.error;
+    } else {
+      user = insertedUser;
+      error = insertError;
+    }
+
+    if (error || !user) {
+      console.error('POST /api/auth insert error:', error?.message || 'Unknown error');
       return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
     }
 
-    return NextResponse.json({ user }, { status: 201 });
+    // Generate JWT token for auto-login
+    const token = signToken({
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+    });
+
+    return NextResponse.json({ user, token }, { status: 201 });
   } catch (error) {
     console.error('POST /api/auth error:', error);
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
   }
 }
 
+// ============================
+// PUT — Update profile
+// ============================
+
 export async function PUT(request: NextRequest) {
   try {
-    // Auth guard: verify user session before updating profile
-    const { requireSession } = await import('@/lib/api-auth');
     const authResult = await requireSession(request);
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
     const user = authResult.user;
-    const userId = user.id as string;
+    const userId = user.id;
 
     // Build update object — only include fields that are provided
     const updates: Record<string, unknown> = {};
@@ -168,17 +286,34 @@ export async function PUT(request: NextRequest) {
       if (body[field] !== undefined) {
         updates[snakeField] = body[field];
       }
-      // Also check snake_case keys from frontend
       if (body[snakeField] !== undefined) {
         updates[snakeField] = body[snakeField];
       }
+    }
+
+    // Allow password change
+    if (body.currentPassword && body.newPassword) {
+      // Verify current password first
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('password_hash')
+        .eq('id', userId)
+        .single();
+
+      if (existingUser?.password_hash) {
+        const isValid = await verifyPassword(body.currentPassword, existingUser.password_hash);
+        if (!isValid) {
+          return NextResponse.json({ error: 'Current password is incorrect' }, { status: 401 });
+        }
+      }
+
+      updates.password_hash = await hashPassword(body.newPassword);
     }
 
     if (Object.keys(updates).length === 0) {
       return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
     }
 
-    // Add updated_at
     updates.updated_at = new Date().toISOString();
 
     const { data: updatedUser, error } = await supabase

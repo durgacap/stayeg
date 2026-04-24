@@ -1,11 +1,12 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireSession } from '@/lib/api-auth';
+import { requireSessionWithRole } from '@/lib/api-auth';
 
 // POST /api/beds — Create a new bed under a room
 export async function POST(request: NextRequest) {
   try {
-    const authResult = await requireSession(request);
+    // Auth guard: only OWNER and ADMIN can create beds
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
@@ -80,7 +81,8 @@ export async function POST(request: NextRequest) {
 // PUT /api/beds — Update a bed's status (and optionally price)
 export async function PUT(request: NextRequest) {
   try {
-    const authResult = await requireSession(request);
+    // Auth guard: only OWNER and ADMIN can update beds
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();

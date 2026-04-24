@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireSession } from '@/lib/api-auth';
+import { requireSession, requireSessionWithRole } from '@/lib/api-auth';
 
 // GET /api/rooms?pgId=...
 export async function GET(request: NextRequest) {
@@ -32,7 +32,8 @@ export async function GET(request: NextRequest) {
 // POST /api/rooms — Create a new room in a PG
 export async function POST(request: NextRequest) {
   try {
-    const authResult = await requireSession(request);
+    // Auth guard: only OWNER and ADMIN can create rooms
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
@@ -103,7 +104,8 @@ export async function POST(request: NextRequest) {
 // PUT /api/rooms — Update a room
 export async function PUT(request: NextRequest) {
   try {
-    const authResult = await requireSession(request);
+    // Auth guard: only OWNER and ADMIN can update rooms
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
@@ -138,7 +140,8 @@ export async function PUT(request: NextRequest) {
 // DELETE /api/rooms?roomId=...
 export async function DELETE(request: NextRequest) {
   try {
-    const authResult = await requireSession(request);
+    // Auth guard: only OWNER and ADMIN can delete rooms
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
     if ('error' in authResult) return authResult.error;
 
     const { searchParams } = new URL(request.url);

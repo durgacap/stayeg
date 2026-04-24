@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireSession } from '@/lib/api-auth';
+import { requireSessionWithRole } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -31,8 +31,8 @@ export async function GET(request: NextRequest) {
 
 export async function POST(request: NextRequest) {
   try {
-    // Auth guard: verify user session before creating worker
-    const authResult = await requireSession(request);
+    // Auth guard: only OWNER and ADMIN can create workers
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
@@ -58,8 +58,8 @@ export async function POST(request: NextRequest) {
 
 export async function PUT(request: NextRequest) {
   try {
-    // Auth guard: verify user session before updating worker
-    const authResult = await requireSession(request);
+    // Auth guard: only OWNER and ADMIN can update workers
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
     if ('error' in authResult) return authResult.error;
 
     const body = await request.json();

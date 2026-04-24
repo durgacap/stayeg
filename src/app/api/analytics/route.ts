@@ -1,27 +1,32 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
+import { requireSessionWithRole } from '@/lib/api-auth';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
 export async function GET(request: NextRequest) {
   try {
-    const ownerId = request.nextUrl.searchParams.get('ownerId');
+    // Role enforcement: analytics are owner/admin only
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
+    if ('error' in authResult) return authResult.error;
 
-    if (!ownerId) {
-      return NextResponse.json({ error: 'ownerId is required' }, { status: 400 });
-    }
+    const ownerId = authResult.user.id;
+
+    // Allow admins to view other owners' analytics
+    const requestedOwnerId = request.nextUrl.searchParams.get('ownerId');
+    const effectiveOwnerId = requestedOwnerId && authResult.user.role === 'ADMIN' ? requestedOwnerId : ownerId;
 
     // ----------------------------------------------------------------
     // 1. PGs & Rooms & Beds
     // ----------------------------------------------------------------
     const [pgsRes, roomsRes, bedsRes] = await Promise.all([
-      supabase.from('pgs').select('id').eq('owner_id', ownerId),
+      supabase.from('pgs').select('id').eq('owner_id', effectiveOwnerId),
       supabase.from('rooms').select('id, pg_id').in('pg_id',
-        (await supabase.from('pgs').select('id').eq('owner_id', ownerId)).data?.map(p => p.id) || ['__none__']
+        (await supabase.from('pgs').select('id').eq('owner_id', effectiveOwnerId)).data?.map(p => p.id) || ['__none__']
       ),
       supabase.from('beds').select('id, status, room_id').in('room_id',
         (await supabase.from('rooms').select('id').in('pg_id',
-          (await supabase.from('pgs').select('id').eq('owner_id', ownerId)).data?.map(p => p.id) || ['__none__']
+          (await supabase.from('pgs').select('id').eq('owner_id', effectiveOwnerId)).data?.map(p => p.id) || ['__none__']
         )).data?.map(r => r.id) || ['__none__']
       ),
     ]);

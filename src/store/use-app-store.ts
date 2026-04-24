@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { toast } from '@/lib/toast';
+import { saveAuthToken, clearAuthToken } from '@/lib/api-client';
 import type { 
   AppView, User, PG, Room, Bed, Booking, Payment, 
   Complaint, Vendor, Worker, AnalyticsData, SearchFilters,
@@ -16,7 +17,7 @@ interface AppState {
   setIsLoggedIn: (val: boolean) => void;
   setIsGuest: (val: boolean) => void;
   setCurrentUser: (user: User | null) => void;
-  login: (user: User) => void;
+  login: (user: User, token?: string) => void;
   logout: () => void;
   switchRole: (role: UserRole) => void;
   
@@ -95,22 +96,31 @@ export const useAppStore = create<AppState>()(
       setIsLoggedIn: (val) => set({ isLoggedIn: val, isGuest: !val }),
       setIsGuest: (val) => set({ isGuest: val, isLoggedIn: !val }),
       setCurrentUser: (user) => set({ currentUser: user }),
-      login: (user) => set({ 
-        isLoggedIn: true, 
-        isGuest: false, 
-        currentUser: user, 
-        currentRole: user.role || 'TENANT',
-        currentView: user.role === 'OWNER' ? 'OWNER_DASHBOARD' : user.role === 'VENDOR' ? 'VENDOR_DASHBOARD' : 'TENANT_HOME',
-        viewHistory: []
-      }),
-      logout: () => set({ 
-        isLoggedIn: false, 
-        isGuest: true, 
-        currentUser: null, 
-        currentRole: 'TENANT',
-        currentView: 'LANDING',
-        viewHistory: []
-      }),
+      login: (user, token) => {
+        // Save JWT token to localStorage for API auth
+        if (token) {
+          saveAuthToken(token);
+        }
+        set({ 
+          isLoggedIn: true, 
+          isGuest: false, 
+          currentUser: user, 
+          currentRole: user.role || 'TENANT',
+          currentView: user.role === 'OWNER' ? 'OWNER_DASHBOARD' : user.role === 'VENDOR' ? 'VENDOR_DASHBOARD' : 'TENANT_HOME',
+          viewHistory: []
+        });
+      },
+      logout: () => {
+        clearAuthToken();
+        set({ 
+          isLoggedIn: false, 
+          isGuest: true, 
+          currentUser: null, 
+          currentRole: 'TENANT',
+          currentView: 'LANDING',
+          viewHistory: []
+        });
+      },
       switchRole: (role) => set({ 
         currentRole: role,
         currentView: role === 'OWNER' ? 'OWNER_DASHBOARD' : role === 'ADMIN' ? 'ADMIN_DASHBOARD' : role === 'VENDOR' ? 'VENDOR_DASHBOARD' : 'LANDING',

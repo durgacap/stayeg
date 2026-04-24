@@ -124,8 +124,26 @@ export default function LoginPage() {
       showToast('Please enter a valid phone number');
       return;
     }
-    setShowOTP(true);
-    showToast('OTP sent to ' + phone);
+    setIsSubmitting(true);
+    try {
+      // Call the real OTP API
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setShowOTP(true);
+        showToast(data.simulated ? 'OTP generated (demo mode)' : 'OTP sent to ' + phone);
+      } else {
+        showToast(data.error || 'Failed to send OTP');
+      }
+    } catch {
+      showToast('Failed to send OTP. Please try again.');
+    }
+    setIsSubmitting(false);
   };
 
   const handleVerifyOTP = async () => {
@@ -135,27 +153,63 @@ export default function LoginPage() {
     }
     setIsSubmitting(true);
 
-    // Try real auth first
-    const result = await tryRealLogin(phone, 'phone');
+    try {
+      // Try real OTP verification via API
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp }),
+      });
+      const data = await res.json();
 
+      if (data.verified && data.user) {
+        // Check if OWNER account is pending approval
+        if (data.user.role === 'OWNER' && !data.user.is_approved) {
+          showToast('Your PG Owner account is pending approval.');
+          setShowOTP(false);
+          setOtp('');
+          setIsSubmitting(false);
+          return;
+        }
+        login(data.user, data.token);
+        showToast('Welcome back, ' + data.user.name + '!');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (data.phoneVerified) {
+        // Phone verified but user doesn't exist — redirect to signup
+        showToast('Phone verified! Please complete your registration.');
+        setCurrentView('SIGNUP');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // API returned an error
+      if (data.error) {
+        showToast(data.error);
+        setIsSubmitting(false);
+        return;
+      }
+    } catch {
+      // API failed — fall through to legacy demo mode
+    }
+
+    // Fallback: legacy demo login
+    const result = await tryRealLogin(phone, 'phone');
     if (result) {
-      // Check if OWNER account is pending approval
       if (result.user.role === 'OWNER' && !result.isApproved) {
-        showToast('Your PG Owner account is pending approval. Please wait for admin verification.');
-        setShowOTP(false);
-        setOtp('');
+        showToast('Your PG Owner account is pending approval.');
         setIsSubmitting(false);
         return;
       }
       login(result.user);
       showToast('Welcome back, ' + result.user.name + '!');
     } else {
-      // Fall back to demo mode
       const user = DEMO_USERS[selectedRole];
       login(user);
       showToast('Welcome, ' + user.name + '! (Demo Mode)');
     }
-
     setIsSubmitting(false);
   };
 
@@ -175,30 +229,61 @@ export default function LoginPage() {
 
     setIsSubmitting(true);
 
-    // Try real auth first (lookup by email)
-    if (email) {
-      const result = await tryRealLogin(email, 'email');
+    try {
+      // Real auth: login with email + password verification
+      const res = await fetch(`/api/auth?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      const data = await res.json();
 
-      if (result) {
+      if (res.ok && data.user && data.token) {
         // Check if OWNER account is pending approval
-        if (result.user.role === 'OWNER' && !result.isApproved) {
+        if (data.user.role === 'OWNER' && !data.user.is_approved) {
           showToast('Your PG Owner account is pending approval. Please wait for admin verification.');
           setIsSubmitting(false);
           return;
         }
-        login(result.user);
-        showToast('Welcome back, ' + result.user.name + '!');
+        login(data.user, data.token);
+        showToast('Welcome back, ' + data.user.name + '!');
         setIsSubmitting(false);
         return;
       }
-      // Email not found in DB → fall through to demo mode
+
+      if (data.code === 'USER_NOT_FOUND') {
+        showToast('No account found with this email. Please sign up.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (data.code === 'INVALID_PASSWORD') {
+        showToast('Incorrect password. Please try again.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (data.error) {
+        showToast(data.error);
+        setIsSubmitting(false);
+        return;
+      }
+    } catch {
+      // API failed — fall through to demo
     }
 
-    // Fall back to demo mode
-    await new Promise((r) => setTimeout(r, 400));
-    const user = DEMO_USERS[selectedRole];
-    login(user);
-    showToast('Demo mode — no database connected');
+    // Fallback: legacy demo mode
+    const result = await tryRealLogin(email, 'email');
+    if (result) {
+      if (result.user.role === 'OWNER' && !result.isApproved) {
+        showToast('Your PG Owner account is pending approval.');
+        setIsSubmitting(false);
+        return;
+      }
+      login(result.user);
+      showToast('Welcome back, ' + result.user.name + '!');
+    } else {
+      await new Promise((r) => setTimeout(r, 400));
+      const user = DEMO_USERS[selectedRole];
+      login(user);
+      showToast('Demo mode — no database connected');
+    }
     setIsSubmitting(false);
   };
 
@@ -245,8 +330,24 @@ export default function LoginPage() {
     showToast('Browsing as guest. Sign in later to book!');
   };
 
-  const handleForgotPassword = () => {
-    showToast('Coming soon in v2.0');
+  const handleForgotPassword = async () => {
+    if (!email || !email.includes('@')) {
+      showToast('Please enter your email first, then click Forgot Password');
+      return;
+    }
+    try {
+      const res = await fetch('/api/auth/forgot-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showToast(data.message || 'Reset link sent! Check your email.');
+      }
+    } catch {
+      showToast('Failed to process request. Please try again.');
+    }
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -568,7 +669,7 @@ export default function LoginPage() {
                   <div className="flex items-center gap-2 mt-4 px-2">
                     <AlertCircle className="size-3.5 text-muted-foreground shrink-0" />
                     <p className="text-[11px] text-muted-foreground">
-                      Enter any 6 digits to proceed in demo mode
+                      OTP verification enabled. In demo mode, enter any 6 digits.
                     </p>
                   </div>
                 </motion.div>

@@ -180,7 +180,7 @@ export default function SignupPage() {
           return;
         }
 
-        // Non-OWNER roles: auto-login as before
+        // Non-OWNER roles: auto-login with JWT token
         const user: User = {
           id: raw.id,
           name: raw.name,
@@ -195,7 +195,7 @@ export default function SignupPage() {
           bio: raw.bio || form.bio || undefined,
           createdAt: raw.created_at,
         };
-        login(user);
+        login(user, data.token); // Pass JWT token for API auth
         showToast('Account created! Welcome, ' + form.fullName + '!');
         setIsSubmitting(false);
         return;
