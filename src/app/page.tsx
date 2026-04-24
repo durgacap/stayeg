@@ -30,51 +30,54 @@ function ViewLoader() {
   );
 }
 
+// Safe dynamic import helper - prevents chunk load errors from crashing the whole app
+const safeDynamic = (importFn: () => Promise<any>) => importFn().catch(() => () => <ViewLoader />);
+
 // Lazy load all other views on-demand (ssr: false to prevent compilation OOM)
-const LoginPage = dynamic(() => import('@/components/stayease/auth/login-page'), { ssr: false, loading: () => <ViewLoader /> });
-const SignupPage = dynamic(() => import('@/components/stayease/auth/signup-page'), { ssr: false, loading: () => <ViewLoader /> });
-const SiteFooter = dynamic(() => import('@/components/stayease/site-footer'), { ssr: false });
-const PGListing = dynamic(() => import('@/components/stayease/tenant/pg-listing'), { ssr: false, loading: () => <ViewLoader /> });
-const PGDetail = dynamic(() => import('@/components/stayease/tenant/pg-detail'), { ssr: false, loading: () => <ViewLoader /> });
+const LoginPage = dynamic(() => import('@/components/stayease/auth/login-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const SignupPage = dynamic(() => import('@/components/stayease/auth/signup-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const SiteFooter = dynamic(() => import('@/components/stayease/site-footer').catch(() => () => null), { ssr: false });
+const PGListing = dynamic(() => import('@/components/stayease/tenant/pg-listing').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const PGDetail = dynamic(() => import('@/components/stayease/tenant/pg-detail').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
 const BookingModal = dynamic(() => import('@/components/stayease/tenant/booking-modal').catch(() => () => null), { ssr: false, loading: () => <ViewLoader /> });
-const MyBookings = dynamic(() => import('@/components/stayease/tenant/my-bookings'), { ssr: false, loading: () => <ViewLoader /> });
-const TenantMyStay = dynamic(() => import('@/components/stayease/tenant/tenant-my-stay'), { ssr: false, loading: () => <ViewLoader /> });
-const PaymentSection = dynamic(() => import('@/components/stayease/tenant/payment-section'), { ssr: false, loading: () => <ViewLoader /> });
-const ComplaintSection = dynamic(() => import('@/components/stayease/tenant/complaint-section'), { ssr: false, loading: () => <ViewLoader /> });
-const NearbyServices = dynamic(() => import('@/components/stayease/tenant/nearby-services'), { ssr: false, loading: () => <ViewLoader /> });
-const OwnerDashboard = dynamic(() => import('@/components/stayease/owner/dashboard-analytics'), { ssr: false, loading: () => <ViewLoader /> });
-const PGManagement = dynamic(() => import('@/components/stayease/owner/pg-management'), { ssr: false, loading: () => <ViewLoader /> });
-const RoomManagement = dynamic(() => import('@/components/stayease/owner/room-management'), { ssr: false, loading: () => <ViewLoader /> });
-const TenantManagement = dynamic(() => import('@/components/stayease/owner/tenant-management'), { ssr: false, loading: () => <ViewLoader /> });
-const RentManagement = dynamic(() => import('@/components/stayease/owner/rent-management'), { ssr: false, loading: () => <ViewLoader /> });
-const VendorManagement = dynamic(() => import('@/components/stayease/owner/vendor-management'), { ssr: false, loading: () => <ViewLoader /> });
-const WorkerManagement = dynamic(() => import('@/components/stayease/owner/worker-management'), { ssr: false, loading: () => <ViewLoader /> });
-const ComplaintManagement = dynamic(() => import('@/components/stayease/owner/complaint-management'), { ssr: false, loading: () => <ViewLoader /> });
-const AIAssistant = dynamic(() => import('@/components/stayease/owner/ai-assistant'), { ssr: false });
-const QROnboarding = dynamic(() => import('@/components/stayease/owner/qr-onboarding'), { ssr: false, loading: () => <ViewLoader /> });
-const OwnerContactSupport = dynamic(() => import('@/components/stayease/owner/contact-support'), { ssr: false, loading: () => <ViewLoader /> });
-const AdminDashboard = dynamic(() => import('@/components/stayease/admin/admin-dashboard'), { ssr: false, loading: () => <ViewLoader /> });
-const ProfilePage = dynamic(() => import('@/components/stayease/profile/profile-page'), { ssr: false, loading: () => <ViewLoader /> });
-const TenantProfile = dynamic(() => import('@/components/stayease/tenant/tenant-profile'), { ssr: false, loading: () => <ViewLoader /> });
-const CommunityPage = dynamic(() => import('@/components/stayease/community/community-page'), { ssr: false, loading: () => <ViewLoader /> });
-const PricingPage = dynamic(() => import('@/components/stayease/pricing/pricing-page'), { ssr: false, loading: () => <ViewLoader /> });
-const TermsPage = dynamic(() => import('@/components/stayease/policy/terms-page'), { ssr: false, loading: () => <ViewLoader /> });
-const PrivacyPage = dynamic(() => import('@/components/stayease/policy/privacy-page'), { ssr: false, loading: () => <ViewLoader /> });
-const SafeUsePage = dynamic(() => import('@/components/stayease/policy/safe-use-page'), { ssr: false, loading: () => <ViewLoader /> });
-const AboutPage = dynamic(() => import('@/components/stayease/policy/about-page'), { ssr: false, loading: () => <ViewLoader /> });
-const HelpPage = dynamic(() => import('@/components/stayease/policy/help-page'), { ssr: false, loading: () => <ViewLoader /> });
-const HowItWorksPage = dynamic(() => import('@/components/stayease/policy/how-it-works-page'), { ssr: false, loading: () => <ViewLoader /> });
-const ContactPage = dynamic(() => import('@/components/stayease/policy/contact-page'), { ssr: false, loading: () => <ViewLoader /> });
-const RefundPolicyPage = dynamic(() => import('@/components/stayease/policy/refund-policy-page'), { ssr: false, loading: () => <ViewLoader /> });
-const OwnerGuide = dynamic(() => import('@/components/stayease/owner/owner-guide'), { ssr: false });
-const NotificationsPanel = dynamic(() => import('@/components/stayease/notifications-panel'), { ssr: false });
-const TenantOnboarding = dynamic(() => import('@/components/stayease/guidance/tenant-onboarding'), { ssr: false });
-const TenantAIAssistant = dynamic(() => import('@/components/stayease/guidance/tenant-ai-assistant'), { ssr: false });
-const OwnerSetupWizard = dynamic(() => import('@/components/stayease/owner/setup-wizard'), { ssr: false });
-const TenantHome = dynamic(() => import('@/components/stayease/tenant/tenant-home'), { ssr: false, loading: () => <ViewLoader /> });
-const TenantExplore = dynamic(() => import('@/components/stayease/tenant/tenant-explore'), { ssr: false, loading: () => <ViewLoader /> });
-const TenantSupport = dynamic(() => import('@/components/stayease/tenant/tenant-support'), { ssr: false, loading: () => <ViewLoader /> });
-const DatabaseSetupV2 = dynamic(() => import('@/components/stayease/setup/database-setup-v2'), { ssr: false, loading: () => <ViewLoader /> });
+const MyBookings = dynamic(() => import('@/components/stayease/tenant/my-bookings').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const TenantMyStay = dynamic(() => import('@/components/stayease/tenant/tenant-my-stay').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const PaymentSection = dynamic(() => import('@/components/stayease/tenant/payment-section').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const ComplaintSection = dynamic(() => import('@/components/stayease/tenant/complaint-section').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const NearbyServices = dynamic(() => import('@/components/stayease/tenant/nearby-services').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const OwnerDashboard = dynamic(() => import('@/components/stayease/owner/dashboard-analytics').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const PGManagement = dynamic(() => import('@/components/stayease/owner/pg-management').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const RoomManagement = dynamic(() => import('@/components/stayease/owner/room-management').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const TenantManagement = dynamic(() => import('@/components/stayease/owner/tenant-management').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const RentManagement = dynamic(() => import('@/components/stayease/owner/rent-management').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const VendorManagement = dynamic(() => import('@/components/stayease/owner/vendor-management').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const WorkerManagement = dynamic(() => import('@/components/stayease/owner/worker-management').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const ComplaintManagement = dynamic(() => import('@/components/stayease/owner/complaint-management').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const AIAssistant = dynamic(() => import('@/components/stayease/owner/ai-assistant').catch(() => () => null), { ssr: false });
+const QROnboarding = dynamic(() => import('@/components/stayease/owner/qr-onboarding').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const OwnerContactSupport = dynamic(() => import('@/components/stayease/owner/contact-support').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const AdminDashboard = dynamic(() => import('@/components/stayease/admin/admin-dashboard').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const ProfilePage = dynamic(() => import('@/components/stayease/profile/profile-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const TenantProfile = dynamic(() => import('@/components/stayease/tenant/tenant-profile').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const CommunityPage = dynamic(() => import('@/components/stayease/community/community-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const PricingPage = dynamic(() => import('@/components/stayease/pricing/pricing-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const TermsPage = dynamic(() => import('@/components/stayease/policy/terms-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const PrivacyPage = dynamic(() => import('@/components/stayease/policy/privacy-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const SafeUsePage = dynamic(() => import('@/components/stayease/policy/safe-use-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const AboutPage = dynamic(() => import('@/components/stayease/policy/about-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const HelpPage = dynamic(() => import('@/components/stayease/policy/help-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const HowItWorksPage = dynamic(() => import('@/components/stayease/policy/how-it-works-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const ContactPage = dynamic(() => import('@/components/stayease/policy/contact-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const RefundPolicyPage = dynamic(() => import('@/components/stayease/policy/refund-policy-page').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const OwnerGuide = dynamic(() => import('@/components/stayease/owner/owner-guide').catch(() => () => null), { ssr: false });
+const NotificationsPanel = dynamic(() => import('@/components/stayease/notifications-panel').catch(() => () => null), { ssr: false });
+const TenantOnboarding = dynamic(() => import('@/components/stayease/guidance/tenant-onboarding').catch(() => () => null), { ssr: false });
+const TenantAIAssistant = dynamic(() => import('@/components/stayease/guidance/tenant-ai-assistant').catch(() => () => null), { ssr: false });
+const OwnerSetupWizard = dynamic(() => import('@/components/stayease/owner/setup-wizard').catch(() => () => null), { ssr: false });
+const TenantHome = dynamic(() => import('@/components/stayease/tenant/tenant-home').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const TenantExplore = dynamic(() => import('@/components/stayease/tenant/tenant-explore').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const TenantSupport = dynamic(() => import('@/components/stayease/tenant/tenant-support').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const DatabaseSetupV2 = dynamic(() => import('@/components/stayease/setup/database-setup-v2').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
 
 // Navigation
 const PUBLIC_NAV = [
