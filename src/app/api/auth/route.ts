@@ -147,3 +147,55 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: 'Failed to create user' }, { status: 500 });
   }
 }
+
+export async function PUT(request: NextRequest) {
+  try {
+    // Auth guard: verify user session before updating profile
+    const { requireSession } = await import('@/lib/api-auth');
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
+    const body = await request.json();
+    const user = authResult.user;
+    const userId = user.id as string;
+
+    // Build update object — only include fields that are provided
+    const updates: Record<string, unknown> = {};
+    const allowedFields = ['name', 'phone', 'gender', 'city', 'occupation', 'bio', 'avatar', 'aadhaar_number', 'pan_number', 'kyc_status'];
+
+    for (const field of allowedFields) {
+      const snakeField = field.replace(/([A-Z])/g, '_$1').toLowerCase();
+      if (body[field] !== undefined) {
+        updates[snakeField] = body[field];
+      }
+      // Also check snake_case keys from frontend
+      if (body[snakeField] !== undefined) {
+        updates[snakeField] = body[snakeField];
+      }
+    }
+
+    if (Object.keys(updates).length === 0) {
+      return NextResponse.json({ error: 'No fields to update' }, { status: 400 });
+    }
+
+    // Add updated_at
+    updates.updated_at = new Date().toISOString();
+
+    const { data: updatedUser, error } = await supabase
+      .from('users')
+      .update(updates)
+      .eq('id', userId)
+      .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,aadhaar_number,pan_number,kyc_status,created_at,updated_at')
+      .single();
+
+    if (error) {
+      console.error('PUT /api/auth update error:', error.message);
+      return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+    }
+
+    return NextResponse.json({ user: updatedUser });
+  } catch (error) {
+    console.error('PUT /api/auth error:', error);
+    return NextResponse.json({ error: 'Failed to update profile' }, { status: 500 });
+  }
+}

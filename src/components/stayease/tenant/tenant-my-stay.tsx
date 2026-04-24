@@ -274,10 +274,10 @@ export default function TenantMyStay() {
     setMovingOut(true);
     try {
       const res = await authFetch('/api/bookings', {
-        method: 'PUT',
+        method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          id: activeBooking.id,
+          bookingId: activeBooking.id,
           status: 'CANCELLED',
         }),
       });
