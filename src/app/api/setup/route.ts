@@ -31,7 +31,7 @@ export async function GET() {
       }
     }
 
-    const extraTables = ['tenant_notes', 'activity_log'];
+    const extraTables = ['tenant_notes', 'activity_log', 'reports', 'contact_submissions'];
     for (const table of extraTables) {
       try {
         const { count, error } = await supabase

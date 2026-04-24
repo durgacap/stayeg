@@ -93,7 +93,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const validStatuses = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE'];
+    const validStatuses = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE', 'RESERVED'];
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
         { error: `Invalid status. Must be one of: ${validStatuses.join(', ')}` },

@@ -271,6 +271,8 @@ export default function DatabaseSetupV2() {
   const [seeding, setSeeding] = useState(false);
   const [seedResult, setSeedResult] = useState<{ success: boolean; message: string } | null>(null);
   const [showSql, setShowSql] = useState(false);
+  const [autoSetting, setAutoSetting] = useState(false);
+  const [autoResult, setAutoResult] = useState<{ success: boolean; message: string; details?: string } | null>(null);
 
   const ADMIN_SECRET = 'stayeg-v1.2-secure-2025';
 
@@ -343,6 +345,29 @@ export default function DatabaseSetupV2() {
 
   const openSupabase = () => {
     window.open('https://supabase.com/dashboard/project/rgkbkdxfekslaygvjngm/sql/new', '_blank');
+  };
+
+  const handleAutoSetup = async () => {
+    setAutoSetting(true);
+    setAutoResult(null);
+    try {
+      const res = await fetch('/api/setup/run', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'x-admin-secret': ADMIN_SECRET },
+      });
+      const data = await res.json();
+      if (data.success) {
+        setAutoResult({ success: true, message: data.message || 'Database setup completed!' });
+        setTimeout(() => checkStatus(), 2000);
+      } else {
+        const detail = data.steps?.map((s: { step: string; status: string; message: string }) => `${s.step}: ${s.status}`).join('\n');
+        setAutoResult({ success: false, message: data.message || 'Auto-setup failed.', details: detail });
+      }
+    } catch {
+      setAutoResult({ success: false, message: 'Network error. Try the manual setup below.' });
+    } finally {
+      setAutoSetting(false);
+    }
   };
 
   // ── Loading state ──
@@ -568,6 +593,65 @@ export default function DatabaseSetupV2() {
                 );
               })}
             </div>
+
+            {/* Step 0: Auto Setup */}
+            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+              <Card className="border-2 border-brand-teal/30 bg-gradient-to-br from-brand-teal/5 to-transparent">
+                <CardContent className="p-4 sm:p-5 space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-deep to-brand-teal flex items-center justify-center shrink-0">
+                      <Zap className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-sm font-semibold text-foreground">One-Click Auto Setup</h3>
+                      <p className="text-xs text-muted-foreground">Automatically creates all tables and seeds data</p>
+                    </div>
+                  </div>
+                  <Button
+                    onClick={handleAutoSetup}
+                    disabled={autoSetting}
+                    className="w-full h-11 text-sm font-semibold bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white shadow-sm"
+                  >
+                    {autoSetting ? (
+                      <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Setting up database...</>
+                    ) : (
+                      <><Server className="w-4 h-4 mr-2" /> Create All Tables + Seed Data</>
+                    )}
+                  </Button>
+                  <AnimatePresence>
+                    {autoResult && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0 }}
+                        className={`rounded-lg p-3 text-xs font-medium ${
+                          autoResult.success
+                            ? 'bg-green-50 text-green-700 border border-green-200'
+                            : 'bg-amber-50 text-amber-700 border border-amber-200'
+                        }`}
+                      >
+                        <div className="flex items-start gap-1.5">
+                          {autoResult.success ? (
+                            <CheckCircle2 className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                          ) : (
+                            <AlertTriangle className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                          )}
+                          <div>
+                            <p>{autoResult.message}</p>
+                            {!autoResult.success && (
+                              <p className="mt-1 opacity-75">If auto-setup fails, use the manual steps below.</p>
+                            )}
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </CardContent>
+              </Card>
+            </motion.div>
+
+            <Separator className="my-2" />
+            <p className="text-xs text-center text-muted-foreground">Or follow the manual steps below</p>
 
             {/* Step 1: Copy SQL */}
             <StepCard

@@ -220,6 +220,27 @@ CREATE TABLE IF NOT EXISTS activity_log (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
+CREATE TABLE IF NOT EXISTS reports (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  reporter_id UUID REFERENCES users(id) ON DELETE SET NULL,
+  target_id UUID NOT NULL,
+  target_type TEXT NOT NULL,
+  reason TEXT NOT NULL,
+  description TEXT NOT NULL,
+  contact_email TEXT,
+  status TEXT NOT NULL DEFAULT 'PENDING' CHECK (status IN ('PENDING', 'REVIEWED', 'RESOLVED', 'DISMISSED')),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS contact_submissions (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name TEXT NOT NULL,
+  email TEXT NOT NULL,
+  subject TEXT NOT NULL,
+  message TEXT NOT NULL,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
 -- INDEXES
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role);
@@ -254,6 +275,8 @@ CREATE INDEX IF NOT EXISTS idx_workers_role ON workers(role);
 CREATE INDEX IF NOT EXISTS idx_tenant_notes_owner ON tenant_notes(owner_id);
 CREATE INDEX IF NOT EXISTS idx_tenant_notes_tenant ON tenant_notes(tenant_id);
 CREATE INDEX IF NOT EXISTS idx_activity_log_owner ON activity_log(owner_id);
+CREATE INDEX IF NOT EXISTS idx_reports_status ON reports(status);
+CREATE INDEX IF NOT EXISTS idx_reports_target ON reports(target_type, target_id);
 
 -- RLS
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
@@ -267,6 +290,8 @@ ALTER TABLE vendors ENABLE ROW LEVEL SECURITY;
 ALTER TABLE workers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tenant_notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE activity_log ENABLE ROW LEVEL SECURITY;
+ALTER TABLE reports ENABLE ROW LEVEL SECURITY;
+ALTER TABLE contact_submissions ENABLE ROW LEVEL SECURITY;
 
 DO $$ BEGIN CREATE POLICY "all_users" ON users FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE POLICY "all_pgs" ON pgs FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -279,6 +304,8 @@ DO $$ BEGIN CREATE POLICY "all_vendors" ON vendors FOR ALL USING (true) WITH CHE
 DO $$ BEGIN CREATE POLICY "all_workers" ON workers FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE POLICY "all_tenant_notes" ON tenant_notes FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 DO $$ BEGIN CREATE POLICY "all_activity_log" ON activity_log FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "all_reports" ON reports FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
+DO $$ BEGIN CREATE POLICY "all_contact_submissions" ON contact_submissions FOR ALL USING (true) WITH CHECK (true); EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 
 -- TRIGGER FUNCTION
 CREATE OR REPLACE FUNCTION update_updated_at_column()
@@ -492,7 +519,7 @@ INSERT INTO workers (id, name, role, phone, pg_id, shift, status) VALUES
 
     return NextResponse.json({
       success: true,
-      message: 'Database setup complete! All 11 tables created and seeded with demo data.',
+      message: 'Database setup complete! All 13 tables created and seeded with sample data.',
       tables: tables.map((t: any) => t.table_name),
       counts,
     });
