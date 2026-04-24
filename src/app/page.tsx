@@ -7,7 +7,7 @@ import {
   Home, Search, BookOpen, CalendarDays, CreditCard, MessageSquare,
   MapPin, User, Menu, Building2, LayoutDashboard, BedDouble,
   Users, Wallet, Wrench, HardHat, AlertTriangle, LogIn, LogOut,
-  UsersRound, ChevronRight, IndianRupee,
+  UsersRound, ChevronRight, IndianRupee, QrCode,
 } from 'lucide-react';
 // Database setup already completed via Supabase — skipping setup wizard
 import { Button } from '@/components/ui/button';
@@ -33,6 +33,8 @@ import VendorManagement from '@/components/stayease/owner/vendor-management';
 import WorkerManagement from '@/components/stayease/owner/worker-management';
 import ComplaintManagement from '@/components/stayease/owner/complaint-management';
 import AIAssistant from '@/components/stayease/owner/ai-assistant';
+import QROnboarding from '@/components/stayease/owner/qr-onboarding';
+import OwnerContactSupport from '@/components/stayease/owner/contact-support';
 import AdminDashboard from '@/components/stayease/admin/admin-dashboard';
 import ProfilePage from '@/components/stayease/profile/profile-page';
 import SiteFooter from '@/components/stayease/site-footer';
@@ -84,12 +86,14 @@ const TENANT_MOBILE_NAV = [
 const OWNER_NAV = [
   { view: 'OWNER_DASHBOARD' as const, label: 'Dashboard', icon: LayoutDashboard },
   { view: 'OWNER_PGS' as const, label: 'My PGs', icon: Building2 },
-  { view: 'OWNER_ROOMS' as const, label: 'Rooms', icon: BedDouble },
   { view: 'OWNER_TENANTS' as const, label: 'Tenants', icon: Users },
   { view: 'OWNER_RENT' as const, label: 'Rent', icon: Wallet },
+  { view: 'OWNER_ROOMS' as const, label: 'Rooms', icon: BedDouble },
+  { view: 'OWNER_COMPLAINTS' as const, label: 'Complaints', icon: AlertTriangle },
+  { view: 'OWNER_QR' as const, label: 'QR Code', icon: QrCode },
   { view: 'OWNER_VENDORS' as const, label: 'Vendors', icon: Wrench },
   { view: 'OWNER_WORKERS' as const, label: 'Staff', icon: HardHat },
-  { view: 'OWNER_COMPLAINTS' as const, label: 'Complaints', icon: AlertTriangle },
+  { view: 'OWNER_SUPPORT' as const, label: 'Support', icon: MessageSquare },
 ];
 
 const OWNER_MOBILE_NAV = [
@@ -338,7 +342,7 @@ function MainContent() {
     if (currentView === 'REFUND_POLICY') return <RefundPolicyPage />;
 
     // Route protection: redirect unauthenticated users from protected views
-    const PROTECTED_VIEWS = new Set(['BOOKING', 'MY_BOOKINGS', 'PAYMENTS', 'COMPLAINTS', 'NEARBY', 'PROFILE', 'OWNER_DASHBOARD', 'OWNER_PGS', 'OWNER_ROOMS', 'OWNER_TENANTS', 'OWNER_RENT', 'OWNER_VENDORS', 'OWNER_WORKERS', 'OWNER_COMPLAINTS', 'ADMIN_DASHBOARD', 'ADMIN_VERIFICATION', 'ADMIN_USERS']);
+    const PROTECTED_VIEWS = new Set(['BOOKING', 'MY_BOOKINGS', 'PAYMENTS', 'COMPLAINTS', 'NEARBY', 'PROFILE', 'OWNER_DASHBOARD', 'OWNER_PGS', 'OWNER_ROOMS', 'OWNER_TENANTS', 'OWNER_RENT', 'OWNER_VENDORS', 'OWNER_WORKERS', 'OWNER_COMPLAINTS', 'OWNER_QR', 'OWNER_SUPPORT', 'ADMIN_DASHBOARD', 'ADMIN_VERIFICATION', 'ADMIN_USERS']);
 
     if (!isLoggedIn && PROTECTED_VIEWS.has(currentView)) {
       return (
@@ -373,6 +377,8 @@ function MainContent() {
         case 'OWNER_VENDORS': return <VendorManagement />;
         case 'OWNER_WORKERS': return <WorkerManagement />;
         case 'OWNER_COMPLAINTS': return <ComplaintManagement />;
+        case 'OWNER_QR': return <QROnboarding />;
+        case 'OWNER_SUPPORT': return <OwnerContactSupport />;
         default: return <OwnerDashboard />;
       }
     }

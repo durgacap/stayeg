@@ -41,6 +41,8 @@ export type AppView =
   | 'OWNER_VENDORS'
   | 'OWNER_WORKERS'
   | 'OWNER_COMPLAINTS'
+  | 'OWNER_QR'
+  | 'OWNER_SUPPORT'
   // Vendor
   | 'VENDOR_DASHBOARD'
   | 'VENDOR_SERVICES'

@@ -1,10 +1,11 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Plus, BedDouble, Snowflake, Bath, ChevronDown, ChevronUp, Loader2, Check,
+  CheckCircle2, Eye, EyeOff,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -22,15 +23,13 @@ import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
 import { authFetch } from '@/lib/api-client';
 import { BADGE, BADGE_BORDER } from '@/lib/constants';
+import { toast } from 'sonner';
 
 export default function RoomManagement() {
   const { showToast, selectedPG } = useAppStore();
   const queryClient = useQueryClient();
-  // Use store value as source of truth, local state as fallback for manual selection
   const [localPgId, setLocalPgId] = useState('');
   const selectedPgId = selectedPG?.id || localPgId;
-  const handlePgSelect = (id: string) => setLocalPgId(id);
-
   const [addOpen, setAddOpen] = useState(false);
   const [expandedRoom, setExpandedRoom] = useState<string | null>(null);
   const [roomForm, setRoomForm] = useState({
@@ -41,7 +40,7 @@ export default function RoomManagement() {
     queryKey: ['owner-user'],
     queryFn: async () => {
       const res = await fetch('/api/auth?role=OWNER');
-      if (!res.ok) throw new Error('Failed to fetch owner');
+      if (!res.ok) throw new Error('Failed');
       const users = await res.json();
       return (Array.isArray(users) ? users : users.users)?.[0] || null;
     },
@@ -89,44 +88,48 @@ export default function RoomManagement() {
           },
         }),
       });
-      if (!createRes.ok) {
-        throw new Error('Room creation requires backend support');
-      }
+      if (!createRes.ok) throw new Error('Room creation failed');
       return createRes.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['owner-pg-detail'] });
       queryClient.invalidateQueries({ queryKey: ['owner-pgs'] });
-      showToast('Room added successfully!');
+      toast.success('Room added successfully!');
       setAddOpen(false);
       setRoomForm({ roomCode: '', roomType: 'DOUBLE', floor: '1', hasAC: false, hasAttachedBath: false, bedCount: '2' });
     },
-    onError: () => {
-      showToast('Failed to add room. Backend support needed.');
-    },
+    onError: () => toast.error('Failed to add room'),
   });
 
-  const [bedStatuses, setBedStatuses] = useState<Record<string, string>>({});
+  // Toggle bed status with backend persistence
+  const toggleBedMutation = useMutation({
+    mutationFn: async ({ bedId, newStatus }: { bedId: string; newStatus: string }) => {
+      const res = await fetch('/api/beds', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: bedId, status: newStatus }),
+      });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed to update bed'); }
+      return res.json();
+    },
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['owner-pg-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['owner-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['owner-tenants'] });
+      const statusLabel = variables.newStatus === 'AVAILABLE' ? 'Available' : variables.newStatus === 'OCCUPIED' ? 'Occupied' : 'Maintenance';
+      toast.success(`Bed set to ${statusLabel}`);
+    },
+    onError: (e) => toast.error(e.message || 'Failed to update bed'),
+  });
 
-  const toggleBedStatus = (bedId: string, currentStatus: string) => {
+  const markBedAvailable = (bedId: string) => {
+    toggleBedMutation.mutate({ bedId, newStatus: 'AVAILABLE' });
+  };
+
+  const cycleBedStatus = (bedId: string, currentStatus: string) => {
     const statuses = ['AVAILABLE', 'OCCUPIED', 'MAINTENANCE'];
     const nextIndex = (statuses.indexOf(currentStatus) + 1) % statuses.length;
-    const nextStatus = statuses[nextIndex];
-    // Optimistic local update so the UI stays responsive
-    setBedStatuses(prev => ({ ...prev, [bedId]: nextStatus }));
-    showToast(`Bed ${bedId.slice(-4)} set to ${nextStatus}`);
-    // Attempt to persist — fails silently since the API may not support bed updates yet
-    (async () => {
-      try {
-        await authFetch(`/api/pgs/${selectedPgId}`, {
-          method: 'PUT',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ action: 'update_bed_status', bedId, status: nextStatus }),
-        });
-      } catch (warn) {
-        console.warn('Bed status persistence not supported yet:', warn);
-      }
-    })();
+    toggleBedMutation.mutate({ bedId, newStatus: statuses[nextIndex] });
   };
 
   const bedStatusColor = (status: string) => {
@@ -148,12 +151,7 @@ export default function RoomManagement() {
   };
 
   const getRoomTypeBadge = (type: string) => {
-    const colors: Record<string, string> = {
-      SINGLE: BADGE.indigo,
-      DOUBLE: BADGE.blue,
-      TRIPLE: BADGE.cyan,
-      DORMITORY: 'bg-muted text-foreground',
-    };
+    const colors: Record<string, string> = { SINGLE: BADGE.indigo, DOUBLE: BADGE.blue, TRIPLE: BADGE.cyan, DORMITORY: 'bg-muted text-foreground' };
     return colors[type] || 'bg-muted text-foreground';
   };
 
@@ -169,10 +167,8 @@ export default function RoomManagement() {
       {/* PG Selector */}
       <div className="flex items-center gap-4">
         <div className="flex-1 max-w-md">
-          <Select value={selectedPgId} onValueChange={handlePgSelect}>
-            <SelectTrigger>
-              <SelectValue placeholder="Select a PG property..." />
-            </SelectTrigger>
+          <Select value={selectedPgId} onValueChange={setLocalPgId}>
+            <SelectTrigger><SelectValue placeholder="Select a PG property..." /></SelectTrigger>
             <SelectContent>
               {pgList.map((pg: { id: string; name: string }) => (
                 <SelectItem key={pg.id} value={pg.id}>{pg.name}</SelectItem>
@@ -187,51 +183,23 @@ export default function RoomManagement() {
             </Button>
           </DialogTrigger>
           <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Add New Room</DialogTitle>
-            </DialogHeader>
+            <DialogHeader><DialogTitle>Add New Room</DialogTitle></DialogHeader>
             <div className="space-y-4 pt-2">
-              <div className="space-y-2">
-                <Label>Room Code *</Label>
-                <Input placeholder="e.g., A101" value={roomForm.roomCode} onChange={e => setRoomForm(p => ({ ...p, roomCode: e.target.value }))} />
-              </div>
+              <div className="space-y-2"><Label>Room Code *</Label><Input placeholder="e.g., A101" value={roomForm.roomCode} onChange={e => setRoomForm(p => ({ ...p, roomCode: e.target.value }))} /></div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label>Room Type</Label>
+                <div className="space-y-2"><Label>Room Type</Label>
                   <Select value={roomForm.roomType} onValueChange={v => setRoomForm(p => ({ ...p, roomType: v }))}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="SINGLE">Single</SelectItem>
-                      <SelectItem value="DOUBLE">Double</SelectItem>
-                      <SelectItem value="TRIPLE">Triple</SelectItem>
-                      <SelectItem value="DORMITORY">Dormitory</SelectItem>
-                    </SelectContent>
+                    <SelectContent><SelectItem value="SINGLE">Single</SelectItem><SelectItem value="DOUBLE">Double</SelectItem><SelectItem value="TRIPLE">Triple</SelectItem><SelectItem value="DORMITORY">Dormitory</SelectItem></SelectContent>
                   </Select>
                 </div>
-                <div className="space-y-2">
-                  <Label>Floor</Label>
-                  <Input type="number" min="0" value={roomForm.floor} onChange={e => setRoomForm(p => ({ ...p, floor: e.target.value }))} />
-                </div>
+                <div className="space-y-2"><Label>Floor</Label><Input type="number" min="0" value={roomForm.floor} onChange={e => setRoomForm(p => ({ ...p, floor: e.target.value }))} /></div>
               </div>
-              <div className="space-y-2">
-                <Label>Bed Count</Label>
-                <Input type="number" min="1" max="8" value={roomForm.bedCount} onChange={e => setRoomForm(p => ({ ...p, bedCount: e.target.value }))} />
-              </div>
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <Label>Air Conditioning</Label>
-                <Switch checked={roomForm.hasAC} onCheckedChange={v => setRoomForm(p => ({ ...p, hasAC: v }))} />
-              </div>
-              <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                <Label>Attached Bathroom</Label>
-                <Switch checked={roomForm.hasAttachedBath} onCheckedChange={v => setRoomForm(p => ({ ...p, hasAttachedBath: v }))} />
-              </div>
-              <Button
-                className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white"
-                onClick={() => createRoomMutation.mutate(roomForm)}
-                disabled={createRoomMutation.isPending || !roomForm.roomCode}
-              >
-                {createRoomMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <Check className="size-4 mr-2" />}
-                Create Room
+              <div className="space-y-2"><Label>Bed Count</Label><Input type="number" min="1" max="8" value={roomForm.bedCount} onChange={e => setRoomForm(p => ({ ...p, bedCount: e.target.value }))} /></div>
+              <div className="flex items-center justify-between p-3 bg-muted rounded-lg"><Label>Air Conditioning</Label><Switch checked={roomForm.hasAC} onCheckedChange={v => setRoomForm(p => ({ ...p, hasAC: v }))} /></div>
+              <div className="flex items-center justify-between p-3 bg-muted rounded-lg"><Label>Attached Bathroom</Label><Switch checked={roomForm.hasAttachedBath} onCheckedChange={v => setRoomForm(p => ({ ...p, hasAttachedBath: v }))} /></div>
+              <Button className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white" onClick={() => createRoomMutation.mutate(roomForm)} disabled={createRoomMutation.isPending || !roomForm.roomCode}>
+                {createRoomMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <Check className="size-4 mr-2" />}Create Room
               </Button>
             </div>
           </DialogContent>
@@ -239,27 +207,11 @@ export default function RoomManagement() {
       </div>
 
       {!selectedPgId ? (
-        <Card className="border-dashed">
-          <CardContent className="p-12 text-center">
-            <BedDouble className="size-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-muted-foreground">Select a PG Property</h3>
-            <p className="text-sm text-muted-foreground mt-1">Choose a PG from the dropdown above to manage rooms</p>
-          </CardContent>
-        </Card>
+        <Card className="border-dashed"><CardContent className="p-12 text-center"><BedDouble className="size-12 text-muted-foreground mx-auto mb-4" /><h3 className="text-lg font-semibold text-muted-foreground">Select a PG Property</h3><p className="text-sm text-muted-foreground mt-1">Choose a PG from the dropdown above to manage rooms</p></CardContent></Card>
       ) : isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[...Array(4)].map((_, i) => (
-            <Card key={i} className="animate-pulse"><CardContent className="p-6"><div className="h-32 bg-muted rounded" /></CardContent></Card>
-          ))}
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">{[...Array(4)].map((_, i) => <Card key={i} className="animate-pulse"><CardContent className="p-6"><div className="h-32 bg-muted rounded" /></CardContent></Card>)}</div>
       ) : rooms.length === 0 ? (
-        <Card className="border-dashed">
-          <CardContent className="p-12 text-center">
-            <BedDouble className="size-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold text-muted-foreground">No Rooms Yet</h3>
-            <p className="text-sm text-muted-foreground mt-1">Add your first room to this PG property</p>
-          </CardContent>
-        </Card>
+        <Card className="border-dashed"><CardContent className="p-12 text-center"><BedDouble className="size-12 text-muted-foreground mx-auto mb-4" /><h3 className="text-lg font-semibold text-muted-foreground">No Rooms Yet</h3><p className="text-sm text-muted-foreground mt-1">Add your first room to this PG property</p></CardContent></Card>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <AnimatePresence>
@@ -270,12 +222,7 @@ export default function RoomManagement() {
               const available = beds.filter(b => b.status === 'AVAILABLE').length;
               const maintenance = beds.filter(b => b.status === 'MAINTENANCE').length;
               return (
-                <motion.div
-                  key={room.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                >
+                <motion.div key={room.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
                   <Card className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4 md:p-5">
                       <div className="flex items-start justify-between">
@@ -286,77 +233,66 @@ export default function RoomManagement() {
                             <Badge variant="outline">Floor {room.floor}</Badge>
                           </div>
                           <div className="flex items-center gap-3 mt-2">
-                            {room.hasAC && (
-                              <div className="flex items-center gap-1 text-brand-teal text-sm">
-                                <Snowflake className="size-3.5" /> AC
-                              </div>
-                            )}
-                            {room.hasAttachedBath && (
-                              <div className="flex items-center gap-1 text-brand-lime text-sm">
-                                <Bath className="size-3.5" /> Attached Bath
-                              </div>
-                            )}
+                            {room.hasAC && <div className="flex items-center gap-1 text-brand-teal text-sm"><Snowflake className="size-3.5" /> AC</div>}
+                            {room.hasAttachedBath && <div className="flex items-center gap-1 text-brand-lime text-sm"><Bath className="size-3.5" /> Bath</div>}
                           </div>
                         </div>
                         <div className="text-right">
                           <div className="text-2xl font-bold text-foreground">{beds.length}</div>
-                          <div className="text-xs text-muted-foreground">total beds</div>
+                          <div className="text-xs text-muted-foreground">beds</div>
                         </div>
                       </div>
-
                       {/* Bed summary */}
                       <div className="flex items-center gap-4 mt-3 text-sm">
-                        <span className="flex items-center gap-1">
-                          <span className="size-2.5 rounded-full bg-green-500" />
-                          {available} Available
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <span className="size-2.5 rounded-full bg-red-500" />
-                          {occupied} Occupied
-                        </span>
-                        {maintenance > 0 && (
-                          <span className="flex items-center gap-1">
-                            <span className="size-2.5 rounded-full bg-yellow-500" />
-                            {maintenance} Maintenance
-                          </span>
-                        )}
+                        <span className="flex items-center gap-1"><span className="size-2.5 rounded-full bg-green-500" />{available} Available</span>
+                        <span className="flex items-center gap-1"><span className="size-2.5 rounded-full bg-red-500" />{occupied} Occupied</span>
+                        {maintenance > 0 && <span className="flex items-center gap-1"><span className="size-2.5 rounded-full bg-yellow-500" />{maintenance} Maintenance</span>}
                       </div>
-
+                      <div className="mt-2 h-1.5 bg-muted rounded-full overflow-hidden">
+                        <div className="h-full bg-gradient-to-r from-green-500 to-red-500 rounded-full transition-all duration-500" style={{ width: `${beds.length > 0 ? (occupied / beds.length) * 100 : 0}%` }} />
+                      </div>
                       <Separator className="my-3" />
-                      <button
-                        onClick={() => setExpandedRoom(isExpanded ? null : room.id)}
-                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-brand-teal transition-colors w-full text-left"
-                      >
+                      <button onClick={() => setExpandedRoom(isExpanded ? null : room.id)} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-brand-teal transition-colors w-full text-left">
                         {isExpanded ? <ChevronUp className="size-4" /> : <ChevronDown className="size-4" />}
                         <span>{isExpanded ? 'Hide' : 'Show'} Bed Details</span>
                       </button>
-
                       <AnimatePresence>
                         {isExpanded && (
-                          <motion.div
-                            initial={{ height: 0, opacity: 0 }}
-                            animate={{ height: 'auto', opacity: 1 }}
-                            exit={{ height: 0, opacity: 0 }}
-                            transition={{ duration: 0.2 }}
-                            className="overflow-hidden"
-                          >
+                          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                             <div className="mt-3 grid grid-cols-3 gap-2">
-                              {beds.map((bed: { id: string; bedNumber: number; status: string }) => {
-                                const effectiveStatus = bedStatuses[bed.id] || bed.status;
-                                return (
+                              {beds.map((bed: { id: string; bedNumber: number; status: string }) => (
                                 <button
                                   key={bed.id}
-                                  onClick={() => toggleBedStatus(bed.id, effectiveStatus)}
-                                  className={`p-3 rounded-xl border text-center transition-all hover:scale-105 ${bedStatusColor(effectiveStatus)}`}
+                                  onClick={() => cycleBedStatus(bed.id, bed.status)}
+                                  className={`p-3 rounded-xl border text-center transition-all hover:scale-105 ${bedStatusColor(bed.status)}`}
                                 >
-                                  <div className={`size-3 rounded-full ${bedDotColor(effectiveStatus)} mx-auto mb-1.5`} />
+                                  <div className={`size-3 rounded-full ${bedDotColor(bed.status)} mx-auto mb-1.5`} />
                                   <div className="text-xs font-semibold">Bed #{bed.bedNumber}</div>
-                                  <div className="text-[10px] mt-0.5 opacity-75">{effectiveStatus}</div>
+                                  <div className="text-[10px] mt-0.5 opacity-75">{bed.status}</div>
                                 </button>
-                                );
-                              })}
+                              ))}
                             </div>
-                            <p className="text-xs text-muted-foreground mt-2 text-center">Click a bed to cycle its status</p>
+                            {/* Quick Mark Available buttons for occupied beds */}
+                            {occupied > 0 && (
+                              <div className="mt-3 pt-3 border-t">
+                                <p className="text-xs font-medium text-muted-foreground mb-2">Quick Actions:</p>
+                                <div className="flex flex-wrap gap-2">
+                                  {beds.filter(b => b.status === 'OCCUPIED').map((bed: { id: string; bedNumber: number }) => (
+                                    <Button
+                                      key={bed.id}
+                                      variant="outline"
+                                      size="sm"
+                                      className="text-xs h-7 border-green-300 text-green-700 hover:bg-green-50"
+                                      onClick={(e) => { e.stopPropagation(); markBedAvailable(bed.id); }}
+                                    >
+                                      <CheckCircle2 className="size-3 mr-1" />
+                                      Bed #{bed.bedNumber} Available
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                            <p className="text-xs text-muted-foreground mt-2 text-center">Click a bed to cycle: Available → Occupied → Maintenance</p>
                           </motion.div>
                         )}
                       </AnimatePresence>

@@ -24,6 +24,8 @@ model User {
   bookings      Booking[]
   payments      Payment[]
   complaints    Complaint[]
+  tenants       Tenant[]
+  activityLogs  ActivityLog[]
 }
 
 model PG {
@@ -52,6 +54,7 @@ model PG {
   bookings   Booking[]
   payments   Payment[]
   complaints Complaint[]
+  tenants    Tenant[]
 
   @@index([ownerId])
   @@index([city])
@@ -72,6 +75,7 @@ model Room {
 
   pg   PG    @relation(fields: [pgId], references: [id], onDelete: Cascade)
   beds Bed[]
+  tenants Tenant[]
 
   @@index([pgId])
 }
@@ -87,6 +91,7 @@ model Bed {
 
   room     Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
   bookings Booking[]
+  tenants  Tenant[]
 
   @@index([roomId])
   @@index([status])
@@ -125,6 +130,7 @@ model Payment {
   dueDate     DateTime?
   paidDate    DateTime?
   method      String?  // UPI, CARD, NET_BANKING, CASH
+  notes       String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -189,4 +195,72 @@ model Worker {
 
   @@index([pgId])
   @@index([role])
+}
+
+// Owner-managed tenant (directly added by owner, no user account required)
+model Tenant {
+  id          String   @id @default(cuid())
+  ownerId     String
+  pgId        String
+  roomId      String
+  bedId       String
+  name        String
+  phone       String
+  email       String?
+  aadhaar     String?
+  gender      String?
+  rentAmount  Float    @default(0)
+  rentDueDay  Int      @default(5) // day of month rent is due (1-28)
+  status      String   @default("ACTIVE") // ACTIVE, INACTIVE, EVICTED
+  notes       String?
+  joinedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  owner       User     @relation(fields: [ownerId], references: [id])
+  pg          PG       @relation(fields: [pgId], references: [id])
+  room        Room     @relation(fields: [roomId], references: [id])
+  bed         Bed      @relation(fields: [bedId], references: [id])
+  rentRecords RentRecord[]
+
+  @@index([ownerId])
+  @@index([pgId])
+  @@index([roomId])
+  @@index([bedId])
+  @@index([status])
+}
+
+// Rent records for owner-managed tenants
+model RentRecord {
+  id          String   @id @default(cuid())
+  tenantId    String
+  month       String   // "2025-01"
+  amount      Float
+  status      String   @default("PENDING") // PENDING, PAID, OVERDUE, PARTIAL
+  paidDate    DateTime?
+  method      String?  // CASH, UPI, CARD, NET_BANKING
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  tenant      Tenant   @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@index([tenantId])
+  @@index([month])
+  @@index([status])
+}
+
+// Activity log for owner dashboard
+model ActivityLog {
+  id          String   @id @default(cuid())
+  ownerId     String
+  action      String   // TENANT_ADDED, BED_UPDATED, PAYMENT_COLLECTED, etc.
+  description String?
+  metadata    String?  // JSON string for extra data
+  createdAt   DateTime @default(now())
+
+  owner       User     @relation(fields: [ownerId], references: [id])
+
+  @@index([ownerId])
+  @@index([createdAt])
 }
