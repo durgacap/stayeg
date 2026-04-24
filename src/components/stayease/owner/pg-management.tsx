@@ -50,7 +50,6 @@ export default function PGManagement() {
     price: '', securityDeposit: '', description: '', amenities: [] as string[], images: '',
   });
 
-  const { currentUser } = useAppStore();
   const ownerId = currentUser?.id;
 
   const { data: pgs, isLoading } = useQuery({

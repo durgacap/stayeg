@@ -202,14 +202,42 @@ export default function LoginPage() {
     setIsSubmitting(false);
   };
 
-  const handleDemoLogin = (role: UserRole) => {
+  const handleDemoLogin = async (role: UserRole) => {
     setIsSubmitting(true);
-    setTimeout(() => {
+    try {
+      // Try to fetch a real user from the database matching the role
+      const res = await fetch(`/api/auth?role=${role}`);
+      const data = await res.json();
+      if (data.users && data.users.length > 0) {
+        const raw = data.users[0];
+        const user: User = {
+          id: raw.id,
+          name: raw.name,
+          email: raw.email,
+          phone: raw.phone,
+          role: raw.role,
+          gender: raw.gender,
+          isVerified: raw.is_verified ?? false,
+          avatar: raw.avatar,
+          city: raw.city,
+          occupation: raw.occupation,
+          bio: raw.bio,
+          createdAt: raw.created_at,
+        };
+        login(user);
+        showToast('Welcome back, ' + user.name + '!');
+      } else {
+        // Fallback to demo user if DB has no users
+        const user = DEMO_USERS[role];
+        login(user);
+        showToast('Welcome, ' + user.name + '! (Demo Mode)');
+      }
+    } catch {
       const user = DEMO_USERS[role];
       login(user);
       showToast('Welcome, ' + user.name + '! (Demo Mode)');
-      setIsSubmitting(false);
-    }, 600);
+    }
+    setIsSubmitting(false);
   };
 
   const handleGuestContinue = () => {
