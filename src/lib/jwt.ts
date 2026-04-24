@@ -10,13 +10,14 @@
 
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET;
-if (!JWT_SECRET) {
+const _jwtSecret = process.env.JWT_SECRET;
+if (!_jwtSecret) {
   throw new Error(
     'JWT_SECRET environment variable is not set. ' +
     'This is required for authentication. Set it in .env.local.'
   );
 }
+const JWT_SECRET: string = _jwtSecret;
 
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
