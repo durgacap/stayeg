@@ -1,11 +1,23 @@
 /**
  * JWT token utility for StayEg authentication.
  * Uses jsonwebtoken for signing and verifying tokens.
+ *
+ * SECURITY NOTE: JWT_SECRET must be set via environment variables.
+ * Never hardcode secrets in source code — this is a critical production
+ * security requirement. Tokens signed with a leaked secret allow
+ * arbitrary impersonation of any user.
  */
 
 import jwt from 'jsonwebtoken';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'stayeg-jwt-secret-2025-production-key';
+const JWT_SECRET = process.env.JWT_SECRET;
+if (!JWT_SECRET) {
+  throw new Error(
+    'JWT_SECRET environment variable is not set. ' +
+    'This is required for authentication. Set it in .env.local.'
+  );
+}
+
 const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
 
 export interface TokenPayload {
@@ -20,7 +32,7 @@ export interface TokenPayload {
  * Generate a JWT token for a user session.
  */
 export function signToken(payload: Omit<TokenPayload, 'iat' | 'exp'>): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN });
+  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN as any });
 }
 
 /**

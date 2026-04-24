@@ -6,9 +6,11 @@
 
 import Razorpay from 'razorpay';
 
-let razorpayInstance: Razorpay.Instance | null = null;
+type RazorpayInstance = InstanceType<typeof Razorpay>;
 
-function getRazorpayInstance(): Razorpay.Instance | null {
+let razorpayInstance: RazorpayInstance | null = null;
+
+function getRazorpayInstance(): RazorpayInstance | null {
   if (razorpayInstance) return razorpayInstance;
 
   const keyId = process.env.RAZORPAY_KEY_ID;

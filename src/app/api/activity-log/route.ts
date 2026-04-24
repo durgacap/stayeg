@@ -1,10 +1,14 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireSession } from '@/lib/api-auth';
+import { requireSession, requireSessionWithRole } from '@/lib/api-auth';
 
 // GET /api/activity-log?ownerId=xxx
 export async function GET(request: NextRequest) {
   try {
+    // Auth guard: only OWNER and ADMIN can view activity logs
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
+    if ('error' in authResult) return authResult.error;
+
     const { searchParams } = new URL(request.url);
     const ownerId = searchParams.get('ownerId');
 
@@ -12,6 +16,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json(
         { error: 'ownerId query parameter is required' },
         { status: 400 }
+      );
+    }
+
+    // OWNER can only view their own activity logs; ADMIN can view any
+    if (authResult.user.role === 'OWNER' && ownerId !== authResult.user.id) {
+      return NextResponse.json(
+        { error: 'Forbidden: can only view your own activity logs' },
+        { status: 403 }
       );
     }
 

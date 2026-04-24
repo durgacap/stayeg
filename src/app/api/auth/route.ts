@@ -199,8 +199,8 @@ export async function POST(request: NextRequest) {
     const isApproved = userRole === 'OWNER' ? false : true;
 
     // Try inserting with password_hash (if column exists)
-    let user = null;
-    let error = null;
+    let user: any = null;
+    let error: any = null;
 
     const { data: insertedUser, error: insertError } = await supabase
       .from('users')

@@ -19,6 +19,7 @@ interface PersistedAuthState {
     };
     token?: string;
   };
+  token?: string;
 }
 
 function getPersistedAuth(): { email: string | null; token: string | null } {

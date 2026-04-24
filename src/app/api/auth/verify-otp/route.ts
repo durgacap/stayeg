@@ -89,15 +89,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (!users || users.length === 0) {
-      // For simulated mode, allow any OTP for new users (pre-signup)
-      if (!MSG91_AUTH_KEY) {
-        return NextResponse.json({ 
-          phoneVerified: true, 
-          message: 'Phone verified. Please complete signup.',
-          phone: cleanPhone,
-        });
-      }
-      return NextResponse.json({ error: 'User not found with this phone number' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found. Please sign up first.' }, { status: 404 });
     }
 
     const user = users[0];

@@ -1251,9 +1251,9 @@ export default function TenantSupport() {
   const activeBookingPG = activeBooking?.pg;
 
   // Fetch owner details
-  const { data: ownerInfo } = useQuery<User>({
+  const { data: ownerInfo } = useQuery<User | undefined>({
     queryKey: ['pg-owner', activeBookingPG?.id],
-    queryFn: async () => {
+    queryFn: async (): Promise<User | undefined> => {
       if (!activeBookingPG?.id) return undefined;
       const res = await authFetch(`/api/pgs/${activeBookingPG.id}`);
       if (!res.ok) return undefined;

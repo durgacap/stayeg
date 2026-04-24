@@ -4,10 +4,19 @@ import { requireSession } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
   try {
+    // Auth guard: verify user session before fetching payments
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId');
+    let userId = searchParams.get('userId');
     const pgId = searchParams.get('pgId');
     const status = searchParams.get('status');
+
+    // TENANT can only view their own payments
+    if (authResult.user.role === 'TENANT') {
+      userId = authResult.user.id;
+    }
 
     let query = supabase
       .from('payments')

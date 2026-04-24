@@ -1,9 +1,13 @@
 /**
  * API route auth middleware — StayEg v2 (JWT-based + role enforcement).
- * 
- * Supports TWO auth modes for backward compatibility:
- * 1. JWT Bearer token (preferred) — Authorization: Bearer <token>
- * 2. Legacy email header — x-user-email (for gradual migration)
+ *
+ * Authentication is via JWT Bearer token only:
+ *   Authorization: Bearer <token>
+ *
+ * SECURITY NOTE: The legacy x-user-email header and atob-based helpers
+ * have been removed. All API routes must use JWT tokens issued by the
+ * server. The ADMIN_SECRET is also required via environment variables —
+ * no hardcoded fallbacks.
  */
 
 import { NextRequest, NextResponse } from 'next/server';
@@ -28,50 +32,21 @@ export type AuthResult =
   | { user: AuthenticatedUser };
 
 // ============================
-// Legacy helpers (kept for backward compat)
-// ============================
-
-/** Get role from Authorization header or query param (legacy) */
-export function getCallerRole(request: NextRequest): string | null {
-  const authHeader = request.headers.get('authorization');
-  if (authHeader?.startsWith('Bearer ')) {
-    try {
-      const payload = JSON.parse(atob(authHeader.split('.')[1]));
-      return payload.role || null;
-    } catch { return null; }
-  }
-  const role = request.nextUrl.searchParams.get('role');
-  return role || null;
-}
-
-/** Require authentication — returns 401 if no role found (legacy header-based) */
-export function requireAuth(request: NextRequest): NextResponse | null {
-  const role = getCallerRole(request);
-  if (!role) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-  }
-  return null;
-}
-
-/** Require specific role(s) — returns 403 if role doesn't match */
-export function requireRole(request: NextRequest, allowedRoles: string[]): NextResponse | null {
-  const role = getCallerRole(request);
-  if (!role) {
-    return NextResponse.json({ error: 'Authentication required' }, { status: 401 });
-  }
-  if (!allowedRoles.includes(role)) {
-    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
-  }
-  return null;
-}
-
-// ============================
 // Admin secret validation
 // ============================
 
 /** Validate admin secret from x-admin-secret header */
 export function requireAdminSecret(request: NextRequest): NextResponse | null {
-  const ADMIN_SECRET = process.env.ADMIN_SECRET || 'stayeg-v1.2-secure-2025';
+  const ADMIN_SECRET = process.env.ADMIN_SECRET;
+  if (!ADMIN_SECRET) {
+    // Fail closed: if the env var is missing, no admin operation is allowed.
+    console.error('ADMIN_SECRET environment variable is not set. Admin endpoints are disabled.');
+    return NextResponse.json(
+      { error: 'Server misconfigured: admin authentication is unavailable' },
+      { status: 500 }
+    );
+  }
+
   const providedSecret = request.headers.get('x-admin-secret');
   if (!providedSecret || providedSecret !== ADMIN_SECRET) {
     return NextResponse.json(
@@ -87,15 +62,14 @@ export function requireAdminSecret(request: NextRequest): NextResponse | null {
 // ============================
 
 /**
- * Authenticate a request using JWT Bearer token (preferred)
- * Falls back to x-user-email header for backward compatibility.
- * 
+ * Authenticate a request using JWT Bearer token.
+ *
  * Returns the authenticated user or an error response.
  */
 export async function requireSession(
   request: NextRequest
 ): Promise<AuthResult> {
-  // --- Try JWT Bearer token first ---
+  // --- JWT Bearer token ---
   const authHeader = request.headers.get('authorization');
   const token = extractToken(authHeader);
 
@@ -123,44 +97,11 @@ export async function requireSession(
         };
       }
     }
-    // Token invalid or user not found → fall through to legacy check
-  }
-
-  // --- Legacy fallback: x-user-email header ---
-  const userEmail = request.headers.get('x-user-email');
-
-  if (userEmail) {
-    const { data: user, error } = await supabase
-      .from('users')
-      .select('id, email, role, is_verified, is_approved, name')
-      .eq('email', userEmail)
-      .limit(1)
-      .single();
-
-    if (!error && user) {
-      return {
-        user: {
-          id: user.id,
-          email: user.email,
-          role: user.role,
-          is_verified: user.is_verified,
-          is_approved: user.is_approved,
-          name: user.name,
-        },
-      };
-    }
-
-    return {
-      error: NextResponse.json(
-        { error: 'Authentication failed: user not found' },
-        { status: 401 }
-      ),
-    };
   }
 
   return {
     error: NextResponse.json(
-      { error: 'Authentication required: missing token or user identity' },
+      { error: 'Authentication required: provide a valid Bearer token' },
       { status: 401 }
     ),
   };

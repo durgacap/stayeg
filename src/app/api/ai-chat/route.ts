@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import type { ChatMessage } from 'z-ai-web-dev-sdk';
+import { requireSession } from '@/lib/api-auth';
 
 const SYSTEM_PROMPT = `You are StayEg AI Assistant, a helpful chatbot for India's leading PG (Paying Guest) accommodation platform.
 
@@ -21,6 +22,10 @@ Keep responses under 150 words unless the user asks for detailed help.`;
 
 export async function POST(request: NextRequest) {
   try {
+    // Require authentication to prevent SDK quota abuse
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
     const { message, context } = body;
 

@@ -365,7 +365,7 @@ export default function TenantManagement() {
           <AlertDialogHeader><AlertDialogTitle>Remove Tenant</AlertDialogTitle><AlertDialogDescription>Are you sure you want to remove <strong>{selectedTenant?.name}</strong>? Their bed will be marked as available.</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (selectedTenant) deleteMutation.mutate(selectedTenant.booking_id || selectedTenant.id); }} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : null}Remove</AlertDialogAction>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (selectedTenant) deleteMutation.mutate((selectedTenant as any).booking_id || selectedTenant.id); }} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : null}Remove</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -389,7 +389,7 @@ export default function TenantManagement() {
                   <SelectContent>{moveBeds.map(bed => <SelectItem key={bed.id} value={bed.id}>Bed #{bed.bedNumber} {bed.id === selectedTenant.bedId ? '(current)' : ''}</SelectItem>)}</SelectContent>
                 </Select> : <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg">No available beds</p>}
               </div>}
-              <Button className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white" onClick={() => moveMutation.mutate({ bookingId: selectedTenant.booking_id || selectedTenant.id, newBedId: moveTarget.bedId })} disabled={moveMutation.isPending || !moveTarget.bedId || moveTarget.bedId === selectedTenant.bedId}>
+              <Button className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white" onClick={() => moveMutation.mutate({ bookingId: (selectedTenant as any).booking_id || selectedTenant.id, newBedId: moveTarget.bedId })} disabled={moveMutation.isPending || !moveTarget.bedId || moveTarget.bedId === selectedTenant.bedId}>
                 {moveMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <ArrowRightLeft className="size-4 mr-2" />}Move Tenant
               </Button>
             </div>
@@ -405,7 +405,7 @@ export default function TenantManagement() {
             <div className="space-y-4 pt-2">
               <p className="text-sm text-muted-foreground">Notes for <strong>{selectedTenant.name}</strong></p>
               <Textarea placeholder="Add notes about this tenant..." rows={5} value={tenantNote} onChange={e => setTenantNote(e.target.value)} />
-              <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white" onClick={() => notesMutation.mutate({ bookingId: selectedTenant.booking_id || selectedTenant.id, notes: tenantNote })} disabled={notesMutation.isPending}>
+              <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white" onClick={() => notesMutation.mutate({ bookingId: (selectedTenant as any).booking_id || selectedTenant.id, notes: tenantNote })} disabled={notesMutation.isPending}>
                 {notesMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <StickyNote className="size-4 mr-2" />}Save Notes
               </Button>
             </div>

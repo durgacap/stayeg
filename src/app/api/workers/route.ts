@@ -4,6 +4,10 @@ import { requireSessionWithRole } from '@/lib/api-auth';
 
 export async function GET(request: NextRequest) {
   try {
+    // Auth guard: only OWNER and ADMIN can view workers
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
+    if ('error' in authResult) return authResult.error;
+
     const searchParams = request.nextUrl.searchParams;
     const pgId = searchParams.get('pgId');
     const role = searchParams.get('role');

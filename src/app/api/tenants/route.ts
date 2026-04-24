@@ -1,6 +1,6 @@
 import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireSession } from '@/lib/api-auth';
+import { requireSession, requireSessionWithRole } from '@/lib/api-auth';
 
 // In Supabase, tenants are users with active bookings in a PG.
 // This route provides a tenant management view by combining bookings + users + beds + rooms.
@@ -8,6 +8,10 @@ import { requireSession } from '@/lib/api-auth';
 // GET /api/tenants?ownerId=...&pgId=...&roomId=...&status=...&search=...
 export async function GET(request: NextRequest) {
   try {
+    // Auth guard: only OWNER and ADMIN can list tenants
+    const authResult = await requireSessionWithRole(request, ['OWNER', 'ADMIN']);
+    if ('error' in authResult) return authResult.error;
+
     const { searchParams } = new URL(request.url);
     const ownerId = searchParams.get('ownerId');
     const pgId = searchParams.get('pgId');
@@ -15,6 +19,11 @@ export async function GET(request: NextRequest) {
 
     if (!ownerId) {
       return NextResponse.json({ error: 'ownerId is required' }, { status: 400 });
+    }
+
+    // OWNER can only view tenants for their own PGs; ADMIN can view any
+    if (authResult.user.role === 'OWNER' && ownerId !== authResult.user.id) {
+      return NextResponse.json({ error: 'Forbidden: can only view tenants for your own PGs' }, { status: 403 });
     }
 
     // Get all PG IDs for this owner
