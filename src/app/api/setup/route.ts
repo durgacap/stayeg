@@ -1,112 +1,75 @@
-import { supabase } from '@/lib/supabase';
 import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase';
 
 const REQUIRED_TABLES = [
-  'users',
-  'pgs',
-  'rooms',
-  'beds',
-  'bookings',
-  'payments',
-  'complaints',
-  'vendors',
-  'workers',
-] as const;
-
-type TableName = (typeof REQUIRED_TABLES)[number];
-
-async function checkTableExists(name: TableName): Promise<boolean> {
-  try {
-    const { error } = await supabase.from(name).select('id').limit(1);
-    return !error;
-  } catch {
-    return false;
-  }
-}
-
-async function getTableCount(name: TableName): Promise<number> {
-  try {
-    const { count, error } = await supabase
-      .from(name)
-      .select('*', { count: 'exact', head: true });
-    return error ? 0 : (count ?? 0);
-  } catch {
-    return 0;
-  }
-}
+  'users', 'pgs', 'rooms', 'beds', 'bookings',
+  'payments', 'complaints', 'vendors', 'workers',
+];
 
 export async function GET() {
   try {
-    // Check connection first
-    const { error: connError } = await supabase.from('users').select('id').limit(1);
+    const existing: string[] = [];
+    const missing: string[] = [];
+    const tableDetails: { name: string; exists: boolean; count: number }[] = [];
 
-    if (connError && connError.code === '42P01') {
-      // Relation doesn't exist — tables not created yet
-      return NextResponse.json({
-        setup: false,
-        connected: true,
-        tables: [],
-        missing: [...REQUIRED_TABLES],
-        message: 'Database is connected but tables have not been created yet. Please follow the setup guide below.',
-        stats: null,
-      });
+    for (const table of REQUIRED_TABLES) {
+      try {
+        const { count, error } = await supabase
+          .from(table)
+          .select('*', { count: 'exact', head: true });
+
+        if (error) {
+          missing.push(table);
+          tableDetails.push({ name: table, exists: false, count: 0 });
+        } else {
+          existing.push(table);
+          tableDetails.push({ name: table, exists: true, count: count ?? 0 });
+        }
+      } catch {
+        missing.push(table);
+        tableDetails.push({ name: table, exists: false, count: 0 });
+      }
     }
 
-    if (connError) {
-      // Connection issue
-      return NextResponse.json({
-        setup: false,
-        connected: false,
-        tables: [],
-        missing: [...REQUIRED_TABLES],
-        message: `Cannot connect to database: ${connError.message}`,
-        stats: null,
-        error: connError.message,
-      });
+    const extraTables = ['tenant_notes', 'activity_log'];
+    for (const table of extraTables) {
+      try {
+        const { count, error } = await supabase
+          .from(table)
+          .select('*', { count: 'exact', head: true });
+        if (!error) {
+          existing.push(table);
+          tableDetails.push({ name: table, exists: true, count: count ?? 0 });
+        }
+      } catch {
+        // Extra tables are optional
+      }
     }
 
-    // Check each table individually
-    const results = await Promise.all(
-      REQUIRED_TABLES.map(async (name) => ({
-        name,
-        exists: await checkTableExists(name),
-        count: await getTableCount(name),
-      }))
-    );
-
-    const existing = results.filter((r) => r.exists).map((r) => r.name);
-    const missing = results.filter((r) => !r.exists).map((r) => r.name);
-    const allReady = missing.length === 0;
-
+    const isSetup = missing.length === 0;
     const stats: Record<string, number> = {};
-    for (const r of results) {
-      if (r.exists) stats[r.name] = r.count;
+    for (const t of tableDetails) {
+      if (t.exists) stats[t.name] = t.count;
     }
 
     return NextResponse.json({
-      setup: allReady,
+      setup: isSetup,
       connected: true,
       tables: existing,
       missing,
-      tableDetails: results,
-      stats: allReady ? stats : null,
-      message: allReady
-        ? 'Database is fully set up and ready!'
-        : `Connected! ${existing.length}/${REQUIRED_TABLES.length} tables found. ${missing.length} table(s) still missing.`,
+      tableDetails,
+      stats: Object.keys(stats).length > 0 ? stats : null,
+      message: isSetup
+        ? 'All tables are ready!'
+        : `Missing ${missing.length} table(s): ${missing.join(', ')}`,
     });
-  } catch (error) {
-    console.error('Setup check error:', error);
-    return NextResponse.json(
-      {
-        setup: false,
-        connected: false,
-        tables: [],
-        missing: [...REQUIRED_TABLES],
-        message: 'Failed to check database status',
-        error: String(error),
-        stats: null,
-      },
-      { status: 500 }
-    );
+  } catch {
+    return NextResponse.json({
+      setup: false,
+      connected: false,
+      tables: [],
+      missing: REQUIRED_TABLES,
+      message: 'Could not connect to Supabase.',
+    }, { status: 500 });
   }
 }

@@ -10,12 +10,12 @@ export async function GET() {
       return NextResponse.json({
         status: 'ok',
         version: '1.2.0',
-        database: isMissing ? 'demo_mode' : 'error',
-        message: isMissing ? 'Running in demo mode — database tables not yet created' : 'Database connection issue',
+        database: isMissing ? 'not_ready' : 'error',
+        message: isMissing ? 'Database tables not yet created. Please run setup.' : 'Database connection issue',
       });
     }
     return NextResponse.json({ status: 'ok', version: '1.2.0', database: 'connected' });
   } catch {
-    return NextResponse.json({ status: 'ok', version: '1.2.0', database: 'demo_mode' });
+    return NextResponse.json({ status: 'ok', version: '1.2.0', database: 'not_ready' });
   }
 }

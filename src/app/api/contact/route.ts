@@ -1,4 +1,4 @@
-import { supabase, isTableMissing } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
@@ -21,10 +21,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      if (isTableMissing(error)) {
-        return NextResponse.json({ success: true, message: 'Contact form received' });
-      }
-      throw error;
+      console.error('Error submitting contact form:', error.message);
+      return NextResponse.json({ error: 'Failed to submit contact form' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, message: 'Contact form submitted' }, { status: 201 });

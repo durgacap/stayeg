@@ -1,5 +1,6 @@
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { requireSession } from '@/lib/api-auth';
 
 // GET /api/rent-records?tenantId=...&pgId=...&ownerId=...&month=...&status=...
 export async function GET(request: NextRequest) {
@@ -15,81 +16,82 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ error: 'tenantId, pgId, or ownerId required' }, { status: 400 });
     }
 
-    const where: Record<string, unknown> = {};
-    if (tenantId) where.tenantId = tenantId;
-    if (month) where.month = month;
-    if (status) where.status = status;
+    // Rent records are tracked via the payments table (type='RENT')
+    let query = supabase
+      .from('payments')
+      .select('*, user:users(id,name,phone), pg:pgs(id,name)')
+      .eq('type', 'RENT')
+      .order('created_at', { ascending: false });
 
-    if (pgId || ownerId) {
-      where.tenant = {};
-      if (pgId) (where.tenant as Record<string, unknown>).pgId = pgId;
-      if (ownerId) (where.tenant as Record<string, unknown>).ownerId = ownerId;
+    if (tenantId) query = query.eq('user_id', tenantId);
+    if (pgId) query = query.eq('pg_id', pgId);
+    if (status) query = query.eq('status', status);
+
+    // If ownerId, filter by PGs owned by this owner
+    if (ownerId && !tenantId && !pgId) {
+      const { data: pgs } = await supabase
+        .from('pgs')
+        .select('id')
+        .eq('owner_id', ownerId);
+      const pgIds = (pgs ?? []).map((p: { id: string }) => p.id);
+      if (pgIds.length > 0) {
+        query = query.in('pg_id', pgIds);
+      } else {
+        return NextResponse.json([]);
+      }
     }
 
-    const records = await db.rentRecord.findMany({
-      where,
-      include: {
-        tenant: {
-          select: { id: true, name: true, phone: true, pg: { select: { name: true } }, room: { select: { roomCode: true } }, bed: { select: { bedNumber: true } } },
-        },
-      },
-      orderBy: [{ month: 'desc' }, { createdAt: 'desc' }],
-    });
+    // Month filter: filter by created_at prefix (YYYY-MM)
+    // Since payments don't have a month column, use created_at
+    if (month) {
+      query = query.gte('created_at', `${month}-01T00:00:00.000Z`)
+               .lt('created_at', `${month}-31T23:59:59.999Z`);
+    }
 
-    return NextResponse.json(records);
+    const { data: records, error } = await query;
+    if (error) {
+      console.error('GET /api/rent-records error:', error.message);
+      return NextResponse.json({ error: 'Failed to fetch rent records' }, { status: 500 });
+    }
+
+    return NextResponse.json(records || []);
   } catch (error) {
     console.error('GET /api/rent-records error:', error);
     return NextResponse.json({ error: 'Failed to fetch rent records' }, { status: 500 });
   }
 }
 
-// POST /api/rent-records — Create rent record
+// POST /api/rent-records — Create a rent payment record
 export async function POST(request: NextRequest) {
   try {
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
-    const { tenantId, month, amount, status, method, notes } = body;
+    const { userId, pgId, month, amount, status, method, notes } = body;
 
-    if (!tenantId || !month || !amount) {
-      return NextResponse.json({ error: 'tenantId, month, amount required' }, { status: 400 });
+    if (!userId || !pgId || !amount) {
+      return NextResponse.json({ error: 'userId, pgId, and amount required' }, { status: 400 });
     }
 
-    // Check for existing record
-    const existing = await db.rentRecord.findFirst({ where: { tenantId, month } });
-    if (existing) {
-      return NextResponse.json({ error: 'Rent record already exists for this month' }, { status: 409 });
-    }
-
-    const tenant = await db.tenant.findUnique({ where: { id: tenantId } });
-    if (!tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
-    }
-
-    const record = await db.rentRecord.create({
-      data: {
-        tenantId,
-        month,
+    const { data: record, error } = await supabase
+      .from('payments')
+      .insert({
+        user_id: userId,
+        pg_id: pgId,
         amount,
+        type: 'RENT',
         status: status || 'PENDING',
         method: method || null,
         notes: notes || null,
-        paidDate: status === 'PAID' ? new Date() : null,
-      },
-      include: {
-        tenant: { select: { id: true, name: true } },
-      },
-    });
+        paid_date: status === 'PAID' || status === 'COMPLETED' ? new Date().toISOString() : null,
+      })
+      .select()
+      .single();
 
-    if (status === 'PAID') {
-      try {
-        await db.activityLog.create({
-          data: {
-            ownerId: tenant.ownerId,
-            action: 'PAYMENT_COLLECTED',
-            description: `Collected ₹${amount} rent from "${tenant.name}" for ${month}`,
-            metadata: JSON.stringify({ tenantId, month, amount, method }),
-          },
-        });
-      } catch { /* ignore */ }
+    if (error) {
+      console.error('POST /api/rent-records error:', error.message);
+      return NextResponse.json({ error: 'Failed to create rent record' }, { status: 500 });
     }
 
     return NextResponse.json(record, { status: 201 });
@@ -102,6 +104,9 @@ export async function POST(request: NextRequest) {
 // PUT /api/rent-records — Update rent record (mark as paid)
 export async function PUT(request: NextRequest) {
   try {
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
+
     const body = await request.json();
     const { id, status, method, notes } = body;
 
@@ -109,38 +114,27 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Record id required' }, { status: 400 });
     }
 
-    const existing = await db.rentRecord.findUnique({ where: { id }, include: { tenant: true } });
-    if (!existing) {
-      return NextResponse.json({ error: 'Rent record not found' }, { status: 404 });
+    const updateData: Record<string, unknown> = {};
+    if (status) updateData.status = status;
+    if (method) updateData.method = method;
+    if (notes !== undefined) updateData.notes = notes || null;
+    if ((status === 'PAID' || status === 'COMPLETED')) {
+      updateData.paid_date = new Date().toISOString();
     }
 
-    const updated = await db.rentRecord.update({
-      where: { id },
-      data: {
-        ...(status ? { status } : {}),
-        ...(method ? { method } : {}),
-        ...(notes !== undefined ? { notes: notes || null } : {}),
-        ...(status === 'PAID' ? { paidDate: new Date() } : {}),
-      },
-      include: {
-        tenant: { select: { id: true, name: true, ownerId: true } },
-      },
-    });
+    const { data: record, error } = await supabase
+      .from('payments')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
 
-    if (status === 'PAID' && existing.status !== 'PAID') {
-      try {
-        await db.activityLog.create({
-          data: {
-            ownerId: existing.tenant.ownerId,
-            action: 'PAYMENT_COLLECTED',
-            description: `Collected ₹${existing.amount} rent from "${existing.tenant.name}" for ${existing.month}`,
-            metadata: JSON.stringify({ recordId: id, month: existing.month, amount: existing.amount, method }),
-          },
-        });
-      } catch { /* ignore */ }
+    if (error) {
+      console.error('PUT /api/rent-records error:', error.message);
+      return NextResponse.json({ error: 'Failed to update rent record' }, { status: 500 });
     }
 
-    return NextResponse.json(updated);
+    return NextResponse.json(record);
   } catch (error) {
     console.error('PUT /api/rent-records error:', error);
     return NextResponse.json({ error: 'Failed to update rent record' }, { status: 500 });

@@ -1,14 +1,12 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/api-auth';
+import { requireSession } from '@/lib/api-auth';
 
-// POST /api/beds
-// Create a new bed under a room
+// POST /api/beds — Create a new bed under a room
 export async function POST(request: NextRequest) {
   try {
-    // Auth guard
-    const authError = requireAuth(request);
-    if (authError) return authError;
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
     const { roomId, bedNumber, price, status } = body;
@@ -28,12 +26,13 @@ export async function POST(request: NextRequest) {
     }
 
     // Verify the room exists
-    const room = await db.room.findUnique({
-      where: { id: roomId },
-      select: { id: true },
-    });
+    const { data: room, error: roomError } = await supabase
+      .from('rooms')
+      .select('id')
+      .eq('id', roomId)
+      .single();
 
-    if (!room) {
+    if (roomError || !room) {
       return NextResponse.json(
         { error: 'Room not found' },
         { status: 404 }
@@ -41,9 +40,12 @@ export async function POST(request: NextRequest) {
     }
 
     // Check for duplicate bed number in the same room
-    const existingBed = await db.bed.findFirst({
-      where: { roomId, bedNumber },
-    });
+    const { data: existingBed } = await supabase
+      .from('beds')
+      .select('id')
+      .eq('room_id', roomId)
+      .eq('bed_number', bedNumber)
+      .maybeSingle();
 
     if (existingBed) {
       return NextResponse.json(
@@ -52,23 +54,18 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const bed = await db.bed.create({
-      data: {
-        roomId,
-        bedNumber,
+    const { data: bed, error } = await supabase
+      .from('beds')
+      .insert({
+        room_id: roomId,
+        bed_number: bedNumber,
         price: price ?? null,
         status: status ?? 'AVAILABLE',
-      },
-      include: {
-        room: {
-          include: {
-            pg: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-      },
-    });
+      })
+      .select('*, room:rooms(id, room_code, pg:pgs(id, name))')
+      .single();
+
+    if (error) throw error;
 
     return NextResponse.json(bed, { status: 201 });
   } catch (error) {
@@ -80,13 +77,11 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// PUT /api/beds
-// Update a bed's status (and optionally price)
+// PUT /api/beds — Update a bed's status (and optionally price)
 export async function PUT(request: NextRequest) {
   try {
-    // Auth guard
-    const authError = requireAuth(request);
-    if (authError) return authError;
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
     const { id, status, price } = body;
@@ -106,76 +101,33 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    // Fetch current bed with tenant info
-    const currentBed = await db.bed.findUnique({
-      where: { id },
-      include: {
-        tenants: {
-          where: { status: 'ACTIVE' },
-        },
-        room: {
-          include: {
-            pg: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-      },
-    });
+    // Fetch current bed
+    const { data: currentBed, error: fetchError } = await supabase
+      .from('beds')
+      .select('id, status')
+      .eq('id', id)
+      .single();
 
-    if (!currentBed) {
+    if (fetchError || !currentBed) {
       return NextResponse.json(
         { error: 'Bed not found' },
         { status: 404 }
       );
     }
 
-    // Guard: cannot set a bed to AVAILABLE if it has active tenants
-    if (status === 'AVAILABLE' && currentBed.status === 'OCCUPIED') {
-      if (currentBed.tenants.length > 0) {
-        return NextResponse.json(
-          {
-            error:
-              'Cannot mark bed as AVAILABLE. There are active tenants assigned to this bed. Please remove or deactivate all tenant assignments first.',
-          },
-          { status: 409 }
-        );
-      }
+    const updateData: Record<string, unknown> = { status };
+    if (price !== undefined) updateData.price = price;
 
-      // No active tenants — clear any inactive/evicted tenant bed assignments
-      await db.tenant.updateMany({
-        where: { bedId: id, status: { in: ['INACTIVE', 'EVICTED'] } },
-        data: { bedId: "" },
-      });
-    }
+    const { data: bed, error } = await supabase
+      .from('beds')
+      .update(updateData)
+      .eq('id', id)
+      .select('*, room:rooms(id, room_code, pg:pgs(id, name))')
+      .single();
 
-    // Build update payload
-    const updateData: { status: string; price?: number | null } = {
-      status,
-    };
-    if (price !== undefined) {
-      updateData.price = price;
-    }
+    if (error) throw error;
 
-    const updatedBed = await db.bed.update({
-      where: { id },
-      data: updateData,
-      include: {
-        room: {
-          include: {
-            pg: {
-              select: { id: true, name: true },
-            },
-          },
-        },
-        tenants: {
-          where: { status: 'ACTIVE' },
-          select: { id: true, name: true, status: true },
-        },
-      },
-    });
-
-    return NextResponse.json(updatedBed);
+    return NextResponse.json(bed);
   } catch (error) {
     console.error('Error updating bed:', error);
     return NextResponse.json(

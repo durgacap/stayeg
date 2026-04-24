@@ -1,47 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import type { UserRole, User } from '@/lib/types';
-import { supabase, isTableMissing } from '@/lib/supabase';
-
-// ============================
-// Session helpers (client-side localStorage)
-// ============================
-
-const STORAGE_KEY = 'stayeg-auth-storage';
-
-interface PersistedAuth {
-  state?: {
-    isLoggedIn?: boolean;
-    currentUser?: User | null;
-    currentRole?: UserRole;
-    isGuest?: boolean;
-  };
-}
-
-/** Get the current session from localStorage (client-side only) */
-export function getSession(): { user: User | null; role: UserRole | null; isLoggedIn: boolean } {
-  if (typeof window === 'undefined') {
-    return { user: null, role: null, isLoggedIn: false };
-  }
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { user: null, role: null, isLoggedIn: false };
-    const parsed: PersistedAuth = JSON.parse(raw);
-    const s = parsed.state;
-    return {
-      user: s?.currentUser ?? null,
-      role: s?.currentRole ?? null,
-      isLoggedIn: s?.isLoggedIn ?? false,
-    };
-  } catch {
-    return { user: null, role: null, isLoggedIn: false };
-  }
-}
+import { supabase } from '@/lib/supabase';
 
 // ============================
 // API route auth middleware
 // ============================
 
-/** Get role from Authorization header or query param */
+/** Get role from Authorization header or query param (legacy, kept for backwards compat) */
 export function getCallerRole(request: NextRequest): string | null {
   const authHeader = request.headers.get('authorization');
   if (authHeader?.startsWith('Bearer ')) {
@@ -54,7 +18,7 @@ export function getCallerRole(request: NextRequest): string | null {
   return role || null;
 }
 
-/** Require authentication — returns 403 if no role found */
+/** Require authentication — returns 401 if no role found (legacy header-based) */
 export function requireAuth(request: NextRequest): NextResponse | null {
   const role = getCallerRole(request);
   if (!role) {
@@ -97,8 +61,7 @@ export function requireAdminSecret(request: NextRequest): NextResponse | null {
 // ============================
 
 /** Verify user session by checking x-user-email header against the database.
- *  Returns the error response if auth fails, or null if auth succeeds.
- *  The authenticated user object is optionally returned via the user reference. */
+ *  Returns the error response if auth fails, or the authenticated user object if auth succeeds. */
 export async function requireSession(
   request: NextRequest
 ): Promise<{ error: NextResponse } | { user: Record<string, unknown> }> {
@@ -122,18 +85,6 @@ export async function requireSession(
     .single();
 
   if (error || !user) {
-    // If Supabase tables don't exist (demo mode), create a demo user
-    if (error && isTableMissing(error)) {
-      return {
-        user: {
-          id: `demo-${Date.now()}`,
-          email: userEmail,
-          role: 'TENANT',
-          is_verified: false,
-        },
-      };
-    }
-
     return {
       error: NextResponse.json(
         { error: 'Authentication failed: user not found' },

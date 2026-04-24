@@ -842,15 +842,4 @@ export async function updateWorker(
   return worker as WorkerRow;
 }
 
-// =============================================================
-// UTILITY: Check if a table exists (for graceful demo fallback)
-// =============================================================
 
-export async function isTableReady(tableName: string): Promise<boolean> {
-  try {
-    const { error } = await supabase.from(tableName).select('id').limit(1);
-    return !error;
-  } catch {
-    return false;
-  }
-}

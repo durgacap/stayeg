@@ -1,9 +1,8 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth } from '@/lib/api-auth';
+import { requireSession } from '@/lib/api-auth';
 
 // GET /api/activity-log?ownerId=xxx
-// List activity logs for an owner, newest first, capped at 50
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
@@ -16,23 +15,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const logs = await db.activityLog.findMany({
-      where: { ownerId },
-      orderBy: { createdAt: 'desc' },
-      take: 50,
-      select: {
-        id: true,
-        action: true,
-        description: true,
-        metadata: true,
-        createdAt: true,
-        owner: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
+    const { data: logs, error } = await supabase
+      .from('activity_log')
+      .select('id, action, details, entity_type, entity_id, created_at')
+      .eq('owner_id', ownerId)
+      .order('created_at', { ascending: false })
+      .limit(50);
 
-    return NextResponse.json(logs);
+    if (error) {
+      console.error('Error fetching activity logs:', error.message);
+      return NextResponse.json(
+        { error: 'Failed to fetch activity logs' },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(logs || []);
   } catch (error) {
     console.error('Error fetching activity logs:', error);
     return NextResponse.json(
@@ -42,16 +40,14 @@ export async function GET(request: NextRequest) {
   }
 }
 
-// POST /api/activity-log
-// Create a new activity log entry
+// POST /api/activity-log — Create a new activity log entry
 export async function POST(request: NextRequest) {
   try {
-    // Auth guard
-    const authError = requireAuth(request);
-    if (authError) return authError;
+    const authResult = await requireSession(request);
+    if ('error' in authResult) return authResult.error;
 
     const body = await request.json();
-    const { ownerId, action, description, metadata } = body;
+    const { ownerId, action, details, entityType, entityId } = body;
 
     if (!ownerId || !action) {
       return NextResponse.json(
@@ -60,19 +56,25 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const log = await db.activityLog.create({
-      data: {
-        ownerId,
+    const { data: log, error } = await supabase
+      .from('activity_log')
+      .insert({
+        owner_id: ownerId,
         action,
-        description: description ?? null,
-        metadata: metadata ?? null,
-      },
-      include: {
-        owner: {
-          select: { id: true, name: true, email: true },
-        },
-      },
-    });
+        details: details ?? null,
+        entity_type: entityType ?? null,
+        entity_id: entityId ?? null,
+      })
+      .select()
+      .single();
+
+    if (error) {
+      console.error('Error creating activity log:', error.message);
+      return NextResponse.json(
+        { error: 'Failed to create activity log' },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json(log, { status: 201 });
   } catch (error) {

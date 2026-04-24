@@ -1,4 +1,4 @@
-import { db } from '@/lib/db';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 
 const MONTH_NAMES = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -12,147 +12,139 @@ export async function GET(request: NextRequest) {
     }
 
     // ----------------------------------------------------------------
-    // 1. PGs & Rooms
+    // 1. PGs & Rooms & Beds
     // ----------------------------------------------------------------
-    const [totalPGs, rooms, beds] = await Promise.all([
-      db.pG.count({ where: { ownerId } }),
-      db.room.findMany({
-        where: { pg: { ownerId } },
-        select: { id: true },
-      }),
-      db.bed.findMany({
-        where: { room: { pg: { ownerId } } },
-        select: { id: true, status: true },
-      }),
+    const [pgsRes, roomsRes, bedsRes] = await Promise.all([
+      supabase.from('pgs').select('id').eq('owner_id', ownerId),
+      supabase.from('rooms').select('id, pg_id').in('pg_id',
+        (await supabase.from('pgs').select('id').eq('owner_id', ownerId)).data?.map(p => p.id) || ['__none__']
+      ),
+      supabase.from('beds').select('id, status, room_id').in('room_id',
+        (await supabase.from('rooms').select('id').in('pg_id',
+          (await supabase.from('pgs').select('id').eq('owner_id', ownerId)).data?.map(p => p.id) || ['__none__']
+        )).data?.map(r => r.id) || ['__none__']
+      ),
     ]);
 
-    const totalRooms = rooms.length;
-    const roomIds = rooms.map((r) => r.id);
+    const totalPGs = pgsRes.data?.length ?? 0;
+    const totalRooms = roomsRes.data?.length ?? 0;
+    const beds = bedsRes.data ?? [];
     const totalBeds = beds.length;
-    const occupiedBeds = beds.filter((b) => b.status === 'OCCUPIED').length;
+    const occupiedBeds = beds.filter((b: { status: string }) => b.status === 'OCCUPIED').length;
     const availableBeds = totalBeds - occupiedBeds;
     const occupancyRate = totalBeds > 0 ? Math.round((occupiedBeds / totalBeds) * 100) : 0;
 
     // ----------------------------------------------------------------
-    // 2. Tenants
+    // 2. Tenants (users with active bookings in this owner's PGs)
     // ----------------------------------------------------------------
-    const [totalTenants, activeTenants] = await Promise.all([
-      db.tenant.count({ where: { ownerId } }),
-      db.tenant.count({ where: { ownerId, status: 'ACTIVE' } }),
-    ]);
+    const pgIds = pgsRes.data?.map((p: { id: string }) => p.id) || [];
+    let totalTenants = 0;
+    let activeTenants = 0;
+
+    if (pgIds.length > 0) {
+      const bookingsRes = await supabase
+        .from('bookings')
+        .select('user_id, status')
+        .in('pg_id', pgIds);
+
+      const bookings = bookingsRes.data ?? [];
+      const uniqueUserIds = new Set(bookings.map((b: { user_id: string }) => b.user_id));
+      totalTenants = uniqueUserIds.size;
+      activeTenants = new Set(
+        bookings.filter((b: { status: string }) => ['ACTIVE', 'CONFIRMED'].includes(b.status))
+          .map((b: { user_id: string }) => b.user_id)
+      ).size;
+    }
 
     // ----------------------------------------------------------------
-    // 3. Rent records – revenue & payment status
+    // 3. Payments — revenue & payment status
     // ----------------------------------------------------------------
     const now = new Date();
     const currentMonth = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
 
-    const rentRecords = await db.rentRecord.findMany({
-      where: { tenant: { ownerId } },
-      include: { tenant: { select: { id: true } } },
-    });
+    let monthlyRevenue = 0;
+    let pendingPayments = 0;
+    let pendingAmount = 0;
 
-    // Monthly revenue = sum of PAID records for the current month
-    const monthlyRevenue = rentRecords
-      .filter((r) => r.month === currentMonth && r.status === 'PAID')
-      .reduce((sum, r) => sum + r.amount, 0);
+    if (pgIds.length > 0) {
+      const paymentsRes = await supabase
+        .from('payments')
+        .select('amount, status, created_at')
+        .in('pg_id', pgIds);
 
-    // Pending payments (status = PENDING, regardless of month)
-    const pendingRecords = rentRecords.filter((r) => r.status === 'PENDING');
-    const pendingPayments = pendingRecords.length;
-    const pendingAmount = pendingRecords.reduce((sum, r) => sum + r.amount, 0);
+      const payments = paymentsRes.data ?? [];
 
-    // Overdue payments (status = OVERDUE)
-    const overdueRecords = rentRecords.filter((r) => r.status === 'OVERDUE');
-    const overduePayments = overdueRecords.length;
-    const overdueAmount = overdueRecords.reduce((sum, r) => sum + r.amount, 0);
+      // Monthly revenue = sum of COMPLETED payments for the current month
+      monthlyRevenue = payments
+        .filter((p: { status: string; created_at: string }) =>
+          p.status === 'COMPLETED' && p.created_at?.startsWith(currentMonth)
+        )
+        .reduce((sum: number, p: { amount: number }) => sum + (p.amount || 0), 0);
+
+      // Pending payments
+      const pendingRecs = payments.filter((p: { status: string }) => p.status === 'PENDING');
+      pendingPayments = pendingRecs.length;
+      pendingAmount = pendingRecs.reduce((sum: number, p: { amount: number }) => sum + (p.amount || 0), 0);
+    }
 
     // ----------------------------------------------------------------
     // 4. Open complaints
     // ----------------------------------------------------------------
-    const openComplaints = await db.complaint.count({
-      where: {
-        pg: { ownerId },
-        status: { in: ['OPEN', 'IN_PROGRESS'] },
-      },
-    });
+    let openComplaints = 0;
+    if (pgIds.length > 0) {
+      const complaintsRes = await supabase
+        .from('complaints')
+        .select('id')
+        .in('pg_id', pgIds)
+        .in('status', ['OPEN', 'IN_PROGRESS']);
+      openComplaints = complaintsRes.data?.length ?? 0;
+    }
 
     // ----------------------------------------------------------------
-    // 5. Recent activity (last 20)
+    // 5. Recent activity (from activity_log table)
     // ----------------------------------------------------------------
-    const recentLogs = await db.activityLog.findMany({
-      where: { ownerId },
-      orderBy: { createdAt: 'desc' },
-      take: 20,
-      select: {
-        action: true,
-        description: true,
-        createdAt: true,
-      },
-    });
+    let recentActivity: { action: string; description: string; createdAt: string }[] = [];
+    try {
+      const logsRes = await supabase
+        .from('activity_log')
+        .select('action, details, created_at')
+        .eq('owner_id', ownerId)
+        .order('created_at', { ascending: false })
+        .limit(20);
 
-    const recentActivity = recentLogs.map((log) => ({
-      action: log.action,
-      description: log.description ?? '',
-      createdAt: log.createdAt.toISOString(),
-    }));
-
-    // ----------------------------------------------------------------
-    // 6. Rent due today or overdue
-    // ----------------------------------------------------------------
-    const today = now.getDate();
-
-    // Tenants whose rentDueDay is today or has passed, and they don't have a PAID
-    // record for the current month.
-    const activeTenantList = await db.tenant.findMany({
-      where: { ownerId, status: 'ACTIVE' },
-      select: {
-        id: true,
-        name: true,
-        phone: true,
-        rentAmount: true,
-        rentDueDay: true,
-        pg: { select: { name: true } },
-        rentRecords: {
-          where: { month: currentMonth },
-          select: { status: true },
-        },
-      },
-    });
-
-    const rentDue = activeTenantList
-      .filter((t) => {
-        // Only include if rent due day is today or earlier (not yet paid)
-        const hasPaid = t.rentRecords.some((r) => r.status === 'PAID');
-        if (hasPaid) return false;
-        return t.rentDueDay <= today;
-      })
-      .map((t) => {
-        const currentRecord = t.rentRecords.find((r) => r.status === 'PENDING' || r.status === 'OVERDUE');
-        return {
-          tenantName: t.name,
-          phone: t.phone,
-          amount: t.rentAmount,
-          dueDay: t.rentDueDay,
-          pgName: t.pg.name,
-          status: currentRecord?.status ?? 'PENDING',
-        };
-      });
+      recentActivity = (logsRes.data ?? []).map((log: { action: string; details: string | null; created_at: string }) => ({
+        action: log.action,
+        description: log.details ?? '',
+        createdAt: log.created_at,
+      }));
+    } catch {
+      // activity_log table may not exist yet — return empty
+    }
 
     // ----------------------------------------------------------------
-    // 7. Revenue trend (last 6 months from PAID records)
+    // 6. Revenue trend (last 6 months)
     // ----------------------------------------------------------------
     const revenueTrend: { month: string; revenue: number }[] = [];
-    for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-      const revenue = rentRecords
-        .filter((r) => r.month === monthKey && r.status === 'PAID')
-        .reduce((sum, r) => sum + r.amount, 0);
-      revenueTrend.push({
-        month: MONTH_NAMES[d.getMonth()],
-        revenue,
-      });
+    if (pgIds.length > 0) {
+      const paymentsRes = await supabase
+        .from('payments')
+        .select('amount, status, created_at')
+        .in('pg_id', pgIds)
+        .eq('status', 'COMPLETED');
+
+      const completedPayments = paymentsRes.data ?? [];
+
+      for (let i = 5; i >= 0; i--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+        const monthKey = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        const revenue = completedPayments
+          .filter((p: { created_at: string }) => p.created_at?.startsWith(monthKey))
+          .reduce((sum: number, p: { amount: number }) => sum + (p.amount || 0), 0);
+        revenueTrend.push({
+          month: MONTH_NAMES[d.getMonth()],
+          revenue,
+        });
+      }
     }
 
     // ----------------------------------------------------------------
@@ -171,11 +163,8 @@ export async function GET(request: NextRequest) {
       monthlyRevenue,
       pendingPayments,
       pendingAmount,
-      overduePayments,
-      overdueAmount,
       openComplaints,
       recentActivity,
-      rentDue,
       revenueTrend,
     });
   } catch (error) {

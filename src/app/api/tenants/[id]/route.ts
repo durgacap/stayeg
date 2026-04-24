@@ -1,20 +1,21 @@
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
-import { db } from '@/lib/db';
+import { requireSession } from '@/lib/api-auth';
 
-// ============================
-// Auth helper (Prisma-based)
-// ============================
-
+// Auth helper: verify user is an owner via x-user-email
 async function getOwnerSession(request: NextRequest) {
   const userEmail = request.headers.get('x-user-email');
   if (!userEmail) {
     return { error: NextResponse.json({ error: 'Authentication required: missing user identity' }, { status: 401 }) };
   }
-  const user = await db.user.findUnique({
-    where: { email: userEmail },
-    select: { id: true, email: true, role: true },
-  });
-  if (!user) {
+  const { data: user, error } = await supabase
+    .from('users')
+    .select('id, email, role')
+    .eq('email', userEmail)
+    .limit(1)
+    .single();
+
+  if (error || !user) {
     return { error: NextResponse.json({ error: 'Authentication failed: user not found' }, { status: 401 }) };
   }
   if (user.role !== 'OWNER') {
@@ -24,7 +25,7 @@ async function getOwnerSession(request: NextRequest) {
 }
 
 // ============================
-// GET /api/tenants/[id] — fetch single tenant with full details
+// GET /api/tenants/[id] — fetch single tenant booking details
 // ============================
 
 export async function GET(
@@ -37,29 +38,23 @@ export async function GET(
 
     const { id } = await params;
 
-    const tenant = await db.tenant.findUnique({
-      where: { id },
-      include: {
-        pg: { select: { id: true, name: true, address: true, city: true } },
-        room: { select: { id: true, roomCode: true, roomType: true, floor: true, hasAC: true, hasAttachedBath: true } },
-        bed: { select: { id: true, bedNumber: true, status: true, price: true } },
-        owner: { select: { id: true, name: true, email: true, phone: true } },
-        rentRecords: {
-          orderBy: { month: 'desc' },
-        },
-      },
-    });
+    const { data: booking, error } = await supabase
+      .from('bookings')
+      .select(`
+        *,
+        user:users(id, name, email, phone, avatar, gender, city),
+        bed:beds(id, bed_number, status, price, room_id, room:rooms(id, room_code, room_type, floor, has_ac, has_attached_bath)),
+        pg:pgs(id, name, address, city),
+        payments:payments(id, amount, type, status, created_at, paid_date)
+      `)
+      .eq('id', id)
+      .single();
 
-    if (!tenant) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+    if (error || !booking) {
+      return NextResponse.json({ error: 'Tenant booking not found' }, { status: 404 });
     }
 
-    // Ownership check
-    if (tenant.ownerId !== authResult.user.id) {
-      return NextResponse.json({ error: 'Forbidden: tenant does not belong to this owner' }, { status: 403 });
-    }
-
-    return NextResponse.json(tenant);
+    return NextResponse.json(booking);
   } catch (error) {
     console.error('Error fetching tenant:', error);
     return NextResponse.json({ error: 'Failed to fetch tenant' }, { status: 500 });
@@ -67,7 +62,7 @@ export async function GET(
 }
 
 // ============================
-// PUT /api/tenants/[id] — update a single tenant
+// PUT /api/tenants/[id] — update a single tenant booking
 // ============================
 
 export async function PUT(
@@ -80,128 +75,61 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const {
-      pgId, roomId, bedId, name, phone, email, aadhaar,
-      gender, rentAmount, rentDueDay, status, notes,
-    } = body;
+    const { status, newBedId } = body;
 
-    // Fetch existing tenant and verify ownership
-    const existing = await db.tenant.findUnique({
-      where: { id },
-      select: { id: true, ownerId: true, bedId: true, roomId: true, pgId: true, status: true },
-    });
-    if (!existing) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
-    }
-    if (existing.ownerId !== authResult.user.id) {
-      return NextResponse.json({ error: 'Forbidden: tenant does not belong to this owner' }, { status: 403 });
+    // Fetch existing booking
+    const { data: existing, error: fetchError } = await supabase
+      .from('bookings')
+      .select('id, bed_id, status')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !existing) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
 
-    // Build update data
+    // Handle bed change
+    if (newBedId && newBedId !== existing.bed_id) {
+      const { data: newBed } = await supabase
+        .from('beds')
+        .select('id, status')
+        .eq('id', newBedId)
+        .single();
+
+      if (!newBed || newBed.status === 'OCCUPIED') {
+        return NextResponse.json({ error: 'Target bed is not available' }, { status: 409 });
+      }
+
+      await supabase.from('beds').update({ status: 'AVAILABLE' }).eq('id', existing.bed_id);
+      await supabase.from('beds').update({ status: 'OCCUPIED' }).eq('id', newBedId);
+    }
+
+    // Handle status change
+    if (status === 'CANCELLED' || status === 'COMPLETED') {
+      await supabase.from('beds').update({ status: 'AVAILABLE' }).eq('id', existing.bed_id);
+    } else if (status === 'ACTIVE' && (existing.status === 'CANCELLED' || existing.status === 'COMPLETED')) {
+      await supabase.from('beds').update({ status: 'OCCUPIED' }).eq('id', existing.bed_id);
+    }
+
     const updateData: Record<string, unknown> = {};
-    if (name !== undefined) updateData.name = name;
-    if (phone !== undefined) updateData.phone = phone;
-    if (email !== undefined) updateData.email = email || null;
-    if (aadhaar !== undefined) updateData.aadhaar = aadhaar || null;
-    if (gender !== undefined) updateData.gender = gender || null;
-    if (rentAmount !== undefined) updateData.rentAmount = rentAmount;
-    if (rentDueDay !== undefined) {
-      if (rentDueDay < 1 || rentDueDay > 28) {
-        return NextResponse.json({ error: 'rentDueDay must be between 1 and 28' }, { status: 400 });
-      }
-      updateData.rentDueDay = rentDueDay;
-    }
-    if (status !== undefined) updateData.status = status;
-    if (notes !== undefined) updateData.notes = notes || null;
+    if (status) updateData.status = status;
+    if (newBedId) updateData.bed_id = newBedId;
 
-    // Handle bed/room/pg move
-    let newBedId = existing.bedId;
-    let newRoomId = existing.roomId;
-    let newPgId = existing.pgId;
+    const { data: booking, error } = await supabase
+      .from('bookings')
+      .update(updateData)
+      .eq('id', id)
+      .select(`
+        *,
+        user:users(id, name, email, phone),
+        bed:beds(id, bed_number, status, room:rooms(id, room_code, room_type, floor)),
+        pg:pgs(id, name, address)
+      `)
+      .single();
 
-    if (bedId && bedId !== existing.bedId) {
-      const targetRoomId = roomId || existing.roomId;
-      const targetPgId = pgId || existing.pgId;
+    if (error) throw error;
 
-      // Verify room belongs to PG
-      const room = await db.room.findUnique({
-        where: { id: targetRoomId },
-        select: { id: true, pgId: true },
-      });
-      if (!room || room.pgId !== targetPgId) {
-        return NextResponse.json({ error: 'Room not found or does not belong to the PG' }, { status: 400 });
-      }
-
-      // Verify bed belongs to room and is available
-      const bed = await db.bed.findUnique({
-        where: { id: bedId },
-        select: { id: true, roomId: true, status: true },
-      });
-      if (!bed || bed.roomId !== targetRoomId) {
-        return NextResponse.json({ error: 'Bed not found or does not belong to the room' }, { status: 400 });
-      }
-      if (bed.status !== 'AVAILABLE') {
-        return NextResponse.json(
-          { error: `Target bed is not available (current status: ${bed.status})` },
-          { status: 409 }
-        );
-      }
-
-      newBedId = bedId;
-      newRoomId = targetRoomId;
-      newPgId = targetPgId;
-      updateData.bedId = newBedId;
-      updateData.roomId = newRoomId;
-      updateData.pgId = newPgId;
-    }
-
-    // Perform update in transaction (handle bed status changes)
-    const updatedTenant = await db.$transaction(async (tx) => {
-      // If bed changed, release old bed and occupy new one
-      if (newBedId !== existing.bedId) {
-        await tx.bed.update({
-          where: { id: existing.bedId },
-          data: { status: 'AVAILABLE' },
-        });
-        await tx.bed.update({
-          where: { id: newBedId },
-          data: { status: 'OCCUPIED' },
-        });
-      }
-
-      // If tenant is being evicted/inactivated (and wasn't already), free up the bed
-      if ((status === 'INACTIVE' || status === 'EVICTED') && existing.status === 'ACTIVE') {
-        await tx.bed.update({
-          where: { id: existing.bedId },
-          data: { status: 'AVAILABLE' },
-        });
-      }
-
-      // If tenant is being re-activated, occupy the bed again
-      if (status === 'ACTIVE' && (existing.status === 'INACTIVE' || existing.status === 'EVICTED')) {
-        await tx.bed.update({
-          where: { id: existing.bedId },
-          data: { status: 'OCCUPIED' },
-        });
-      }
-
-      return tx.tenant.update({
-        where: { id },
-        data: updateData,
-        include: {
-          pg: { select: { id: true, name: true, address: true } },
-          room: { select: { id: true, roomCode: true, roomType: true, floor: true } },
-          bed: { select: { id: true, bedNumber: true, status: true } },
-          rentRecords: {
-            select: { id: true, month: true, amount: true, status: true, paidDate: true },
-            orderBy: { month: 'desc' },
-            take: 3,
-          },
-        },
-      });
-    });
-
-    return NextResponse.json(updatedTenant);
+    return NextResponse.json(booking);
   } catch (error) {
     console.error('Error updating tenant:', error);
     return NextResponse.json({ error: 'Failed to update tenant' }, { status: 500 });
@@ -209,7 +137,7 @@ export async function PUT(
 }
 
 // ============================
-// DELETE /api/tenants/[id] — delete a single tenant
+// DELETE /api/tenants/[id] — delete a tenant booking
 // ============================
 
 export async function DELETE(
@@ -222,35 +150,31 @@ export async function DELETE(
 
     const { id } = await params;
 
-    // Fetch tenant and verify ownership
-    const existing = await db.tenant.findUnique({
-      where: { id },
-      select: { id: true, ownerId: true, bedId: true, name: true, status: true },
-    });
-    if (!existing) {
-      return NextResponse.json({ error: 'Tenant not found' }, { status: 404 });
+    // Fetch booking
+    const { data: booking, error: fetchError } = await supabase
+      .from('bookings')
+      .select('id, bed_id, status')
+      .eq('id', id)
+      .single();
+
+    if (fetchError || !booking) {
+      return NextResponse.json({ error: 'Booking not found' }, { status: 404 });
     }
-    if (existing.ownerId !== authResult.user.id) {
-      return NextResponse.json({ error: 'Forbidden: tenant does not belong to this owner' }, { status: 403 });
+
+    // Cancel the booking
+    const { error } = await supabase
+      .from('bookings')
+      .update({ status: 'CANCELLED' })
+      .eq('id', id);
+
+    if (error) throw error;
+
+    // Free the bed if it was active
+    if (booking.status === 'ACTIVE' || booking.status === 'CONFIRMED') {
+      await supabase.from('beds').update({ status: 'AVAILABLE' }).eq('id', booking.bed_id);
     }
 
-    // Delete tenant and free bed in transaction
-    await db.$transaction(async (tx) => {
-      // Only free bed if tenant was active
-      if (existing.status === 'ACTIVE') {
-        await tx.bed.update({
-          where: { id: existing.bedId },
-          data: { status: 'AVAILABLE' },
-        });
-      }
-
-      // Delete the tenant (rent records are cascade-deleted via schema)
-      await tx.tenant.delete({
-        where: { id },
-      });
-    });
-
-    return NextResponse.json({ success: true, message: `Tenant "${existing.name}" has been removed` });
+    return NextResponse.json({ success: true, message: 'Tenant has been removed' });
   } catch (error) {
     console.error('Error deleting tenant:', error);
     return NextResponse.json({ error: 'Failed to delete tenant' }, { status: 500 });

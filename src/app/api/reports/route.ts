@@ -1,4 +1,4 @@
-import { supabase, isTableMissing } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/api-auth';
 
@@ -28,10 +28,8 @@ export async function POST(request: NextRequest) {
     });
 
     if (error) {
-      if (isTableMissing(error)) {
-        return NextResponse.json({ success: true, message: 'Report received' });
-      }
-      throw error;
+      console.error('Error submitting report:', error.message);
+      return NextResponse.json({ error: 'Failed to submit report' }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, message: 'Report submitted' }, { status: 201 });

@@ -19,16 +19,17 @@ export async function GET(request: NextRequest) {
       .order('created_at', { ascending: false });
 
     if (error) {
-      // Table missing - return empty
-      return NextResponse.json({ demo: true, pending: [], approved: [] });
+      console.error('Error fetching owners:', error.message);
+      return NextResponse.json({ error: 'Failed to fetch owners' }, { status: 500 });
     }
 
-    const pending = (data || []).filter(u => !u.is_approved);
-    const approved = (data || []).filter(u => u.is_approved);
+    const pending = (data || []).filter((u: { is_approved: boolean }) => !u.is_approved);
+    const approved = (data || []).filter((u: { is_approved: boolean }) => u.is_approved);
 
-    return NextResponse.json({ demo: false, pending, approved });
+    return NextResponse.json({ pending, approved });
   } catch (error) {
-    return NextResponse.json({ demo: true, pending: [], approved: [] });
+    console.error('GET /api/admin/approve-owner error:', error);
+    return NextResponse.json({ error: 'Failed to fetch owners' }, { status: 500 });
   }
 }
 
@@ -64,11 +65,13 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (error) {
+      console.error('Error updating owner:', error.message);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
     return NextResponse.json({ success: true, user: data });
   } catch (error) {
+    console.error('PUT /api/admin/approve-owner error:', error);
     return NextResponse.json({ error: 'Failed to update' }, { status: 500 });
   }
 }

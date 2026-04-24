@@ -1,15 +1,6 @@
-import { supabase, isTableMissing } from '@/lib/supabase';
+import { supabase } from '@/lib/supabase';
 import { NextRequest, NextResponse } from 'next/server';
 import { requireSession } from '@/lib/api-auth';
-
-const DEMO_PAYMENTS = [
-  { id: 'demo-pay-1', user_id: 'demo-tenant-001', pg_id: 'demo-pg-1', booking_id: 'demo-booking-1', amount: 8500, type: 'RENT', status: 'COMPLETED', method: 'UPI', paid_date: '2025-06-01T10:00:00Z', created_at: '2025-06-01T10:00:00Z', user: { id: 'demo-tenant-001', name: 'Rahul Sharma', email: 'rahul.sharma@example.com' }, pg: { id: 'demo-pg-1', name: 'CozyStay PG' } },
-  { id: 'demo-pay-2', user_id: 'demo-tenant-001', pg_id: 'demo-pg-1', booking_id: 'demo-booking-1', amount: 8500, type: 'RENT', status: 'COMPLETED', method: 'UPI', paid_date: '2025-05-01T10:00:00Z', created_at: '2025-05-01T10:00:00Z', user: { id: 'demo-tenant-001', name: 'Rahul Sharma', email: 'rahul.sharma@example.com' }, pg: { id: 'demo-pg-1', name: 'CozyStay PG' } },
-  { id: 'demo-pay-3', user_id: 'demo-tenant-002', pg_id: 'demo-pg-3', booking_id: 'demo-booking-2', amount: 9000, type: 'RENT', status: 'COMPLETED', method: 'CREDIT_CARD', paid_date: '2025-06-01T10:00:00Z', created_at: '2025-06-01T10:00:00Z', user: { id: 'demo-tenant-002', name: 'Priya M.', email: 'priya.m@example.com' }, pg: { id: 'demo-pg-3', name: 'Sunrise Ladies PG' } },
-  { id: 'demo-pay-4', user_id: 'demo-tenant-002', pg_id: 'demo-pg-3', booking_id: 'demo-booking-2', amount: 9000, type: 'RENT', status: 'PENDING', due_date: '2025-07-01T10:00:00Z', created_at: '2025-06-15T10:00:00Z', user: { id: 'demo-tenant-002', name: 'Priya M.', email: 'priya.m@example.com' }, pg: { id: 'demo-pg-3', name: 'Sunrise Ladies PG' } },
-  { id: 'demo-pay-5', user_id: 'demo-tenant-003', pg_id: 'demo-pg-2', booking_id: 'demo-booking-3', amount: 7000, type: 'RENT', status: 'COMPLETED', method: 'NET_BANKING', paid_date: '2025-06-01T10:00:00Z', created_at: '2025-06-01T10:00:00Z', user: { id: 'demo-tenant-003', name: 'Arjun K.', email: 'arjun.k@example.com' }, pg: { id: 'demo-pg-2', name: 'Green Valley PG' } },
-  { id: 'demo-pay-6', user_id: 'demo-tenant-001', pg_id: 'demo-pg-1', booking_id: 'demo-booking-1', amount: 8500, type: 'RENT', status: 'PENDING', due_date: '2025-07-01T10:00:00Z', created_at: '2025-06-20T10:00:00Z', user: { id: 'demo-tenant-001', name: 'Rahul Sharma', email: 'rahul.sharma@example.com' }, pg: { id: 'demo-pg-1', name: 'CozyStay PG' } },
-];
 
 export async function GET(request: NextRequest) {
   try {
@@ -29,14 +20,8 @@ export async function GET(request: NextRequest) {
 
     const { data: payments, error } = await query;
     if (error) {
-      if (isTableMissing(error)) {
-        let filtered = [...DEMO_PAYMENTS];
-        if (userId) filtered = filtered.filter((p) => p.user_id === userId);
-        if (pgId) filtered = filtered.filter((p) => p.pg_id === pgId);
-        if (status) filtered = filtered.filter((p) => p.status === status);
-        return NextResponse.json(filtered);
-      }
-      throw error;
+      console.error('Error fetching payments:', error.message);
+      return NextResponse.json({ error: 'Failed to fetch payments' }, { status: 500 });
     }
 
     return NextResponse.json(payments || []);
@@ -64,7 +49,7 @@ export async function POST(request: NextRequest) {
       .insert({
         user_id: userId,
         pg_id: pgId,
-        booking_id: bookingId,
+        booking_id: bookingId || null,
         amount,
         type: type || 'RENT',
         method: method || 'UPI',
