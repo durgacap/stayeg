@@ -8,7 +8,7 @@
  * and automatically attaches it as the Authorization header.
  */
 
-import { verifyToken, extractToken } from '@/lib/jwt';
+import { verifyTokenClient, extractToken } from '@/lib/jwt';
 
 const STORAGE_KEY = 'stayeg-auth-storage';
 
@@ -32,9 +32,9 @@ function getPersistedAuth(): { email: string | null; token: string | null } {
     // First try to get the stored JWT token
     const token = parsed?.token || parsed?.state?.token || null;
 
-    // Validate the token is still valid
+    // Validate the token is still valid (client-safe decode, no crypto)
     if (token) {
-      const payload = verifyToken(token);
+      const payload = verifyTokenClient(token);
       if (payload) {
         return { email: payload.email, token };
       }

@@ -2,65 +2,68 @@
 
 import { useEffect, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import dynamic from 'next/dynamic';
 import { pageTransition } from '@/lib/animations';
 import {
-  Home, Search, BookOpen, CalendarDays, CreditCard, MessageSquare,
-  MapPin, User, Menu, Building2, LayoutDashboard, BedDouble,
+  Home, Search, CalendarDays, MessageSquare,
+  User, Menu, Building2, LayoutDashboard, BedDouble,
   Users, Wallet, Wrench, HardHat, AlertTriangle, LogIn, LogOut,
   UsersRound, ChevronRight, IndianRupee, QrCode,
 } from 'lucide-react';
-// Database setup already completed via Supabase — skipping setup wizard
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { useAppStore } from '@/store/use-app-store';
+
+// Eagerly load the landing page + common auth views
 import HeroSection from '@/components/stayease/tenant/hero';
-import PGListing from '@/components/stayease/tenant/pg-listing';
-import PGDetail from '@/components/stayease/tenant/pg-detail';
-import BookingModal from '@/components/stayease/tenant/booking-modal';
-import MyBookings from '@/components/stayease/tenant/my-bookings';
-import TenantMyStay from '@/components/stayease/tenant/tenant-my-stay';
-import PaymentSection from '@/components/stayease/tenant/payment-section';
-import ComplaintSection from '@/components/stayease/tenant/complaint-section';
-import NearbyServices from '@/components/stayease/tenant/nearby-services';
-import OwnerDashboard from '@/components/stayease/owner/dashboard-analytics';
-import PGManagement from '@/components/stayease/owner/pg-management';
-import RoomManagement from '@/components/stayease/owner/room-management';
-import TenantManagement from '@/components/stayease/owner/tenant-management';
-import RentManagement from '@/components/stayease/owner/rent-management';
-import VendorManagement from '@/components/stayease/owner/vendor-management';
-import WorkerManagement from '@/components/stayease/owner/worker-management';
-import ComplaintManagement from '@/components/stayease/owner/complaint-management';
-import AIAssistant from '@/components/stayease/owner/ai-assistant';
-import QROnboarding from '@/components/stayease/owner/qr-onboarding';
-import OwnerContactSupport from '@/components/stayease/owner/contact-support';
-import AdminDashboard from '@/components/stayease/admin/admin-dashboard';
-import ProfilePage from '@/components/stayease/profile/profile-page';
-import TenantProfile from '@/components/stayease/tenant/tenant-profile';
-import SiteFooter from '@/components/stayease/site-footer';
-import CommunityPage from '@/components/stayease/community/community-page';
 import LoginPage from '@/components/stayease/auth/login-page';
 import SignupPage from '@/components/stayease/auth/signup-page';
-import PricingPage from '@/components/stayease/pricing/pricing-page';
-import TermsPage from '@/components/stayease/policy/terms-page';
-import PrivacyPage from '@/components/stayease/policy/privacy-page';
-import SafeUsePage from '@/components/stayease/policy/safe-use-page';
-import AboutPage from '@/components/stayease/policy/about-page';
-import HelpPage from '@/components/stayease/policy/help-page';
-import OwnerGuide from '@/components/stayease/owner/owner-guide';
-import NotificationsPanel from '@/components/stayease/notifications-panel';
-import DatabaseSetupV2 from '@/components/stayease/setup/database-setup-v2';
-import HowItWorksPage from '@/components/stayease/policy/how-it-works-page';
-import ContactPage from '@/components/stayease/policy/contact-page';
-import RefundPolicyPage from '@/components/stayease/policy/refund-policy-page';
-import TenantOnboarding from '@/components/stayease/guidance/tenant-onboarding';
-import TenantAIAssistant from '@/components/stayease/guidance/tenant-ai-assistant';
-import OwnerSetupWizard from '@/components/stayease/owner/setup-wizard';
-import TenantHome from '@/components/stayease/tenant/tenant-home';
-import TenantExplore from '@/components/stayease/tenant/tenant-explore';
-import TenantSupport from '@/components/stayease/tenant/tenant-support';
+
+// Lazy load everything else to prevent OOM on compilation
+const SiteFooter = dynamic(() => import('@/components/stayease/site-footer'), { ssr: false });
+const PGListing = dynamic(() => import('@/components/stayease/tenant/pg-listing'), { ssr: false });
+const PGDetail = dynamic(() => import('@/components/stayease/tenant/pg-detail'), { ssr: false });
+const BookingModal = dynamic(() => import('@/components/stayease/tenant/booking-modal'), { ssr: false });
+const MyBookings = dynamic(() => import('@/components/stayease/tenant/my-bookings'), { ssr: false });
+const TenantMyStay = dynamic(() => import('@/components/stayease/tenant/tenant-my-stay'), { ssr: false });
+const PaymentSection = dynamic(() => import('@/components/stayease/tenant/payment-section'), { ssr: false });
+const ComplaintSection = dynamic(() => import('@/components/stayease/tenant/complaint-section'), { ssr: false });
+const NearbyServices = dynamic(() => import('@/components/stayease/tenant/nearby-services'), { ssr: false });
+const OwnerDashboard = dynamic(() => import('@/components/stayease/owner/dashboard-analytics'), { ssr: false });
+const PGManagement = dynamic(() => import('@/components/stayease/owner/pg-management'), { ssr: false });
+const RoomManagement = dynamic(() => import('@/components/stayease/owner/room-management'), { ssr: false });
+const TenantManagement = dynamic(() => import('@/components/stayease/owner/tenant-management'), { ssr: false });
+const RentManagement = dynamic(() => import('@/components/stayease/owner/rent-management'), { ssr: false });
+const VendorManagement = dynamic(() => import('@/components/stayease/owner/vendor-management'), { ssr: false });
+const WorkerManagement = dynamic(() => import('@/components/stayease/owner/worker-management'), { ssr: false });
+const ComplaintManagement = dynamic(() => import('@/components/stayease/owner/complaint-management'), { ssr: false });
+const AIAssistant = dynamic(() => import('@/components/stayease/owner/ai-assistant'), { ssr: false });
+const QROnboarding = dynamic(() => import('@/components/stayease/owner/qr-onboarding'), { ssr: false });
+const OwnerContactSupport = dynamic(() => import('@/components/stayease/owner/contact-support'), { ssr: false });
+const AdminDashboard = dynamic(() => import('@/components/stayease/admin/admin-dashboard'), { ssr: false });
+const ProfilePage = dynamic(() => import('@/components/stayease/profile/profile-page'), { ssr: false });
+const TenantProfile = dynamic(() => import('@/components/stayease/tenant/tenant-profile'), { ssr: false });
+const CommunityPage = dynamic(() => import('@/components/stayease/community/community-page'), { ssr: false });
+const PricingPage = dynamic(() => import('@/components/stayease/pricing/pricing-page'), { ssr: false });
+const TermsPage = dynamic(() => import('@/components/stayease/policy/terms-page'), { ssr: false });
+const PrivacyPage = dynamic(() => import('@/components/stayease/policy/privacy-page'), { ssr: false });
+const SafeUsePage = dynamic(() => import('@/components/stayease/policy/safe-use-page'), { ssr: false });
+const AboutPage = dynamic(() => import('@/components/stayease/policy/about-page'), { ssr: false });
+const HelpPage = dynamic(() => import('@/components/stayease/policy/help-page'), { ssr: false });
+const HowItWorksPage = dynamic(() => import('@/components/stayease/policy/how-it-works-page'), { ssr: false });
+const ContactPage = dynamic(() => import('@/components/stayease/policy/contact-page'), { ssr: false });
+const RefundPolicyPage = dynamic(() => import('@/components/stayease/policy/refund-policy-page'), { ssr: false });
+const OwnerGuide = dynamic(() => import('@/components/stayease/owner/owner-guide'), { ssr: false });
+const NotificationsPanel = dynamic(() => import('@/components/stayease/notifications-panel'), { ssr: false });
+const TenantOnboarding = dynamic(() => import('@/components/stayease/guidance/tenant-onboarding'), { ssr: false });
+const TenantAIAssistant = dynamic(() => import('@/components/stayease/guidance/tenant-ai-assistant'), { ssr: false });
+const OwnerSetupWizard = dynamic(() => import('@/components/stayease/owner/setup-wizard'), { ssr: false });
+const TenantHome = dynamic(() => import('@/components/stayease/tenant/tenant-home'), { ssr: false });
+const TenantExplore = dynamic(() => import('@/components/stayease/tenant/tenant-explore'), { ssr: false });
+const TenantSupport = dynamic(() => import('@/components/stayease/tenant/tenant-support'), { ssr: false });
+const DatabaseSetupV2 = dynamic(() => import('@/components/stayease/setup/database-setup-v2'), { ssr: false });
 
 // Navigation items
 const PUBLIC_NAV = [
@@ -140,29 +143,21 @@ function MobileNav({ items }: { items: typeof TENANT_MOBILE_NAV | typeof OWNER_M
 function TopHeader() {
   const { currentView, setCurrentView, currentUser, isMobileMenuOpen, setMobileMenuOpen, currentRole, isLoggedIn, logout } = useAppStore();
 
-  // Pick nav items based on auth state and role
   const navItems = !isLoggedIn
     ? PUBLIC_NAV
     : currentRole === 'OWNER'
       ? OWNER_NAV
       : currentRole === 'ADMIN'
-        ? [] // admin uses its own nav
+        ? []
         : TENANT_NAV;
 
   const hideHeader = (HIDE_HEADER_VIEWS as readonly string[]).includes(currentView);
-
   if (hideHeader) return null;
 
   return (
-    <header
-      className="sticky top-0 z-40 transition-all duration-300 bg-background border-b border-gold/20"
-    >
+    <header className="sticky top-0 z-40 transition-all duration-300 bg-background border-b border-gold/20">
       <div className="max-w-7xl mx-auto px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-2.5 flex items-center justify-between">
-        {/* Logo */}
-        <button
-          onClick={() => setCurrentView('LANDING')}
-          className="flex items-center gap-2 group"
-        >
+        <button onClick={() => setCurrentView('LANDING')} className="flex items-center gap-2 group">
           <div className="size-8 bg-gradient-to-br from-brand-deep to-brand-teal rounded-lg flex items-center justify-center shadow-sm group-hover:shadow-md transition-shadow">
             <Building2 className="size-4 text-white" />
           </div>
@@ -171,7 +166,6 @@ function TopHeader() {
           </span>
         </button>
 
-        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-1">
           {navItems.map((item) => {
             const isActive = currentView === item.view;
@@ -180,9 +174,7 @@ function TopHeader() {
                 key={item.view}
                 onClick={() => setCurrentView(item.view)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  isActive
-                    ? 'bg-brand-teal/10 text-brand-teal'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  isActive ? 'bg-brand-teal/10 text-brand-teal' : 'text-muted-foreground hover:text-foreground hover:bg-muted'
                 }`}
               >
                 <item.icon className="size-4" />
@@ -192,11 +184,9 @@ function TopHeader() {
           })}
         </nav>
 
-        {/* Right side */}
         <div className="flex items-center gap-1">
           {isLoggedIn ? (
             <>
-              {/* Logged-in: notifications, profile, logout */}
               <div className="hidden sm:flex">
                 <NotificationsPanel />
               </div>
@@ -214,26 +204,17 @@ function TopHeader() {
             </>
           ) : (
             <>
-              {/* Guest: Login + Signup */}
-              <Button
-                variant="ghost"
-                onClick={() => setCurrentView('LOGIN')}
-                className="text-foreground hover:text-brand-teal hidden sm:flex"
-              >
+              <Button variant="ghost" onClick={() => setCurrentView('LOGIN')} className="text-foreground hover:text-brand-teal hidden sm:flex">
                 <LogIn className="size-4 mr-1.5" />
                 Login
               </Button>
-              <Button
-                onClick={() => setCurrentView('SIGNUP')}
-                className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white shadow-sm"
-              >
+              <Button onClick={() => setCurrentView('SIGNUP')} className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white shadow-sm">
                 Sign Up
                 <ChevronRight className="size-3.5 ml-1" />
               </Button>
             </>
           )}
 
-          {/* Mobile menu */}
           <Sheet open={isMobileMenuOpen} onOpenChange={setMobileMenuOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -256,12 +237,7 @@ function TopHeader() {
                         <div className="text-xs text-muted-foreground truncate">{currentUser?.email || ''}</div>
                       </div>
                     </div>
-                    <button
-                      onClick={() => { setCurrentView('PROFILE'); setMobileMenuOpen(false); }}
-                      className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                        currentView === 'PROFILE' ? 'bg-brand-teal/10 text-brand-teal' : 'text-muted-foreground hover:bg-muted'
-                      }`}
-                    >
+                    <button onClick={() => { setCurrentView('PROFILE'); setMobileMenuOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${currentView === 'PROFILE' ? 'bg-brand-teal/10 text-brand-teal' : 'text-muted-foreground hover:bg-muted'}`}>
                       <User className="size-5" />
                       My Profile
                     </button>
@@ -269,10 +245,7 @@ function TopHeader() {
                   </>
                 ) : (
                   <div className="mb-4 space-y-2">
-                    <Button
-                      onClick={() => { setCurrentView('LOGIN'); setMobileMenuOpen(false); }}
-                      className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white"
-                    >
+                    <Button onClick={() => { setCurrentView('LOGIN'); setMobileMenuOpen(false); }} className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white">
                       <LogIn className="size-4 mr-2" />
                       Login / Sign Up
                     </Button>
@@ -280,13 +253,7 @@ function TopHeader() {
                   </div>
                 )}
                 {navItems.map((item) => (
-                  <button
-                    key={item.view}
-                    onClick={() => { setCurrentView(item.view); setMobileMenuOpen(false); }}
-                    className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${
-                      currentView === item.view ? 'bg-brand-teal/10 text-brand-teal' : 'text-muted-foreground hover:bg-muted'
-                    }`}
-                  >
+                  <button key={item.view} onClick={() => { setCurrentView(item.view); setMobileMenuOpen(false); }} className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors ${currentView === item.view ? 'bg-brand-teal/10 text-brand-teal' : 'text-muted-foreground hover:bg-muted'}`}>
                     <item.icon className="size-5" />
                     {item.label}
                   </button>
@@ -294,10 +261,7 @@ function TopHeader() {
                 {isLoggedIn && (
                   <>
                     <Separator className="my-2" />
-                    <button
-                      onClick={() => { logout(); setMobileMenuOpen(false); }}
-                      className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors"
-                    >
+                    <button onClick={() => { logout(); setMobileMenuOpen(false); }} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-destructive hover:bg-destructive/10 transition-colors">
                       <LogOut className="size-5" />
                       Logout
                     </button>
@@ -328,14 +292,10 @@ function MainContent() {
   const bookingModalOpen = currentView === 'BOOKING';
 
   const renderView = () => {
-    // Auth views
     if (currentView === 'LOGIN') return <LoginPage />;
     if (currentView === 'SIGNUP') return <SignupPage />;
-
-    // Setup view
     if (currentView === 'DATABASE_SETUP_V2') return <DatabaseSetupV2 />;
 
-    // Tenant new views (mobile-first)
     if (currentRole === 'TENANT' || currentRole === 'VENDOR') {
       switch (currentView) {
         case 'TENANT_HOME': return <TenantHome />;
@@ -349,7 +309,6 @@ function MainContent() {
       }
     }
 
-    // Policy & pricing views (accessible to all)
     if (currentView === 'PRICING') return <PricingPage />;
     if (currentView === 'TERMS') return <TermsPage />;
     if (currentView === 'PRIVACY') return <PrivacyPage />;
@@ -360,7 +319,6 @@ function MainContent() {
     if (currentView === 'CONTACT') return <ContactPage />;
     if (currentView === 'REFUND_POLICY') return <RefundPolicyPage />;
 
-    // Route protection: redirect unauthenticated users from protected views
     const PROTECTED_VIEWS = new Set(['BOOKING', 'MY_BOOKINGS', 'PAYMENTS', 'COMPLAINTS', 'NEARBY', 'PROFILE', 'OWNER_DASHBOARD', 'OWNER_PGS', 'OWNER_ROOMS', 'OWNER_TENANTS', 'OWNER_RENT', 'OWNER_VENDORS', 'OWNER_WORKERS', 'OWNER_COMPLAINTS', 'OWNER_QR', 'OWNER_SUPPORT', 'ADMIN_DASHBOARD', 'ADMIN_VERIFICATION', 'ADMIN_USERS', 'TENANT_HOME', 'TENANT_EXPLORE', 'TENANT_MY_STAY', 'TENANT_SUPPORT', 'TENANT_PROFILE', 'MY_STAY']);
 
     if (!isLoggedIn && PROTECTED_VIEWS.has(currentView)) {
@@ -370,22 +328,15 @@ function MainContent() {
             <LogIn className="size-8 text-brand-teal" />
           </div>
           <h2 className="text-xl font-bold text-foreground mb-2">Login Required</h2>
-          <p className="text-sm text-muted-foreground max-w-md mb-6">
-            Please sign in to access this feature.
-          </p>
+          <p className="text-sm text-muted-foreground max-w-md mb-6">Please sign in to access this feature.</p>
           <div className="flex gap-3">
-            <Button variant="outline" onClick={() => setCurrentView('LANDING')}>
-              Back to Home
-            </Button>
-            <Button onClick={() => setCurrentView('LOGIN')} className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white">
-              Sign In
-            </Button>
+            <Button variant="outline" onClick={() => setCurrentView('LANDING')}>Back to Home</Button>
+            <Button onClick={() => setCurrentView('LOGIN')} className="bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white">Sign In</Button>
           </div>
         </div>
       );
     }
 
-    // Owner views
     if (currentRole === 'OWNER') {
       switch (currentView) {
         case 'OWNER_DASHBOARD': return <OwnerDashboard />;
@@ -402,7 +353,6 @@ function MainContent() {
       }
     }
 
-    // Admin views
     if (currentRole === 'ADMIN') {
       switch (currentView) {
         case 'ADMIN_DASHBOARD':
@@ -413,7 +363,6 @@ function MainContent() {
       }
     }
 
-    // Vendor views
     if (currentRole === 'VENDOR') {
       return (
         <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
@@ -421,20 +370,14 @@ function MainContent() {
             <Wrench className="size-8 text-brand-sage" />
           </div>
           <h2 className="text-xl font-bold text-foreground mb-2">Vendor Portal Coming Soon</h2>
-          <p className="text-sm text-muted-foreground max-w-md mb-6">
-            The vendor dashboard is under construction. You&apos;ll be able to manage services, track earnings, and connect with PG owners soon.
-          </p>
-          <button
-            onClick={() => setCurrentView('LANDING')}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-deep to-brand-teal text-white text-sm font-medium hover:opacity-90 transition-opacity"
-          >
+          <p className="text-sm text-muted-foreground max-w-md mb-6">The vendor dashboard is under construction.</p>
+          <button onClick={() => setCurrentView('LANDING')} className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-brand-deep to-brand-teal text-white text-sm font-medium hover:opacity-90 transition-opacity">
             Back to Home
           </button>
         </div>
       );
     }
 
-    // Tenant views
     switch (currentView) {
       case 'LANDING': return <HeroSection />;
       case 'PG_LISTING': return <PGListing />;
@@ -479,13 +422,11 @@ export default function StayeGApp() {
   const [showOwnerGuide, setShowOwnerGuide] = useState(false);
   const [showSetupWizard, setShowSetupWizard] = useState(false);
 
-  // Show owner guide when owner first reaches dashboard
   useEffect(() => {
     if (isLoggedIn && currentRole === 'OWNER' && currentView === 'OWNER_DASHBOARD') {
       const hasSeenGuide = localStorage.getItem('stayeg_owner_guide_seen');
       if (!hasSeenGuide) {
         localStorage.setItem('stayeg_owner_guide_seen', '1');
-        // Use setTimeout to avoid setting state during render
         const timer = setTimeout(() => setShowOwnerGuide(true), 100);
         return () => clearTimeout(timer);
       }
@@ -495,7 +436,6 @@ export default function StayeGApp() {
   const handleGuideClose = () => setShowOwnerGuide(false);
   const handleSetupWizardClose = () => setShowSetupWizard(false);
 
-  // Show setup wizard for new owners with no PGs
   useEffect(() => {
     if (isLoggedIn && currentRole === 'OWNER' && currentView === 'OWNER_DASHBOARD') {
       const hasSeenWizard = localStorage.getItem('stayeg_owner_setup_done');
@@ -507,7 +447,7 @@ export default function StayeGApp() {
   }, [isLoggedIn, currentRole, currentView]);
 
   const mobileNav = !isLoggedIn
-    ? [] // No mobile nav for guests
+    ? []
     : currentRole === 'OWNER'
       ? OWNER_MOBILE_NAV
       : TENANT_MOBILE_NAV;

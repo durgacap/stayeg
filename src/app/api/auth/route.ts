@@ -77,7 +77,7 @@ export async function GET(request: NextRequest) {
       }
 
       // Generate JWT token
-      const token = signToken({
+      const token = await signToken({
         userId: user.id,
         email: user.email,
         role: user.role,
@@ -251,7 +251,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Generate JWT token for auto-login
-    const token = signToken({
+    const token = await signToken({
       userId: user.id,
       email: user.email,
       role: user.role,

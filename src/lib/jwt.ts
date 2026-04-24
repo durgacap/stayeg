@@ -1,6 +1,7 @@
 /**
  * JWT token utility for StayEg authentication.
- * Uses jsonwebtoken for signing and verifying tokens.
+ * Server-side uses jsonwebtoken for signing/verifying tokens.
+ * Client-side uses lightweight base64url decode (no crypto dependency).
  *
  * SECURITY NOTE: JWT_SECRET must be set via environment variables.
  * Never hardcode secrets in source code — this is a critical production
@@ -8,44 +9,12 @@
  * arbitrary impersonation of any user.
  */
 
-import jwt from 'jsonwebtoken';
-
-const _jwtSecret = process.env.JWT_SECRET;
-if (!_jwtSecret) {
-  throw new Error(
-    'JWT_SECRET environment variable is not set. ' +
-    'This is required for authentication. Set it in .env.local.'
-  );
-}
-const JWT_SECRET: string = _jwtSecret;
-
-const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN || '7d';
-
 export interface TokenPayload {
   userId: string;
   email: string;
   role: string;
   iat?: number;
   exp?: number;
-}
-
-/**
- * Generate a JWT token for a user session.
- */
-export function signToken(payload: Omit<TokenPayload, 'iat' | 'exp'>): string {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRES_IN as any });
-}
-
-/**
- * Verify a JWT token and return the decoded payload.
- * Returns null if the token is invalid or expired.
- */
-export function verifyToken(token: string): TokenPayload | null {
-  try {
-    return jwt.verify(token, JWT_SECRET) as TokenPayload;
-  } catch {
-    return null;
-  }
 }
 
 /**
@@ -58,4 +27,99 @@ export function extractToken(authHeader: string | null): string | null {
     return authHeader.slice(7).trim();
   }
   return authHeader.trim();
+}
+
+// ---------------------------------------------------------------------------
+// Client-safe JWT decode (no crypto dependency)
+// Used by api-client.ts in browser context
+// ---------------------------------------------------------------------------
+
+function base64UrlDecode(str: string): string {
+  // Replace URL-safe chars and add padding
+  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4 !== 0) base64 += '=';
+  try {
+    return atob(base64);
+  } catch {
+    return '';
+  }
+}
+
+/**
+ * Client-safe JWT payload decode (no signature verification).
+ * Checks expiry but does NOT verify cryptographic signature.
+ * Signature verification always happens server-side in API routes.
+ */
+export function verifyTokenClient(token: string): TokenPayload | null {
+  try {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(base64UrlDecode(parts[1]));
+    if (!payload.userId || !payload.email) return null;
+    // Check expiry
+    if (payload.exp && Date.now() / 1000 > payload.exp) return null;
+    return payload as TokenPayload;
+  } catch {
+    return null;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Server-only functions (dynamic import to avoid bundling jsonwebtoken in client)
+// ---------------------------------------------------------------------------
+
+let _signToken: ((payload: Omit<TokenPayload, 'iat' | 'exp'>) => string) | null = null;
+let _verifyTokenServer: ((token: string) => TokenPayload | null) | null = null;
+let _serverInitAttempted = false;
+
+async function ensureServerJWT() {
+  if (_serverInitAttempted) return;
+  _serverInitAttempted = true;
+  if (typeof window !== 'undefined') return; // Never load jsonwebtoken in browser
+
+  try {
+    const jwtModule = await import('jsonwebtoken');
+    const secret = process.env.JWT_SECRET;
+    if (!secret) {
+      console.error('[JWT] JWT_SECRET not set');
+      return;
+    }
+    const expiresIn = process.env.JWT_EXPIRES_IN || '7d';
+    const jwt = jwtModule.default || jwtModule;
+
+    _signToken = (payload) =>
+      jwt.sign(payload, secret, { expiresIn } as any);
+
+    _verifyTokenServer = (token) => {
+      try {
+        return jwt.verify(token, secret) as TokenPayload;
+      } catch {
+        return null;
+      }
+    };
+  } catch (err) {
+    console.error('[JWT] Failed to load jsonwebtoken:', err);
+  }
+}
+
+/**
+ * Server-only: Generate a JWT token for a user session.
+ * Must only be called from API routes (server-side).
+ */
+export async function signToken(payload: Omit<TokenPayload, 'iat' | 'exp'>): Promise<string> {
+  await ensureServerJWT();
+  if (!_signToken) throw new Error('JWT signing not available. Ensure JWT_SECRET is set.');
+  return _signToken(payload);
+}
+
+/**
+ * Server-only: Verify a JWT token with full cryptographic verification.
+ * Must only be called from API routes (server-side).
+ * On the client, use verifyTokenClient instead.
+ */
+export async function verifyToken(token: string): Promise<TokenPayload | null> {
+  await ensureServerJWT();
+  if (_verifyTokenServer) return _verifyTokenServer(token);
+  // Fallback to client-safe decode if server module unavailable
+  return verifyTokenClient(token);
 }

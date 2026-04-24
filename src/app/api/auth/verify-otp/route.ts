@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
 
           if (users && users.length > 0) {
             const user = users[0];
-            const token = signToken({ userId: user.id, email: user.email, role: user.role });
+            const token = await signToken({ userId: user.id, email: user.email, role: user.role });
 
             // Clear the OTP
             await supabase
@@ -114,7 +114,7 @@ export async function POST(request: NextRequest) {
       .update({ otp_code: null, otp_expires_at: null })
       .eq('id', user.id);
 
-    const token = signToken({ userId: user.id, email: user.email, role: user.role });
+    const token = await signToken({ userId: user.id, email: user.email, role: user.role });
 
     // Remove OTP fields from response
     const { otp_code, otp_expires_at, ...safeUser } = user;

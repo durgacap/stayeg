@@ -74,7 +74,7 @@ export async function requireSession(
   const token = extractToken(authHeader);
 
   if (token) {
-    const payload: TokenPayload | null = verifyToken(token);
+    const payload: TokenPayload | null = await verifyToken(token);
     if (payload) {
       // Fetch latest user data from DB to get is_approved, is_verified etc.
       const { data: user, error } = await supabase

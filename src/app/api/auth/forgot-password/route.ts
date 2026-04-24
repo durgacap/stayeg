@@ -34,7 +34,7 @@ export async function POST(request: NextRequest) {
     const user = users[0];
 
     // Generate a password reset token (valid for 1 hour)
-    const resetToken = signToken({
+    const resetToken = await signToken({
       userId: user.id,
       email: user.email,
       role: user.role,

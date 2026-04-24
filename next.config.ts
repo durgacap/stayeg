@@ -6,6 +6,7 @@ const nextConfig: NextConfig = {
     "http://preview-chat-*.space.z.ai",
     "https://*.space.z.ai",
     "http://*.space.z.ai",
+    "https://preview-chat-b1f7b228-d558-43b2-a40e-9099a3e86d3d.space.z.ai",
   ],
   images: {
     remotePatterns: [
