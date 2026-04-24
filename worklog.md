@@ -108,3 +108,24 @@ Stage Summary:
 - Production: https://stayeg.vercel.app (auto-deployed from GitHub)
 - All 11 users, 6 PGs, 8 vendors, 6 complaints verified working
 - One manual step remaining: run 4 ALTER TABLE commands in Supabase SQL Editor (~2 min)
+
+---
+Task ID: 1
+Agent: Main Agent
+Task: Fix "Something went wrong" error and make StayEg fully production-ready
+
+Work Log:
+- Diagnosed the root cause: jwt.ts was importing jsonwebtoken (Node.js-only) at module level and throwing an Error when JWT_SECRET env var was missing on client-side
+- Since api-client.ts imported from jwt.ts, and api-client.ts was used in client components (tenant-home.tsx, etc.), the entire client-side app crashed
+- Fixed jwt.ts: Split into client-safe (base64url decode) and server-only (dynamic import of jsonwebtoken) paths
+- Fixed api-client.ts: Changed import from verifyToken to verifyTokenClient
+- Fixed api-auth.ts: Added await to verifyToken call
+- Updated 4 API route files to use await with async signToken/verifyToken
+- Clean build succeeded, pushed to GitHub, deployed to Vercel
+- Verified all flows: Homepage (HTTP 200), Admin login, Tenant login, Owner login, PG listing, Vendors, etc.
+
+Stage Summary:
+- Root cause: jsonwebtoken library crashing in browser (no crypto module available)
+- Fix: Client-safe JWT decode without crypto, server-only dynamic import for real verification
+- Production deployment: https://stayeg.vercel.app - ALL GREEN
+- All 3 user roles verified working (Admin, Tenant, Owner)
