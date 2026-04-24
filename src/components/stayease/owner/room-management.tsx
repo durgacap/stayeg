@@ -23,11 +23,11 @@ import {
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
 import { authFetch } from '@/lib/api-client';
-import { BADGE_BORDER, BADGE } from '@/lib/constants';
+import { BADGE_BORDER } from '@/lib/constants';
 import { toast } from 'sonner';
 
 export default function RoomManagement() {
-  const { selectedPG } = useAppStore();
+  const { selectedPG, currentUser } = useAppStore();
   const queryClient = useQueryClient();
   const [localPgId, setLocalPgId] = useState('');
   const selectedPgId = selectedPG?.id || localPgId;
@@ -39,17 +39,9 @@ export default function RoomManagement() {
     roomCode: '', roomType: 'DOUBLE', floor: '1', hasAC: false, hasAttachedBath: false, bedCount: '2',
   });
   const [bedCountForm, setBedCountForm] = useState('1');
+  const [bedPriceForm, setBedPriceForm] = useState('');
 
-  const { data: ownerUser } = useQuery({
-    queryKey: ['owner-user'],
-    queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
-      if (!res.ok) throw new Error('Failed');
-      const users = await res.json();
-      return (Array.isArray(users) ? users : users.users)?.[0] || null;
-    },
-  });
-  const ownerId = ownerUser?.id;
+  const ownerId = currentUser?.id;
 
   const { data: pgs } = useQuery({
     queryKey: ['owner-pgs-list', ownerId],
@@ -62,76 +54,85 @@ export default function RoomManagement() {
 
   const pgList = pgs || [];
 
-  const { data: currentPG, isLoading } = useQuery({
-    queryKey: ['owner-pg-detail', selectedPgId],
+  const { data: rooms, isLoading } = useQuery({
+    queryKey: ['owner-rooms', selectedPgId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
-      const allPGs = await res.json();
-      return allPGs.find((p: { id: string }) => p.id === selectedPgId) || null;
+      const res = await fetch(`/api/rooms?pgId=${selectedPgId}`);
+      if (!res.ok) throw new Error('Failed to fetch rooms');
+      return res.json();
     },
-    enabled: !!ownerId && !!selectedPgId,
+    enabled: !!selectedPgId,
   });
-
-  const rooms = currentPG?.rooms || [];
 
   const createRoomMutation = useMutation({
     mutationFn: async (data: typeof roomForm) => {
-      const createRes = await authFetch(`/api/pgs/${selectedPgId}`, {
-        method: 'PUT',
+      const res = await authFetch('/api/rooms', {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          action: 'add_room',
-          room: {
-            pgId: selectedPgId,
-            roomCode: data.roomCode,
-            roomType: data.roomType,
-            floor: Number(data.floor) || 1,
-            hasAC: data.hasAC,
-            hasAttachedBath: data.hasAttachedBath,
-            bedCount: Number(data.bedCount) || 2,
-          },
+          pgId: selectedPgId,
+          roomCode: data.roomCode,
+          roomType: data.roomType,
+          floor: Number(data.floor) || 1,
+          hasAC: data.hasAC,
+          hasAttachedBath: data.hasAttachedBath,
         }),
       });
-      if (!createRes.ok) throw new Error('Room creation failed');
-      return createRes.json();
+      if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Room creation failed'); }
+      const room = await res.json();
+
+      // Create beds for the room
+      const bedCount = Number(data.bedCount) || 2;
+      for (let i = 1; i <= bedCount; i++) {
+        await authFetch('/api/beds', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId: room.id, bedNumber: i, status: 'AVAILABLE' }),
+        });
+      }
+      return room;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['owner-pg-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['owner-rooms'] });
       queryClient.invalidateQueries({ queryKey: ['owner-pgs'] });
       toast.success('Room added successfully!');
       setAddRoomOpen(false);
       setRoomForm({ roomCode: '', roomType: 'DOUBLE', floor: '1', hasAC: false, hasAttachedBath: false, bedCount: '2' });
     },
-    onError: () => toast.error('Failed to add room'),
+    onError: (e) => toast.error(e.message || 'Failed to add room'),
   });
 
   const addBedsMutation = useMutation({
-    mutationFn: async ({ roomId, count }: { roomId: string; count: number }) => {
-      const res = await authFetch(`/api/pgs/${selectedPgId}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          action: 'add_beds',
-          roomId,
-          bedCount: count,
-        }),
-      });
-      if (!res.ok) throw new Error('Failed to add beds');
-      return res.json();
+    mutationFn: async ({ roomId, count, price }: { roomId: string; count: number; price?: number }) => {
+      // Get current beds for this room to determine next bed number
+      const roomData = rooms?.find((r: { id: string }) => r.id === roomId);
+      const existingBeds = roomData?.beds || [];
+      const startNumber = existingBeds.length + 1;
+
+      for (let i = 0; i < count; i++) {
+        const res = await authFetch('/api/beds', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ roomId, bedNumber: startNumber + i, status: 'AVAILABLE', price: price || undefined }),
+        });
+        if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed to add bed'); }
+      }
+      return { added: count };
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['owner-pg-detail'] });
+      queryClient.invalidateQueries({ queryKey: ['owner-rooms'] });
       toast.success('Beds added successfully!');
       setAddBedOpen(false);
       setBedCountForm('1');
+      setBedPriceForm('');
       setSelectedRoomForBeds(null);
     },
-    onError: () => toast.error('Failed to add beds'),
+    onError: (e) => toast.error(e.message || 'Failed to add beds'),
   });
 
   const toggleBedMutation = useMutation({
     mutationFn: async ({ bedId, newStatus }: { bedId: string; newStatus: string }) => {
-      const res = await fetch('/api/beds', {
+      const res = await authFetch('/api/beds', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: bedId, status: newStatus }),
@@ -140,8 +141,7 @@ export default function RoomManagement() {
       return res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['owner-pg-detail'] });
-      queryClient.invalidateQueries({ queryKey: ['owner-analytics'] });
+      queryClient.invalidateQueries({ queryKey: ['owner-rooms'] });
     },
     onError: (e) => toast.error(e.message || 'Failed to update bed'),
   });
@@ -173,14 +173,14 @@ export default function RoomManagement() {
   };
 
   const getRoomTypeBadge = (type: string) => {
-    const colors: Record<string, string> = { SINGLE: 'bg-teal-100 text-teal-700', DOUBLE: 'bg-sky-100 text-sky-700', TRIPLE: 'bg-violet-100 text-violet-700', DORMITORY: 'bg-muted text-foreground' };
+    const colors: Record<string, string> = { SINGLE: 'bg-teal-100 text-teal-700', DOUBLE: 'bg-sky-100 text-sky-700', TRIPLE: 'bg-violet-100 text-violet-700', DORMITORY: 'bg-muted text-foreground', SHARED: 'bg-muted text-foreground' };
     return colors[type] || 'bg-muted text-foreground';
   };
 
-  const totalBeds = rooms.reduce((sum: number, r: { beds?: unknown[] }) => sum + (r.beds?.length || 0), 0);
-  const totalOccupied = rooms.reduce((sum: number, r: { beds?: { status: string }[] }) => sum + (r.beds?.filter(b => b.status === 'OCCUPIED').length || 0), 0);
-  const totalAvailable = rooms.reduce((sum: number, r: { beds?: { status: string }[] }) => sum + (r.beds?.filter(b => b.status === 'AVAILABLE').length || 0), 0);
-  const totalMaintenance = rooms.reduce((sum: number, r: { beds?: { status: string }[] }) => sum + (r.beds?.filter(b => b.status === 'MAINTENANCE').length || 0), 0);
+  const totalBeds = (rooms || []).reduce((sum: number, r: { beds?: unknown[] }) => sum + (r.beds?.length || 0), 0);
+  const totalOccupied = (rooms || []).reduce((sum: number, r: { beds?: { status: string }[] }) => sum + (r.beds?.filter(b => b.status === 'OCCUPIED').length || 0), 0);
+  const totalAvailable = (rooms || []).reduce((sum: number, r: { beds?: { status: string }[] }) => sum + (r.beds?.filter(b => b.status === 'AVAILABLE').length || 0), 0);
+  const totalMaintenance = (rooms || []).reduce((sum: number, r: { beds?: { status: string }[] }) => sum + (r.beds?.filter(b => b.status === 'MAINTENANCE').length || 0), 0);
   const occupancyRate = totalBeds > 0 ? Math.round((totalOccupied / totalBeds) * 100) : 0;
 
   return (
@@ -195,7 +195,7 @@ export default function RoomManagement() {
       {/* PG Selector */}
       <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
         <div className="flex-1 max-w-md">
-          <Select value={selectedPgId} onValueChange={setLocalPgId}>
+          <Select value={selectedPgId || ''} onValueChange={setLocalPgId}>
             <SelectTrigger><SelectValue placeholder="Select a PG property..." /></SelectTrigger>
             <SelectContent>
               {pgList.map((pg: { id: string; name: string }) => (
@@ -245,7 +245,7 @@ export default function RoomManagement() {
             {[...Array(4)].map((_, i) => <Skeleton key={i} className="h-40 rounded-xl" />)}
           </div>
         </div>
-      ) : rooms.length === 0 ? (
+      ) : (rooms || []).length === 0 ? (
         <Card className="border-dashed"><CardContent className="p-12 text-center"><BedDouble className="size-12 text-muted-foreground mx-auto mb-4" /><h3 className="text-lg font-semibold text-muted-foreground">No Rooms Yet</h3><p className="text-sm text-muted-foreground mt-1">Add your first room to this PG property</p></CardContent></Card>
       ) : (
         <>
@@ -273,12 +273,15 @@ export default function RoomManagement() {
           {/* Room Cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <AnimatePresence>
-              {rooms.map((room: { id: string; roomCode: string; roomType: string; floor: number; hasAC: boolean; hasAttachedBath: boolean; beds?: { id: string; bedNumber: number; status: string }[] }, index: number) => {
+              {(rooms || []).map((room: { id: string; roomCode: string; room_type?: string; roomType?: string; floor: number; has_ac?: boolean; hasAC?: boolean; has_attached_bath?: boolean; hasAttachedBath?: boolean; beds?: { id: string; bedNumber: number; status: string; price?: number }[] }, index: number) => {
                 const isExpanded = expandedRoom === room.id;
                 const beds = room.beds || [];
-                const occupied = beds.filter(b => b.status === 'OCCUPIED').length;
-                const available = beds.filter(b => b.status === 'AVAILABLE').length;
-                const maintenance = beds.filter(b => b.status === 'MAINTENANCE').length;
+                const occupied = beds.filter((b: { status: string }) => b.status === 'OCCUPIED').length;
+                const available = beds.filter((b: { status: string }) => b.status === 'AVAILABLE').length;
+                const maintenance = beds.filter((b: { status: string }) => b.status === 'MAINTENANCE').length;
+                const roomType = room.room_type || room.roomType || '';
+                const hasAC = room.has_ac ?? room.hasAC ?? false;
+                const hasBath = room.has_attached_bath ?? room.hasAttachedBath ?? false;
                 return (
                   <motion.div key={room.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.05 }}>
                     <Card className="hover:shadow-md transition-shadow">
@@ -287,12 +290,12 @@ export default function RoomManagement() {
                           <div>
                             <div className="flex items-center gap-2 flex-wrap">
                               <span className="font-mono font-bold text-foreground text-lg">{room.roomCode}</span>
-                              <Badge className={getRoomTypeBadge(room.roomType)}>{room.roomType}</Badge>
+                              <Badge className={getRoomTypeBadge(roomType)}>{roomType}</Badge>
                               <Badge variant="outline">Floor {room.floor}</Badge>
                             </div>
                             <div className="flex items-center gap-3 mt-2">
-                              {room.hasAC && <div className="flex items-center gap-1 text-brand-teal text-sm"><Snowflake className="size-3.5" /> AC</div>}
-                              {room.hasAttachedBath && <div className="flex items-center gap-1 text-emerald-600 text-sm"><Bath className="size-3.5" /> Bath</div>}
+                              {hasAC && <div className="flex items-center gap-1 text-brand-teal text-sm"><Snowflake className="size-3.5" /> AC</div>}
+                              {hasBath && <div className="flex items-center gap-1 text-emerald-600 text-sm"><Bath className="size-3.5" /> Bath</div>}
                             </div>
                           </div>
                           <div className="text-right shrink-0">
@@ -328,7 +331,7 @@ export default function RoomManagement() {
                           {isExpanded && (
                             <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }} transition={{ duration: 0.2 }} className="overflow-hidden">
                               <div className="mt-3 grid grid-cols-3 sm:grid-cols-4 gap-2">
-                                {beds.map((bed: { id: string; bedNumber: number; status: string }) => (
+                                {beds.map((bed: { id: string; bedNumber: number; status: string; price?: number }) => (
                                   <button
                                     key={bed.id}
                                     onClick={() => cycleBedStatus(bed.id, bed.status)}
@@ -337,37 +340,38 @@ export default function RoomManagement() {
                                     <div className={`size-3 rounded-full ${bedDotColor(bed.status)} mx-auto mb-1.5`} />
                                     <div className="text-xs font-semibold">Bed #{bed.bedNumber}</div>
                                     <div className="text-[10px] mt-0.5 opacity-75">{bed.status}</div>
+                                    {bed.price && bed.price > 0 && <div className="text-[10px] opacity-60">₹{bed.price.toLocaleString('en-IN')}</div>}
                                   </button>
                                 ))}
                               </div>
-                            {occupied > 0 && (
-                              <div className="mt-3 pt-3 border-t">
-                                <p className="text-xs font-medium text-muted-foreground mb-2">Quick Vacate:</p>
-                                <div className="flex flex-wrap gap-2">
-                                  {beds.filter(b => b.status === 'OCCUPIED').map((bed: { id: string; bedNumber: number }) => (
-                                    <Button
-                                      key={bed.id}
-                                      variant="outline"
-                                      size="sm"
-                                      className="text-xs h-7 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
-                                      onClick={(e) => { e.stopPropagation(); toggleBedMutation.mutate({ bedId: bed.id, newStatus: 'AVAILABLE' }); toast.success(`Bed #${bed.bedNumber} set to Available`); }}
-                                    >
-                                      <CheckCircle2 className="size-3 mr-1" />
-                                      #{bed.bedNumber} Vacate
-                                    </Button>
-                                  ))}
+                              {occupied > 0 && (
+                                <div className="mt-3 pt-3 border-t">
+                                  <p className="text-xs font-medium text-muted-foreground mb-2">Quick Vacate:</p>
+                                  <div className="flex flex-wrap gap-2">
+                                    {beds.filter((b: { status: string }) => b.status === 'OCCUPIED').map((bed: { id: string; bedNumber: number }) => (
+                                      <Button
+                                        key={bed.id}
+                                        variant="outline"
+                                        size="sm"
+                                        className="text-xs h-7 border-emerald-300 text-emerald-700 hover:bg-emerald-50"
+                                        onClick={(e) => { e.stopPropagation(); toggleBedMutation.mutate({ bedId: bed.id, newStatus: 'AVAILABLE' }); toast.success(`Bed #${bed.bedNumber} set to Available`); }}
+                                      >
+                                        <CheckCircle2 className="size-3 mr-1" />
+                                        #{bed.bedNumber} Vacate
+                                      </Button>
+                                    ))}
+                                  </div>
                                 </div>
-                              </div>
-                            )}
-                            <p className="text-xs text-muted-foreground mt-2 text-center">Click a bed to cycle: Available &rarr; Occupied &rarr; Maintenance</p>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                              )}
+                              <p className="text-xs text-muted-foreground mt-2 text-center">Click a bed to cycle: Available &rarr; Occupied &rarr; Maintenance</p>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
             </AnimatePresence>
           </div>
         </>
@@ -380,15 +384,19 @@ export default function RoomManagement() {
           {selectedRoomForBeds && (
             <div className="space-y-4 pt-2">
               <p className="text-sm text-muted-foreground">
-                Adding beds to <strong>{rooms.find((r: { id: string }) => r.id === selectedRoomForBeds)?.roomCode}</strong>
+                Adding beds to <strong>{(rooms || []).find((r: { id: string }) => r.id === selectedRoomForBeds)?.roomCode}</strong>
               </p>
               <div className="space-y-2">
                 <Label>Number of Beds to Add</Label>
                 <Input type="number" min="1" max="6" value={bedCountForm} onChange={e => setBedCountForm(e.target.value)} />
               </div>
+              <div className="space-y-2">
+                <Label>Price per Bed (₹, optional)</Label>
+                <Input type="number" min="0" placeholder="Leave empty to use PG default" value={bedPriceForm} onChange={e => setBedPriceForm(e.target.value)} />
+              </div>
               <Button
                 className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white"
-                onClick={() => addBedsMutation.mutate({ roomId: selectedRoomForBeds, count: Number(bedCountForm) || 1 })}
+                onClick={() => addBedsMutation.mutate({ roomId: selectedRoomForBeds, count: Number(bedCountForm) || 1, price: Number(bedPriceForm) || undefined })}
                 disabled={addBedsMutation.isPending}
               >
                 {addBedsMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <Check className="size-4 mr-2" />}

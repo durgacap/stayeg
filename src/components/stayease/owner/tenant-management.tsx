@@ -28,6 +28,7 @@ import {
 } from '@/components/ui/alert-dialog';
 import { Separator } from '@/components/ui/separator';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { BADGE, TEXT_COLOR } from '@/lib/constants';
 
 const formatCurrency = (amount: number) =>
@@ -81,16 +82,7 @@ export default function TenantManagement() {
   });
   const [moveTarget, setMoveTarget] = useState({ roomId: '', bedId: '' });
 
-  const { data: ownerUser } = useQuery({
-    queryKey: ['owner-user'],
-    queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
-      if (!res.ok) throw new Error('Failed');
-      const users = await res.json();
-      return (Array.isArray(users) ? users : users.users)?.[0] || null;
-    },
-  });
-  const ownerId = ownerUser?.id;
+  const ownerId = currentUser?.id;
 
   const { data: pgs } = useQuery({
     queryKey: ['owner-pgs-tenants', ownerId],
@@ -130,7 +122,7 @@ export default function TenantManagement() {
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof form) => {
-      const res = await fetch('/api/tenants', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ ...data, ownerId, rentAmount: Number(data.rentAmount) || 0, rentDueDay: Number(data.rentDueDay) || 5 }) });
+      const res = await authFetch('/api/tenants', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: '', pgId: data.pgId, bedId: data.bedId, checkInDate: new Date().toISOString(), advancePaid: 0, ownerId }) });
       if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed'); }
       return res.json();
     },
@@ -140,7 +132,7 @@ export default function TenantManagement() {
 
   const deleteMutation = useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/tenants?id=${id}`, { method: 'DELETE' });
+      const res = await authFetch(`/api/tenants?bookingId=${id}`, { method: 'DELETE' });
       if (!res.ok) throw new Error('Failed to remove tenant');
       return res.json();
     },
@@ -149,8 +141,8 @@ export default function TenantManagement() {
   });
 
   const moveMutation = useMutation({
-    mutationFn: async ({ id, newBedId, newRoomId }: { id: string; newBedId: string; newRoomId: string }) => {
-      const res = await fetch('/api/tenants', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, newBedId, newRoomId }) });
+    mutationFn: async ({ bookingId, newBedId }: { bookingId: string; newBedId: string }) => {
+      const res = await authFetch('/api/tenants', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId, newBedId }) });
       if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed to move'); }
       return res.json();
     },
@@ -159,8 +151,8 @@ export default function TenantManagement() {
   });
 
   const notesMutation = useMutation({
-    mutationFn: async ({ id, notes }: { id: string; notes: string }) => {
-      const res = await fetch('/api/tenants', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, notes }) });
+    mutationFn: async ({ bookingId, notes }: { bookingId: string; notes: string }) => {
+      const res = await authFetch('/api/tenants', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ bookingId, notes }) });
       if (!res.ok) throw new Error('Failed to update notes');
       return res.json();
     },
@@ -253,7 +245,7 @@ export default function TenantManagement() {
                   </Select> : <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg">No available beds in this room</p>}
                 </div>}
               </div>
-              <Button className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white" onClick={() => createMutation.mutate(form)} disabled={createMutation.isPending || !form.name || !form.phone || !form.bedId}>
+              <Button className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white" onClick={() => createMutation.mutate(form)} disabled={createMutation.isPending || !form.name || !form.phone || !form.bedId || !form.pgId}>
                 {createMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <Check className="size-4 mr-2" />}Add Tenant
               </Button>
             </div>
@@ -372,7 +364,7 @@ export default function TenantManagement() {
           <AlertDialogHeader><AlertDialogTitle>Remove Tenant</AlertDialogTitle><AlertDialogDescription>Are you sure you want to remove <strong>{selectedTenant?.name}</strong>? Their bed will be marked as available.</AlertDialogDescription></AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (selectedTenant) deleteMutation.mutate(selectedTenant.id); }} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : null}Remove</AlertDialogAction>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" onClick={() => { if (selectedTenant) deleteMutation.mutate(selectedTenant.booking_id || selectedTenant.id); }} disabled={deleteMutation.isPending}>{deleteMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : null}Remove</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -396,7 +388,7 @@ export default function TenantManagement() {
                   <SelectContent>{moveBeds.map(bed => <SelectItem key={bed.id} value={bed.id}>Bed #{bed.bedNumber} {bed.id === selectedTenant.bedId ? '(current)' : ''}</SelectItem>)}</SelectContent>
                 </Select> : <p className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg">No available beds</p>}
               </div>}
-              <Button className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white" onClick={() => moveMutation.mutate({ id: selectedTenant.id, newBedId: moveTarget.bedId, newRoomId: moveTarget.roomId })} disabled={moveMutation.isPending || !moveTarget.bedId || moveTarget.bedId === selectedTenant.bedId}>
+              <Button className="w-full bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep hover:to-brand-teal text-white" onClick={() => moveMutation.mutate({ bookingId: selectedTenant.booking_id || selectedTenant.id, newBedId: moveTarget.bedId })} disabled={moveMutation.isPending || !moveTarget.bedId || moveTarget.bedId === selectedTenant.bedId}>
                 {moveMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <ArrowRightLeft className="size-4 mr-2" />}Move Tenant
               </Button>
             </div>
@@ -412,7 +404,7 @@ export default function TenantManagement() {
             <div className="space-y-4 pt-2">
               <p className="text-sm text-muted-foreground">Notes for <strong>{selectedTenant.name}</strong></p>
               <Textarea placeholder="Add notes about this tenant..." rows={5} value={tenantNote} onChange={e => setTenantNote(e.target.value)} />
-              <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white" onClick={() => notesMutation.mutate({ id: selectedTenant.id, notes: tenantNote })} disabled={notesMutation.isPending}>
+              <Button className="w-full bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white" onClick={() => notesMutation.mutate({ bookingId: selectedTenant.booking_id || selectedTenant.id, notes: tenantNote })} disabled={notesMutation.isPending}>
                 {notesMutation.isPending ? <Loader2 className="size-4 mr-2 animate-spin" /> : <StickyNote className="size-4 mr-2" />}Save Notes
               </Button>
             </div>

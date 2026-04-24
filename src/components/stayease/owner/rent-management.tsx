@@ -18,6 +18,7 @@ import {
 } from '@/components/ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { STATUSES, BADGE, TEXT_COLOR, CARD_BG } from '@/lib/constants';
 
 const formatCurrency = (amount: number) =>
@@ -41,16 +42,7 @@ export default function RentManagement() {
     tenantName: string; month: string; amount: number; paidDate: string; method: string; pgName: string;
   } | null>(null);
 
-  const { data: ownerUser } = useQuery({
-    queryKey: ['owner-user'],
-    queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
-      if (!res.ok) throw new Error('Failed');
-      const users = await res.json();
-      return (Array.isArray(users) ? users : users.users)?.[0] || null;
-    },
-  });
-  const ownerId = ownerUser?.id;
+  const ownerId = currentUser?.id;
 
   const { data: tenants } = useQuery({
     queryKey: ['owner-tenants-rent', ownerId],
@@ -74,7 +66,7 @@ export default function RentManagement() {
 
   const markPaidMutation = useMutation({
     mutationFn: async ({ id, method }: { id: string; method: string }) => {
-      const res = await fetch('/api/rent-records', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'PAID', method }) });
+      const res = await authFetch('/api/rent-records', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id, status: 'PAID', method }) });
       if (!res.ok) throw new Error('Failed to update');
       return res.json();
     },

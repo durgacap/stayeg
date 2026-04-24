@@ -25,17 +25,7 @@ export default function OwnerDashboard() {
   const { setCurrentView, currentUser } = useAppStore();
   const [showBenefits, setShowBenefits] = useState(false);
 
-  const { data: ownerUser } = useQuery({
-    queryKey: ['owner-user'],
-    queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
-      if (!res.ok) throw new Error('Failed to fetch owner');
-      const users = await res.json();
-      return (Array.isArray(users) ? users : users.users)?.[0] || null;
-    },
-  });
-
-  const ownerId = ownerUser?.id;
+  const ownerId = currentUser?.id;
 
   const { data: analytics, isLoading: analyticsLoading, isError, refetch } = useQuery({
     queryKey: ['owner-analytics', ownerId],
@@ -213,7 +203,7 @@ export default function OwnerDashboard() {
         <div>
           <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
           <p className="text-muted-foreground mt-1">
-            Welcome back, {currentUser?.name || ownerUser?.name || 'Owner'}!
+            Welcome back, {currentUser?.name || 'Owner'}!
           </p>
         </div>
         <div className="flex items-center gap-2">

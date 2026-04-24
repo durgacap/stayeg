@@ -35,7 +35,7 @@ const formatCurrency = (amount: number) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(amount);
 
 export default function PGManagement() {
-  const { showToast, setSelectedPG } = useAppStore();
+  const { showToast, setSelectedPG, currentUser } = useAppStore();
   const queryClient = useQueryClient();
   const [addOpen, setAddOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
@@ -50,16 +50,8 @@ export default function PGManagement() {
     price: '', securityDeposit: '', description: '', amenities: [] as string[], images: '',
   });
 
-  const { data: ownerUser } = useQuery({
-    queryKey: ['owner-user'],
-    queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
-      if (!res.ok) throw new Error('Failed to fetch owner');
-      const users = await res.json();
-      return (Array.isArray(users) ? users : users.users)?.[0] || null;
-    },
-  });
-  const ownerId = ownerUser?.id;
+  const { currentUser } = useAppStore();
+  const ownerId = currentUser?.id;
 
   const { data: pgs, isLoading } = useQuery({
     queryKey: ['owner-pgs', ownerId],
