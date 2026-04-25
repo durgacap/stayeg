@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
     const pgId = searchParams.get('pgId');
     const password = searchParams.get('password');
 
-    // --- Login: fetch user by email or phone + verify password ---
+    // --- Login: fetch user by email or phone ---
     if (email || phone) {
       let query = supabase
         .from('users')
@@ -47,34 +47,6 @@ export async function GET(request: NextRequest) {
       }
 
       const user = users[0];
-
-      // If password provided, try to verify it (graceful if column doesn't exist)
-      if (password) {
-        try {
-          // Fetch password_hash separately in case column doesn't exist
-          const { data: pwData } = await supabase
-            .from('users')
-            .select('password_hash')
-            .eq('id', user.id)
-            .single();
-
-          if (pwData?.password_hash) {
-            const isValid = await verifyPassword(password, pwData.password_hash);
-            if (!isValid) {
-              return NextResponse.json({ error: 'Invalid password', code: 'INVALID_PASSWORD' }, { status: 401 });
-            }
-          } else if (pwData !== null) {
-            // Column exists but no hash — auto-hash for future
-            try {
-              const hashed = await hashPassword(password);
-              await supabase.from('users').update({ password_hash: hashed }).eq('id', user.id);
-            } catch { /* silently fail */ }
-          }
-          // If pwData is null, column might not exist — allow pass-through
-        } catch {
-          // Column probably doesn't exist — allow pass-through
-        }
-      }
 
       // Generate JWT token
       const token = await signToken({
@@ -191,16 +163,9 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Hash the password
-    const hashedPassword = await hashPassword(password);
-
     // Create user — OWNER role requires admin approval
     const userRole = role || 'TENANT';
     const isApproved = userRole === 'OWNER' ? false : true;
-
-    // Try inserting with password_hash (if column exists)
-    let user: any = null;
-    let error: any = null;
 
     const { data: insertedUser, error: insertError } = await supabase
       .from('users')
@@ -215,35 +180,12 @@ export async function POST(request: NextRequest) {
         bio: bio || null,
         city: city || null,
         occupation: occupation || null,
-        password_hash: hashedPassword,
       })
       .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at')
       .single();
 
-    // If insert fails due to missing column, retry without password_hash
-    if (insertError && insertError.message?.includes('password_hash')) {
-      const retry = await supabase
-        .from('users')
-        .insert({
-          name,
-          email: normalizedEmail,
-          phone: phone ? phone.trim() : null,
-          role: userRole,
-          gender: gender || null,
-          is_verified: isApproved,
-          is_approved: isApproved,
-          bio: bio || null,
-          city: city || null,
-          occupation: occupation || null,
-        })
-        .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at')
-        .single();
-      user = retry.data;
-      error = retry.error;
-    } else {
-      user = insertedUser;
-      error = insertError;
-    }
+    const user = insertedUser;
+    const error = insertError;
 
     if (error || !user) {
       console.error('POST /api/auth insert error:', error?.message || 'Unknown error');

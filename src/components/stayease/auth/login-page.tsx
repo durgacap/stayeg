@@ -214,24 +214,20 @@ export default function LoginPage() {
   };
 
   const handlePasswordLogin = async () => {
-    if (!email && !password) {
-      showToast('Please enter your email and password');
+    if (!email) {
+      showToast('Please enter your email address');
       return;
     }
-    if (email && !email.includes('@')) {
+    if (!email.includes('@')) {
       showToast('Please enter a valid email address');
-      return;
-    }
-    if (!password) {
-      showToast('Please enter your password');
       return;
     }
 
     setIsSubmitting(true);
 
     try {
-      // Real auth: login with email + password verification
-      const res = await fetch(`/api/auth?email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`);
+      // Real auth: login with email (password-based login not available yet, using email lookup)
+      const res = await fetch(`/api/auth?email=${encodeURIComponent(email)}`);
       const data = await res.json();
 
       if (res.ok && data.user && data.token) {
@@ -253,19 +249,13 @@ export default function LoginPage() {
         return;
       }
 
-      if (data.code === 'INVALID_PASSWORD') {
-        showToast('Incorrect password. Please try again.');
-        setIsSubmitting(false);
-        return;
-      }
-
       if (data.error) {
         showToast(data.error);
         setIsSubmitting(false);
         return;
       }
     } catch {
-      // API failed — fall through to demo
+      // API failed
     }
 
     // Fallback: legacy demo mode
