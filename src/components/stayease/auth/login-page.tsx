@@ -16,58 +16,6 @@ import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from '@/comp
 import { useAppStore } from '@/store/use-app-store';
 import type { UserRole, User } from '@/lib/types';
 
-const DEMO_USERS: Record<UserRole, User> = {
-  TENANT: {
-    id: 'demo-tenant-001',
-    name: 'Rahul Sharma',
-    email: 'rahul.sharma@example.com',
-    phone: '+91 98765 43210',
-    role: 'TENANT',
-    gender: 'MALE',
-    isVerified: true,
-    avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Rahul',
-    city: 'Bangalore',
-    age: 24,
-    occupation: 'Software Engineer',
-    bio: 'Tech enthusiast looking for a cozy PG in Bangalore.',
-  },
-  OWNER: {
-    id: 'demo-owner-001',
-    name: 'Rajesh Kumar',
-    email: 'rajesh@stayeg.in',
-    phone: '+91 98765 43211',
-    role: 'OWNER',
-    gender: 'MALE',
-    isVerified: true,
-    avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Rajesh',
-    city: 'Bangalore',
-    bio: 'PG Owner managing 5 properties across Bangalore.',
-  },
-  ADMIN: {
-    id: 'demo-admin-001',
-    name: 'Admin User',
-    email: 'admin@stayeg.in',
-    phone: '+91 99999 99999',
-    role: 'ADMIN',
-    gender: 'MALE',
-    isVerified: true,
-    avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Admin',
-    city: 'Bangalore',
-  },
-  VENDOR: {
-    id: 'demo-vendor-001',
-    name: 'Suresh Patel',
-    email: 'suresh@services.in',
-    phone: '+91 98765 43212',
-    role: 'VENDOR',
-    gender: 'MALE',
-    isVerified: true,
-    avatar: 'https://api.dicebear.com/9.x/avataaars/svg?seed=Suresh',
-    city: 'Bangalore',
-    bio: 'Plumber & electrician service provider.',
-  },
-};
-
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
   animate: { opacity: 1, y: 0 },
@@ -83,142 +31,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState('');
   const [showOTP, setShowOTP] = useState(false);
   const [otp, setOtp] = useState('');
-  const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false);
-  const [loginMethod, setLoginMethod] = useState<'phone' | 'password'>('phone');
+  const [loginMethod, setLoginMethod] = useState<'phone' | 'email'>('email');
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  /** Try to fetch user from the real API, fall back to demo on failure */
-  const tryRealLogin = useCallback(async (identifier: string, field: 'email' | 'phone'): Promise<{ user: User; isApproved: boolean } | null> => {
-    try {
-      const res = await fetch(`/api/auth?${field}=${encodeURIComponent(identifier)}`);
-      const data = await res.json();
-
-      if (data.demo === true || !data.users || data.users.length === 0) {
-        return null; // No DB or user not found → fall back to demo
-      }
-
-      const raw = data.users[0];
-      const user: User = {
-        id: raw.id,
-        name: raw.name,
-        email: raw.email,
-        phone: raw.phone,
-        role: raw.role,
-        gender: raw.gender,
-        isVerified: raw.is_verified ?? false,
-        avatar: raw.avatar,
-        city: raw.city,
-        occupation: raw.occupation,
-        bio: raw.bio,
-        createdAt: raw.created_at,
-      };
-      return { user, isApproved: raw.is_approved !== false };
-    } catch {
-      return null;
-    }
-  }, []);
-
-  const handleSendOTP = async () => {
-    if (phone.length < 10) {
-      showToast('Please enter a valid phone number');
-      return;
-    }
-    setIsSubmitting(true);
-    try {
-      // Call the real OTP API
-      const res = await fetch('/api/auth/send-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone }),
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        setShowOTP(true);
-        showToast(data.simulated ? 'OTP generated (demo mode)' : 'OTP sent to ' + phone);
-      } else {
-        showToast(data.error || 'Failed to send OTP');
-      }
-    } catch {
-      showToast('Failed to send OTP. Please try again.');
-    }
-    setIsSubmitting(false);
-  };
-
-  const handleVerifyOTP = async () => {
-    if (otp.length !== 6) {
-      showToast('Please enter the 6-digit OTP');
-      return;
-    }
-    setIsSubmitting(true);
-
-    try {
-      // Try real OTP verification via API
-      const res = await fetch('/api/auth/verify-otp', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone, otp }),
-      });
-      const data = await res.json();
-
-      if (data.verified && data.user) {
-        // Check if OWNER account is pending approval
-        if (data.user.role === 'OWNER' && !data.user.is_approved) {
-          showToast('Your PG Owner account is pending approval.');
-          setShowOTP(false);
-          setOtp('');
-          setIsSubmitting(false);
-          return;
-        }
-        login(data.user, data.token);
-        showToast('Welcome back, ' + data.user.name + '!');
-        setIsSubmitting(false);
-        return;
-      }
-
-      if (data.phoneVerified) {
-        // Phone verified but user doesn't exist — redirect to signup
-        showToast('Phone verified! Please complete your registration.');
-        setCurrentView('SIGNUP');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // API returned an error
-      if (data.error) {
-        showToast(data.error);
-        setIsSubmitting(false);
-        return;
-      }
-    } catch {
-      // API failed — fall through to legacy demo mode
-    }
-
-    // Fallback: legacy demo login
-    const result = await tryRealLogin(phone, 'phone');
-    if (result) {
-      if (result.user.role === 'OWNER' && !result.isApproved) {
-        showToast('Your PG Owner account is pending approval.');
-        setIsSubmitting(false);
-        return;
-      }
-      login(result.user);
-      showToast('Welcome back, ' + result.user.name + '!');
-    } else {
-      const user = DEMO_USERS[selectedRole];
-      login(user);
-      showToast('Welcome, ' + user.name + '! (Demo Mode)');
-    }
-    setIsSubmitting(false);
-  };
-
-  const handlePasswordLogin = async () => {
-    if (!email) {
-      showToast('Please enter your email address');
-      return;
-    }
-    if (!email.includes('@')) {
+  /** Email login — calls GET /api/auth?email=... */
+  const handleEmailLogin = async () => {
+    if (!email || !email.includes('@')) {
       showToast('Please enter a valid email address');
       return;
     }
@@ -226,7 +44,6 @@ export default function LoginPage() {
     setIsSubmitting(true);
 
     try {
-      // Real auth: login with email (password-based login not available yet, using email lookup)
       const res = await fetch(`/api/auth?email=${encodeURIComponent(email)}`);
       const data = await res.json();
 
@@ -254,90 +71,121 @@ export default function LoginPage() {
         setIsSubmitting(false);
         return;
       }
-    } catch {
-      // API failed
+    } catch (err) {
+      console.error('Login error:', err);
+      showToast('Network error. Please check your connection.');
     }
 
-    // Fallback: legacy demo mode
-    const result = await tryRealLogin(email, 'email');
-    if (result) {
-      if (result.user.role === 'OWNER' && !result.isApproved) {
-        showToast('Your PG Owner account is pending approval.');
-        setIsSubmitting(false);
-        return;
+    setIsSubmitting(false);
+  };
+
+  /** Phone OTP — Step 1: Send OTP */
+  const handleSendOTP = async () => {
+    if (phone.length < 10) {
+      showToast('Please enter a valid phone number');
+      return;
+    }
+    setIsSubmitting(true);
+    try {
+      const res = await fetch('/api/auth/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone }),
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setShowOTP(true);
+        showToast(data.simulated ? 'OTP generated (demo mode — enter any 6 digits)' : 'OTP sent to ' + phone);
+      } else {
+        showToast(data.error || 'Failed to send OTP');
       }
-      login(result.user);
-      showToast('Welcome back, ' + result.user.name + '!');
-    } else {
-      await new Promise((r) => setTimeout(r, 400));
-      const user = DEMO_USERS[selectedRole];
-      login(user);
-      showToast('Demo mode — no database connected');
+    } catch {
+      showToast('Failed to send OTP. Please try again.');
     }
     setIsSubmitting(false);
   };
 
+  /** Phone OTP — Step 2: Verify OTP */
+  const handleVerifyOTP = async () => {
+    if (otp.length !== 6) {
+      showToast('Please enter the 6-digit OTP');
+      return;
+    }
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch('/api/auth/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, otp }),
+      });
+      const data = await res.json();
+
+      if (data.verified && data.user) {
+        if (data.user.role === 'OWNER' && !data.user.is_approved) {
+          showToast('Your PG Owner account is pending approval.');
+          setShowOTP(false);
+          setOtp('');
+          setIsSubmitting(false);
+          return;
+        }
+        login(data.user, data.token);
+        showToast('Welcome back, ' + data.user.name + '!');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (data.phoneVerified) {
+        showToast('Phone verified! Please complete your registration.');
+        setCurrentView('SIGNUP');
+        setIsSubmitting(false);
+        return;
+      }
+
+      if (data.error) {
+        showToast(data.error);
+        setIsSubmitting(false);
+        return;
+      }
+    } catch {
+      showToast('Verification failed. Please try again.');
+    }
+
+    setIsSubmitting(false);
+  };
+
+  /** Quick Demo Login — fetches real user from DB by role */
   const handleDemoLogin = async (role: UserRole) => {
     setIsSubmitting(true);
     try {
-      // Try to fetch a real user from the database matching the role
-      const res = await fetch(`/api/auth?role=${role}`);
-      const data = await res.json();
-      if (data.users && data.users.length > 0) {
-        const raw = data.users[0];
-        const user: User = {
-          id: raw.id,
-          name: raw.name,
-          email: raw.email,
-          phone: raw.phone,
-          role: raw.role,
-          gender: raw.gender,
-          isVerified: raw.is_verified ?? false,
-          avatar: raw.avatar,
-          city: raw.city,
-          occupation: raw.occupation,
-          bio: raw.bio,
-          createdAt: raw.created_at,
-        };
-        login(user);
-        showToast('Welcome back, ' + user.name + '!');
-      } else {
-        // Fallback to demo user if DB has no users
-        const user = DEMO_USERS[role];
-        login(user);
-        showToast('Welcome, ' + user.name + '! (Demo Mode)');
+      // Try to login via email for known demo users
+      const demoEmails: Record<string, string> = {
+        OWNER: 'rajesh@stayease.in',
+        TENANT: 'tenant@stayeg.com',
+        VENDOR: 'suresh@services.in',
+      };
+      const demoEmail = demoEmails[role];
+      if (demoEmail) {
+        const res = await fetch(`/api/auth?email=${encodeURIComponent(demoEmail)}`);
+        const data = await res.json();
+        if (res.ok && data.user && data.token) {
+          login(data.user, data.token);
+          showToast('Welcome back, ' + data.user.name + '!');
+          setIsSubmitting(false);
+          return;
+        }
       }
+      showToast('Demo login failed. Try signing in with your email.');
     } catch {
-      const user = DEMO_USERS[role];
-      login(user);
-      showToast('Welcome, ' + user.name + '! (Demo Mode)');
+      showToast('Network error. Please try again.');
     }
     setIsSubmitting(false);
   };
 
   const handleGuestContinue = () => {
-    useAppStore.getState().setCurrentView('LANDING');
+    setCurrentView('LANDING');
     showToast('Browsing as guest. Sign in later to book!');
-  };
-
-  const handleForgotPassword = async () => {
-    if (!email || !email.includes('@')) {
-      showToast('Please enter your email first, then click Forgot Password');
-      return;
-    }
-    try {
-      const res = await fetch('/api/auth/forgot-password', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        showToast(data.message || 'Reset link sent! Check your email.');
-      }
-    } catch {
-      showToast('Failed to process request. Please try again.');
-    }
   };
 
   const handleSocialLogin = (provider: string) => {
@@ -374,28 +222,50 @@ export default function LoginPage() {
             <AnimatePresence mode="wait">
               {!showOTP ? (
                 <motion.div key="login-form" {...fadeInUp}>
-                  {/* Role Selection Tabs */}
-                  <Tabs value={selectedRole} onValueChange={(v) => setSelectedRole(v as UserRole)} className="mb-6">
-                    <TabsList className="w-full grid grid-cols-3 bg-brand-teal/10 p-1 h-auto">
+                  {/* Quick Demo Login */}
+                  <div className="mb-5">
+                    <p className="text-xs font-medium text-muted-foreground mb-2.5 text-center">Quick Login (Demo)</p>
+                    <div className="grid grid-cols-3 gap-2">
                       {([
-                        { value: 'TENANT', label: 'Tenant', icon: UserIcon },
-                        { value: 'OWNER', label: 'PG Owner', icon: Building2 },
-                        { value: 'VENDOR', label: 'Vendor', icon: Shield },
-                      ] as const).map((tab) => (
-                        <TabsTrigger
-                          key={tab.value}
-                          value={tab.value}
-                          className="flex items-center justify-center gap-1.5 py-2 text-xs font-medium rounded-lg data-[state=active]:bg-card data-[state=active]:text-brand-teal data-[state=active]:shadow-sm transition-all"
+                        { role: 'TENANT' as UserRole, label: 'Tenant', icon: UserIcon, color: 'from-emerald-500 to-teal-500' },
+                        { role: 'OWNER' as UserRole, label: 'PG Owner', icon: Building2, color: 'from-orange-500 to-amber-500' },
+                        { role: 'VENDOR' as UserRole, label: 'Vendor', icon: Shield, color: 'from-slate-500 to-gray-500' },
+                      ]).map((demo) => (
+                        <Button
+                          key={demo.role}
+                          variant="outline"
+                          onClick={() => handleDemoLogin(demo.role)}
+                          disabled={isSubmitting}
+                          className="flex flex-col items-center gap-1.5 h-auto py-3 border-border hover:bg-muted transition-all"
                         >
-                          <tab.icon className="size-3.5" />
-                          {tab.label}
-                        </TabsTrigger>
+                          <div className={`size-8 rounded-lg bg-gradient-to-br ${demo.color} flex items-center justify-center`}>
+                            <demo.icon className="size-4 text-white" />
+                          </div>
+                          <span className="text-xs font-medium">{demo.label}</span>
+                        </Button>
                       ))}
-                    </TabsList>
-                  </Tabs>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-3 mb-5">
+                    <Separator className="flex-1" />
+                    <span className="text-xs text-muted-foreground font-medium">or sign in with</span>
+                    <Separator className="flex-1" />
+                  </div>
 
                   {/* Login Method Toggle */}
                   <div className="flex bg-muted rounded-lg p-0.5 mb-5">
+                    <button
+                      onClick={() => setLoginMethod('email')}
+                      className={`flex-1 py-2 rounded-md text-xs font-medium transition-all ${
+                        loginMethod === 'email'
+                          ? 'bg-card text-brand-teal shadow-sm'
+                          : 'text-muted-foreground hover:text-foreground'
+                      }`}
+                    >
+                      <Mail className="size-3.5 inline mr-1" />
+                      Email
+                    </button>
                     <button
                       onClick={() => setLoginMethod('phone')}
                       className={`flex-1 py-2 rounded-md text-xs font-medium transition-all ${
@@ -407,21 +277,52 @@ export default function LoginPage() {
                       <Phone className="size-3.5 inline mr-1" />
                       Phone OTP
                     </button>
-                    <button
-                      onClick={() => setLoginMethod('password')}
-                      className={`flex-1 py-2 rounded-md text-xs font-medium transition-all ${
-                        loginMethod === 'password'
-                          ? 'bg-card text-brand-teal shadow-sm'
-                          : 'text-muted-foreground hover:text-foreground'
-                      }`}
-                    >
-                      <Lock className="size-3.5 inline mr-1" />
-                      Password
-                    </button>
                   </div>
 
                   <AnimatePresence mode="wait">
-                    {loginMethod === 'phone' ? (
+                    {loginMethod === 'email' ? (
+                      <motion.div key="email-login" {...fadeInUp}>
+                        <div className="space-y-2 mb-4">
+                          <Label htmlFor="email" className="text-sm font-medium text-foreground">
+                            Email Address
+                          </Label>
+                          <div className="relative">
+                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+                            <Input
+                              id="email"
+                              type="email"
+                              placeholder="you@example.com"
+                              value={email}
+                              onChange={(e) => setEmail(e.target.value)}
+                              onKeyDown={(e) => e.key === 'Enter' && handleEmailLogin()}
+                              className="pl-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20"
+                            />
+                          </div>
+                          <p className="text-[11px] text-muted-foreground">
+                            Enter your registered email to sign in
+                          </p>
+                        </div>
+
+                        <Button
+                          onClick={handleEmailLogin}
+                          disabled={isSubmitting}
+                          className="w-full h-11 bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white font-semibold rounded-xl shadow-lg shadow-brand-teal/20 transition-all"
+                        >
+                          {isSubmitting ? (
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ repeat: Infinity, duration: 1, ease: 'linear' }}
+                              className="size-5 border-2 border-white/30 border-t-white rounded-full"
+                            />
+                          ) : (
+                            <>
+                              <LogIn className="size-4 mr-2" />
+                              Sign In
+                            </>
+                          )}
+                        </Button>
+                      </motion.div>
+                    ) : (
                       <motion.div key="phone-login" {...fadeInUp}>
                         <div className="space-y-2 mb-4">
                           <Label htmlFor="phone" className="text-sm font-medium text-foreground">
@@ -445,66 +346,6 @@ export default function LoginPage() {
 
                         <Button
                           onClick={handleSendOTP}
-                          className="w-full h-11 bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white font-semibold rounded-xl shadow-lg shadow-brand-teal/20 transition-all"
-                        >
-                          Send OTP
-                          <ArrowRight className="size-4 ml-2" />
-                        </Button>
-                      </motion.div>
-                    ) : (
-                      <motion.div key="password-login" {...fadeInUp}>
-                        <div className="space-y-2 mb-4">
-                          <Label htmlFor="email" className="text-sm font-medium text-foreground">
-                            Email
-                          </Label>
-                          <div className="relative">
-                            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                            <Input
-                              id="email"
-                              type="email"
-                              placeholder="you@example.com"
-                              value={email}
-                              onChange={(e) => setEmail(e.target.value)}
-                              className="pl-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20"
-                            />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2 mb-3">
-                          <div className="flex items-center justify-between">
-                            <Label htmlFor="password" className="text-sm font-medium text-foreground">
-                              Password
-                            </Label>
-                            <button
-                              onClick={handleForgotPassword}
-                              className="text-xs text-brand-teal hover:text-foreground font-medium transition-colors"
-                            >
-                              Forgot Password?
-                            </button>
-                          </div>
-                          <div className="relative">
-                            <Lock className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
-                            <Input
-                              id="password"
-                              type={showPassword ? 'text' : 'password'}
-                              placeholder="Enter your password"
-                              value={password}
-                              onChange={(e) => setPassword(e.target.value)}
-                              onKeyDown={(e) => e.key === 'Enter' && handlePasswordLogin()}
-                              className="pl-10 pr-10 h-11 border-border focus:border-brand-teal focus:ring-brand-teal/20"
-                            />
-                            <button
-                              type="button"
-                              onClick={() => setShowPassword(!showPassword)}
-                              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
-                            >
-                              {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
-                            </button>
-                          </div>
-                        </div>
-
-                        <Button
-                          onClick={handlePasswordLogin}
                           disabled={isSubmitting}
                           className="w-full h-11 bg-gradient-to-r from-brand-deep to-brand-teal hover:from-brand-deep/90 hover:to-brand-teal/90 text-white font-semibold rounded-xl shadow-lg shadow-brand-teal/20 transition-all"
                         >
@@ -516,8 +357,8 @@ export default function LoginPage() {
                             />
                           ) : (
                             <>
-                              <LogIn className="size-4 mr-2" />
-                              Sign In
+                              Send OTP
+                              <ArrowRight className="size-4 ml-2" />
                             </>
                           )}
                         </Button>
@@ -525,14 +366,13 @@ export default function LoginPage() {
                     )}
                   </AnimatePresence>
 
-                  {/* Divider */}
+                  {/* Social Login */}
                   <div className="flex items-center gap-3 my-5">
                     <Separator className="flex-1" />
                     <span className="text-xs text-muted-foreground font-medium">or continue with</span>
                     <Separator className="flex-1" />
                   </div>
 
-                  {/* Social Login */}
                   <div className="grid grid-cols-2 gap-3 mb-5">
                     <div className="flex flex-col items-center gap-1">
                       <button
@@ -659,7 +499,7 @@ export default function LoginPage() {
                   <div className="flex items-center gap-2 mt-4 px-2">
                     <AlertCircle className="size-3.5 text-muted-foreground shrink-0" />
                     <p className="text-[11px] text-muted-foreground">
-                      OTP verification enabled. In demo mode, enter any 6 digits.
+                      Demo mode: enter any 6 digits to verify.
                     </p>
                   </div>
                 </motion.div>

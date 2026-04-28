@@ -1,8 +1,7 @@
 /**
  * POST /api/auth/verify-otp
- * 
+ *
  * Verifies a 6-digit OTP sent to the user's phone number.
- * Checks against the stored `otp_code` and `otp_expires_at` in the users table.
  * On success, returns a JWT token for the authenticated user.
  */
 
@@ -26,74 +25,79 @@ export async function POST(request: NextRequest) {
     }
 
     const cleanPhone = phone.replace(/\D/g, '');
+    // Normalize phone: try both with and without + prefix
+    const phoneVariants = [
+      '+' + cleanPhone,        // +919876543210
+      cleanPhone,              // 919876543210
+    ];
+    // If user entered 10-digit number, also try with 91 prefix
+    if (cleanPhone.length === 10) {
+      phoneVariants.push('+91' + cleanPhone, '91' + cleanPhone);
+    }
+
+    // Helper: find user by phone (tries multiple formats)
+    async function findUserByPhone(phoneNum: string) {
+      const { data, error } = await supabase
+        .from('users')
+        .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at')
+        .eq('phone', phoneNum)
+        .limit(1);
+      if (error) return null;
+      if (data && data.length > 0) return data[0];
+      return null;
+    }
 
     // Try MSG91 verification first
     if (MSG91_AUTH_KEY) {
       try {
+        const mobile = cleanPhone.length > 10 ? cleanPhone : '91' + cleanPhone;
         const msg91Response = await fetch(
-          `https://api.msg91.com/api/v5/otp/verify?otp=${otp}&mobile=${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}`,
+          `https://api.msg91.com/api/v5/otp/verify?otp=${otp}&mobile=${mobile}`,
           {
             method: 'GET',
-            headers: {
-              'authkey': MSG91_AUTH_KEY,
-            },
+            headers: { 'authkey': MSG91_AUTH_KEY },
           }
         );
 
         const msg91Data = await msg91Response.json();
 
         if (msg91Data.type === 'success') {
-          // OTP verified via MSG91 — find user and return token
-          const { data: users } = await supabase
-            .from('users')
-            .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at')
-            .eq('phone', cleanPhone)
-            .limit(1);
+          // OTP verified via MSG91 — find user
+          let user = null;
+          for (const variant of phoneVariants) {
+            user = await findUserByPhone(variant);
+            if (user) break;
+          }
 
-          if (users && users.length > 0) {
-            const user = users[0];
+          if (user) {
             const token = await signToken({ userId: user.id, email: user.email, role: user.role });
-
-            // Clear the OTP
-            await supabase
-              .from('users')
-              .update({ otp_code: null, otp_expires_at: null })
-              .eq('id', user.id);
-
             return NextResponse.json({ user, token, verified: true });
           }
 
           // Phone not registered — return phone for signup
-          return NextResponse.json({ 
-            phoneVerified: true, 
+          return NextResponse.json({
+            phoneVerified: true,
             message: 'Phone verified. Please complete signup.',
             phone: cleanPhone,
           });
         }
-        // MSG91 verification failed — fall through to DB check
       } catch (msg91Error) {
         console.warn('MSG91 verify failed:', msg91Error);
       }
     }
 
-    // DB-based OTP verification (simulated mode)
-    // Accept any 6-digit OTP in simulated mode since otp_code column may not exist
-    const { data: users, error: lookupError } = await supabase
-      .from('users')
-      .select('id,name,email,phone,role,avatar,gender,is_verified,is_approved,city,occupation,bio,created_at')
-      .eq('phone', cleanPhone)
-      .limit(1);
-
-    if (lookupError) {
-      console.error('OTP verify lookup error:', lookupError.message);
-      return NextResponse.json({ error: 'Verification failed' }, { status: 500 });
+    // Simulated mode: accept any 6-digit OTP
+    // Try all phone format variants
+    let user = null;
+    for (const variant of phoneVariants) {
+      user = await findUserByPhone(variant);
+      if (user) break;
     }
 
-    if (!users || users.length === 0) {
+    if (!user) {
       return NextResponse.json({ error: 'User not found. Please sign up first.' }, { status: 404 });
     }
 
-    const user = users[0];
     const token = await signToken({ userId: user.id, email: user.email, role: user.role });
 
     return NextResponse.json({ user, token, verified: true });
