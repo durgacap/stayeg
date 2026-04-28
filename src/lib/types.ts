@@ -29,6 +29,7 @@ export type AppView =
   | 'TENANT_EXPLORE'
   | 'TENANT_MY_STAY'
   | 'TENANT_SUPPORT'
+  | 'TENANT_GUIDE'
   | 'TENANT_PROFILE'
   // Customer (requires login)
   | 'BOOKING'

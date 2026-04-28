@@ -89,7 +89,7 @@ export default function ComplaintSection() {
     queryKey: ['complaints', currentUser?.id],
     queryFn: async () => {
       if (!currentUser?.id) return [];
-      const res = await fetch(`/api/complaints?userId=${currentUser.id}`);
+      const res = await authFetch(`/api/complaints?userId=${currentUser.id}`);
       if (!res.ok) throw new Error('Failed to fetch complaints');
       return res.json();
     },

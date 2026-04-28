@@ -42,7 +42,7 @@ export default function MyBookings() {
     queryKey: ['bookings', currentUser?.id],
     queryFn: async () => {
       if (!currentUser?.id) return [];
-      const res = await fetch(`/api/bookings?userId=${currentUser.id}`);
+      const res = await authFetch(`/api/bookings?userId=${currentUser.id}`);
       if (!res.ok) throw new Error('Failed to fetch bookings');
       return res.json();
     },

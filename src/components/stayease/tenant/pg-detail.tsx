@@ -51,6 +51,7 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { PG_IMAGES } from '@/lib/constants';
 import { STATUSES, BADGE_BORDER } from '@/lib/constants';
 import type { PG, Bed } from '@/lib/types';
@@ -106,7 +107,7 @@ export default function PGDetail() {
     queryKey: ['pg-detail', selectedPG?.id],
     queryFn: async () => {
       if (!selectedPG?.id) return null;
-      const res = await fetch(`/api/pgs/${selectedPG.id}`);
+      const res = await authFetch(`/api/pgs/${selectedPG.id}`);
       if (!res.ok) throw new Error('Failed to fetch PG');
       return res.json();
     },

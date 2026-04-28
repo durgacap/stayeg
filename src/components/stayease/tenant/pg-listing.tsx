@@ -33,6 +33,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { AMENITIES_LIST } from '@/lib/constants';
 import PGCard from './pg-card';
 import type { PG } from '@/lib/types';
@@ -206,7 +207,7 @@ export default function PGListing() {
     queryKey: ['pgs', searchFilters.city, filters],
     queryFn: async () => {
       const qs = buildQueryString();
-      const res = await fetch(`/api/pgs?${qs}`);
+      const res = await authFetch(`/api/pgs?${qs}`);
       if (!res.ok) throw new Error('Failed to fetch PGs');
       return res.json();
     },

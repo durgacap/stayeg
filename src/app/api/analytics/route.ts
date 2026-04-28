@@ -153,6 +153,98 @@ export async function GET(request: NextRequest) {
     }
 
     // ----------------------------------------------------------------
+    // 7. Rent Due / Overdue
+    // ----------------------------------------------------------------
+    let rentDue: {
+      tenantName: string;
+      phone: string;
+      pgName: string;
+      roomLabel: string;
+      bedLabel: string;
+      amount: number;
+      dueDate: string;
+      dueDay: number;
+      status: string;
+    }[] = [];
+
+    if (pgIds.length > 0) {
+      const DUE_DAY = 5;
+      const today = now.getDate();
+
+      // Only include when rent is approaching or past due
+      if (today >= DUE_DAY - 3) {
+        // Fetch active bookings with user, bed (room), and pg info via Supabase joins
+        const activeBookingsRes = await supabase
+          .from('bookings')
+          .select(`
+            id, user_id, pg_id, bed_id,
+            users:user_id (name, phone),
+            beds:bed_id (bed_number, price, room_id, rooms:room_id (room_code)),
+            pgs:pg_id (name)
+          `)
+          .in('pg_id', pgIds)
+          .in('status', ['ACTIVE', 'CONFIRMED']);
+
+        const activeBookings = activeBookingsRes.data ?? [];
+
+        if (activeBookings.length > 0) {
+          // Fetch all completed RENT payments for current month across owner's PGs
+          const rentPaymentsRes = await supabase
+            .from('payments')
+            .select('booking_id, user_id, pg_id, created_at')
+            .in('pg_id', pgIds)
+            .eq('type', 'RENT')
+            .eq('status', 'COMPLETED');
+
+          // Build a set of keys identifying tenants who have paid this month
+          // Key can be booking_id directly, or "user_id:pg_id" as fallback
+          const paidKeys = new Set(
+            (rentPaymentsRes.data ?? [])
+              .filter((p: { created_at: string }) => p.created_at?.startsWith(currentMonth))
+              .map((p: { booking_id: string; user_id: string; pg_id: string }) =>
+                p.booking_id || `${p.user_id}:${p.pg_id}`
+              )
+          );
+
+          const dueDate = new Date(now.getFullYear(), now.getMonth(), DUE_DAY);
+          const dueDateStr = dueDate.toISOString();
+
+          for (const booking of activeBookings) {
+            // Skip if already paid this month
+            const bookingKey = booking.id || `${booking.user_id}:${booking.pg_id}`;
+            if (paidKeys.has(bookingKey)) continue;
+            // Also check the composite key even if booking.id exists
+            if (booking.user_id && booking.pg_id && paidKeys.has(`${booking.user_id}:${booking.pg_id}`)) continue;
+
+            const user = (booking.users as { name: string; phone: string | null } | null) || {};
+            const bed = (booking.beds as { bed_number: number; price: number | null; rooms: { room_code: string } | null } | null) || {};
+            const pg = (booking.pgs as { name: string } | null) || {};
+            const room = bed.rooms || {};
+
+            let status: string;
+            if (today > DUE_DAY) {
+              status = 'OVERDUE';
+            } else {
+              status = 'DUE_SOON';
+            }
+
+            rentDue.push({
+              tenantName: user.name || 'Unknown',
+              phone: user.phone || '',
+              pgName: pg.name || 'Unknown PG',
+              roomLabel: room.room_code || '',
+              bedLabel: `Bed ${bed.bed_number || ''}`,
+              amount: bed.price || 0,
+              dueDate: dueDateStr,
+              dueDay: DUE_DAY,
+              status,
+            });
+          }
+        }
+      }
+    }
+
+    // ----------------------------------------------------------------
     // Response
     // ----------------------------------------------------------------
     return NextResponse.json({
@@ -171,6 +263,7 @@ export async function GET(request: NextRequest) {
       openComplaints,
       recentActivity,
       revenueTrend,
+      rentDue,
     });
   } catch (error) {
     console.error('GET /api/analytics error:', error);

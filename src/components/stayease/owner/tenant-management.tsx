@@ -123,8 +123,61 @@ export default function TenantManagement() {
 
   const createMutation = useMutation({
     mutationFn: async (data: typeof form) => {
-      const res = await authFetch('/api/tenants', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ userId: '', pgId: data.pgId, bedId: data.bedId, checkInDate: new Date().toISOString(), advancePaid: 0, ownerId }) });
-      if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed'); }
+      // Step 1: Try to find an existing user by email or phone
+      let userId = '';
+
+      if (data.email) {
+        const lookupRes = await authFetch(`/api/auth?email=${encodeURIComponent(data.email)}`);
+        if (lookupRes.ok) {
+          const lookupData = await lookupRes.json();
+          if (lookupData.user) userId = lookupData.user.id;
+        }
+      }
+
+      if (!userId && data.phone) {
+        const lookupRes = await authFetch(`/api/auth?phone=${encodeURIComponent(data.phone)}`);
+        if (lookupRes.ok) {
+          const lookupData = await lookupRes.json();
+          if (lookupData.user) userId = lookupData.user.id;
+        }
+      }
+
+      // Step 2: If no existing user found, create a new one
+      if (!userId && (data.name || data.phone || data.email)) {
+        const createRes = await authFetch('/api/auth', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            name: data.name,
+            email: data.email || undefined,
+            phone: data.phone,
+            role: 'TENANT',
+            gender: data.gender || undefined,
+          }),
+        });
+        if (!createRes.ok) {
+          const err = await createRes.json();
+          throw new Error(err.error || 'Failed to create user');
+        }
+        const createData = await createRes.json();
+        userId = createData.user.id;
+      }
+
+      if (!userId) throw new Error('Could not determine tenant user. Please provide a name and phone.');
+
+      // Step 3: Create the booking with the real userId
+      const body: Record<string, unknown> = {
+        userId,
+        pgId: data.pgId,
+        bedId: data.bedId,
+        checkInDate: new Date().toISOString(),
+        advancePaid: 0,
+        ownerId,
+      };
+      if (data.notes?.trim()) body.notes = data.notes.trim();
+
+      const res = await authFetch('/api/tenants', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) });
+      if (!res.ok) { const err = await res.json(); throw new Error(err.error || 'Failed to add tenant'); }
       return res.json();
     },
     onSuccess: () => { queryClient.invalidateQueries({ queryKey: ['owner-tenants'] }); queryClient.invalidateQueries({ queryKey: ['owner-analytics'] }); toast.success('Tenant added successfully!'); setAddOpen(false); resetForm(); },

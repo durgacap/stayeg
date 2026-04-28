@@ -30,6 +30,7 @@ import {
   Headphones,
   FileText,
   HelpCircle,
+  BookOpen,
   ExternalLink,
   LifeBuoy,
   MessageCircle,
@@ -1142,6 +1143,7 @@ function HelpTab() {
   const { setCurrentView } = useAppStore();
 
   const policyLinks = [
+    { label: 'User Guide', view: 'TENANT_GUIDE' as const, icon: BookOpen },
     { label: 'Terms of Service', view: 'TERMS' as const, icon: FileText },
     { label: 'Privacy Policy', view: 'PRIVACY' as const, icon: Shield },
     { label: 'Refund Policy', view: 'REFUND_POLICY' as const, icon: LifeBuoy },

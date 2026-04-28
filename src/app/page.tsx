@@ -77,6 +77,7 @@ const OwnerSetupWizard = dynamic(() => import('@/components/stayease/owner/setup
 const TenantHome = dynamic(() => import('@/components/stayease/tenant/tenant-home').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
 const TenantExplore = dynamic(() => import('@/components/stayease/tenant/tenant-explore').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
 const TenantSupport = dynamic(() => import('@/components/stayease/tenant/tenant-support').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
+const TenantUserGuide = dynamic(() => import('@/components/stayease/guidance/tenant-user-guide').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
 const DatabaseSetupV2 = dynamic(() => import('@/components/stayease/setup/database-setup-v2').catch(() => () => <ViewLoader />), { ssr: false, loading: () => <ViewLoader /> });
 
 // Navigation
@@ -239,6 +240,7 @@ function MainContent() {
         case 'TENANT_EXPLORE': return <TenantExplore />;
         case 'TENANT_MY_STAY': return <TenantMyStay />;
         case 'TENANT_SUPPORT': return <TenantSupport />;
+        case 'TENANT_GUIDE': return <TenantUserGuide />;
         case 'TENANT_PROFILE': return <TenantProfile />;
         case 'PG_DETAIL': return <PGDetail />;
         case 'BOOKING': return null;

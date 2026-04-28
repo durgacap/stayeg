@@ -121,7 +121,7 @@ export default function PaymentSection() {
     queryKey: ['payments', currentUser?.id],
     queryFn: async () => {
       if (!currentUser?.id) return [];
-      const res = await fetch(`/api/payments?userId=${currentUser.id}`);
+      const res = await authFetch(`/api/payments?userId=${currentUser.id}`);
       if (!res.ok) throw new Error('Failed to fetch payments');
       return res.json();
     },

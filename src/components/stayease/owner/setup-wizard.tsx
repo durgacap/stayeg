@@ -831,6 +831,7 @@ export default function OwnerSetupWizard({
   const [step, setStep] = useState(0);
   const [showSuccess, setShowSuccess] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitProgress, setSubmitProgress] = useState<string>('');
 
   // Form state
   const [pgData, setPgData] = useState<PGFormData>({
@@ -862,6 +863,7 @@ export default function OwnerSetupWizard({
   const resetState = useCallback(() => {
     setStep(0);
     setShowSuccess(false);
+    setSubmitProgress('');
     setPgData({
       name: '',
       address: '',
@@ -919,10 +921,13 @@ export default function OwnerSetupWizard({
     if (step < 2) {
       setStep((s) => s + 1);
     } else {
-      // Step 2 (final): persist PG data to backend
+      // Step 2 (final): persist PG, rooms, beds, and staff to backend
       setIsSubmitting(true);
+      const warnings: string[] = [];
       try {
-        const payload = {
+        // 1. Create the PG
+        setSubmitProgress('Creating your PG...');
+        const pgPayload = {
           name: pgData.name,
           ownerId: currentUser?.id,
           description: pgData.description,
@@ -934,14 +939,112 @@ export default function OwnerSetupWizard({
           amenities: pgData.amenities,
           images: [],
         };
-        const res = await authFetch('/api/pgs', {
+        const pgRes = await authFetch('/api/pgs', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
+          body: JSON.stringify(pgPayload),
         });
-        if (!res.ok) {
-          const errBody = await res.json().catch(() => ({ error: 'Unknown error' }));
+        if (!pgRes.ok) {
+          const errBody = await pgRes.json().catch(() => ({ error: 'Unknown error' }));
           throw new Error(errBody.error || 'Failed to create PG');
+        }
+        const pg = await pgRes.json();
+        const pgId = pg.id;
+
+        // 2. Create rooms (and their beds)
+        setSubmitProgress('Creating rooms...');
+        for (let i = 0; i < rooms.length; i++) {
+          const room = rooms[i];
+          try {
+            const roomAmenities: string[] = [];
+            if (room.hasAC) roomAmenities.push('AC');
+            if (room.hasAttachedBath) roomAmenities.push('ATTACHED_BATHROOM');
+
+            const roomPayload = {
+              pgId,
+              roomCode: room.roomCode,
+              roomType: room.roomType,
+              capacity: parseInt(room.numBeds) || 1,
+              floor: room.floor ? parseInt(room.floor) : undefined,
+              amenities: roomAmenities.length > 0 ? roomAmenities : undefined,
+              pricePerBed: Number(room.pricePerBed) || undefined,
+            };
+
+            const roomRes = await authFetch('/api/rooms', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(roomPayload),
+            });
+            if (!roomRes.ok) {
+              const errBody = await roomRes.json().catch(() => ({ error: 'Unknown error' }));
+              warnings.push(`Room ${room.roomCode || i + 1}: ${errBody.error || 'Failed to create'}`);
+              continue;
+            }
+            const createdRoom = await roomRes.json();
+            const roomId = createdRoom.id;
+
+            // 3. Create beds for this room
+            const numBeds = parseInt(room.numBeds) || 1;
+            for (let b = 1; b <= numBeds; b++) {
+              try {
+                const bedPayload = {
+                  roomId,
+                  bedNumber: b,
+                  bedType: 'SINGLE',
+                  price: Number(room.pricePerBed) || undefined,
+                  status: 'AVAILABLE',
+                };
+                const bedRes = await authFetch('/api/beds', {
+                  method: 'POST',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify(bedPayload),
+                });
+                if (!bedRes.ok) {
+                  const errBody = await bedRes.json().catch(() => ({ error: 'Unknown error' }));
+                  warnings.push(`Bed ${b} in ${room.roomCode || `Room ${i + 1}`}: ${errBody.error || 'Failed to create'}`);
+                }
+              } catch {
+                warnings.push(`Bed ${b} in ${room.roomCode || `Room ${i + 1}`}: Network error`);
+              }
+            }
+          } catch {
+            warnings.push(`Room ${room.roomCode || i + 1}: Network error`);
+          }
+        }
+
+        // 4. Create staff / workers
+        if (staff.length > 0) {
+          setSubmitProgress('Adding staff...');
+          for (let i = 0; i < staff.length; i++) {
+            const member = staff[i];
+            try {
+              const workerPayload = {
+                name: member.name,
+                phone: member.phone || undefined,
+                role: member.role,
+                pgId,
+                shift: member.shift || undefined,
+                status: 'ACTIVE',
+              };
+              const workerRes = await authFetch('/api/workers', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(workerPayload),
+              });
+              if (!workerRes.ok) {
+                const errBody = await workerRes.json().catch(() => ({ error: 'Unknown error' }));
+                warnings.push(`Staff ${member.name || i + 1}: ${errBody.error || 'Failed to create'}`);
+              }
+            } catch {
+              warnings.push(`Staff ${member.name || i + 1}: Network error`);
+            }
+          }
+        }
+
+        // Show success
+        setSubmitProgress('');
+        if (warnings.length > 0) {
+          showToast(`Setup complete with ${warnings.length} warning(s). Some items may need manual setup.`);
         }
         setShowSuccess(true);
         setTimeout(() => {
@@ -950,6 +1053,7 @@ export default function OwnerSetupWizard({
           onClose();
         }, 3000);
       } catch (err) {
+        setSubmitProgress('');
         showToast(err instanceof Error ? err.message : 'Failed to save PG. Please try again.');
       } finally {
         setIsSubmitting(false);
@@ -1095,7 +1199,10 @@ export default function OwnerSetupWizard({
             >
               {step === 2 ? (
                 isSubmitting ? (
-                  <Loader2 className="size-4 mr-1 animate-spin" />
+                  <>
+                    <Loader2 className="size-4 mr-1 animate-spin" />
+                    {submitProgress || 'Saving...'}
+                  </>
                 ) : (
                   <>
                     Complete Setup
