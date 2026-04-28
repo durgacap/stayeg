@@ -30,3 +30,25 @@ Stage Summary:
 
 Files modified:
 - next.config.ts: removed standalone output, added typescript ignoreBuildErrors
+
+---
+Task ID: w1
+Agent: Main Agent
+Task: Wave 1 - Fix all broken features across both dashboards
+
+Work Log:
+- Fixed fetch→authFetch in 5 tenant files (payment-section, complaint-section, pg-listing, pg-detail, my-bookings) - auth headers were missing on GET queries
+- Added authFetch imports where missing (pg-listing, pg-detail)
+- Created comprehensive Tenant User Guide (tenant-user-guide.tsx) with 8 accordion sections
+- Added TENANT_GUIDE AppView type and route in page.tsx
+- Added "User Guide" link in Tenant Support > Help tab
+- Fixed Setup Wizard to save rooms + beds + staff after PG creation (was silently discarding data)
+- Fixed Analytics API to return rentDue field (rent alert banner now works)
+- Fixed Tenant Add form to lookup/create real users before booking (was sending empty userId)
+- Built, deployed to Vercel, verified all changes
+
+Stage Summary:
+- All 6 Wave 1 tasks completed
+- 12 files changed, 963 insertions, 14 deletions
+- Pushed to GitHub, deployed to Vercel (https://stayeg.vercel.app)
+- rentDue API field verified working (returns empty array, populates with real unpaid tenants)
