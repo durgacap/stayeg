@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { useAppStore } from '@/store/use-app-store';
 import { QRCodeSVG } from 'qrcode.react';
 import { toast } from 'sonner';
+import { authFetch } from '@/lib/api-client';
 import type { AppView } from '@/lib/types';
 
 export default function QROnboarding() {
@@ -21,7 +22,7 @@ export default function QROnboarding() {
   const { data: ownerUser } = useQuery({
     queryKey: ['owner-user'],
     queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
+      const res = await authFetch('/api/auth?role=OWNER');
       if (!res.ok) throw new Error('Failed');
       const users = await res.json();
       return (Array.isArray(users) ? users : users.users)?.[0] || null;
@@ -32,7 +33,7 @@ export default function QROnboarding() {
   const { data: pgs } = useQuery({
     queryKey: ['owner-pgs-qr', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/pgs?ownerId=${ownerId}`);
       return res.json();
     },
     enabled: !!ownerId,

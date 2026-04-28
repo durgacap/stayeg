@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { authFetch } from '@/lib/api-client';
 import { useAppStore } from '@/store/use-app-store';
 
 interface Message {
@@ -175,7 +176,7 @@ export default function TenantAIAssistant() {
 
   const getAIResponse = async (question: string): Promise<string> => {
     try {
-      const res = await fetch('/api/ai-chat', {
+      const res = await authFetch('/api/ai-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

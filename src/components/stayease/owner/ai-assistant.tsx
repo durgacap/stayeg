@@ -6,6 +6,7 @@ import {
   MessageSquare, X, Send, Bot, User, Sparkles, Plus, CreditCard, MessageCircle,
   BarChart3, Building2, ChevronRight, Loader2,
 } from 'lucide-react';
+import { authFetch } from '@/lib/api-client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -132,7 +133,7 @@ export default function AIAssistant() {
 
   const getAIResponse = async (question: string): Promise<string> => {
     try {
-      const res = await fetch('/api/ai-chat', {
+      const res = await authFetch('/api/ai-chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -69,7 +69,7 @@ export default function WorkerManagement() {
   const { data: ownerUser } = useQuery({
     queryKey: ['owner-user'],
     queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
+      const res = await authFetch('/api/auth?role=OWNER');
       if (!res.ok) throw new Error('Failed to fetch owner');
       const users = await res.json();
       return (Array.isArray(users) ? users : users.users)?.[0] || null;
@@ -80,7 +80,7 @@ export default function WorkerManagement() {
   const { data: pgs } = useQuery({
     queryKey: ['owner-pgs-worker', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/pgs?ownerId=${ownerId}`);
       return res.json();
     },
     enabled: !!ownerId,
@@ -89,7 +89,7 @@ export default function WorkerManagement() {
   const { data: workers, isLoading } = useQuery({
     queryKey: ['workers'],
     queryFn: async () => {
-      const res = await fetch('/api/workers');
+      const res = await authFetch('/api/workers');
       if (!res.ok) throw new Error('Failed to fetch workers');
       return res.json();
     },

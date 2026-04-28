@@ -46,7 +46,7 @@ export default function RoomManagement() {
   const { data: pgs } = useQuery({
     queryKey: ['owner-pgs-list', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/pgs?ownerId=${ownerId}`);
       return res.json();
     },
     enabled: !!ownerId,
@@ -57,7 +57,7 @@ export default function RoomManagement() {
   const { data: rooms, isLoading } = useQuery({
     queryKey: ['owner-rooms', selectedPgId],
     queryFn: async () => {
-      const res = await fetch(`/api/rooms?pgId=${selectedPgId}`);
+      const res = await authFetch(`/api/rooms?pgId=${selectedPgId}`);
       if (!res.ok) throw new Error('Failed to fetch rooms');
       return res.json();
     },

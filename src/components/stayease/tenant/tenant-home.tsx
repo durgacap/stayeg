@@ -9,7 +9,7 @@ import {
   CheckCircle2, Building2, Star, MapPin, UtensilsCrossed,
   TrainFront, Hospital, Landmark, Pill, ShoppingBag, Sparkles,
   Gift, UsersRound, Trophy, Zap, ArrowRight, RefreshCcw,
-  Home, CalendarDays, Bell, Wifi,
+  Home, CalendarDays, Bell, Wifi, HelpCircle,
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -171,6 +171,7 @@ const QUICK_ACTIONS = [
   { id: 'qa2', label: 'My Bookings', icon: BookOpen, view: 'MY_BOOKINGS' as AppView, color: 'bg-blue-50 text-blue-600', description: 'View booking status' },
   { id: 'qa3', label: 'Payments', icon: CreditCard, view: 'PAYMENTS' as AppView, color: 'bg-green-50 text-green-600', description: 'Track & pay rent' },
   { id: 'qa4', label: 'Complaints', icon: MessageSquare, view: 'COMPLAINTS' as AppView, color: 'bg-amber-50 text-amber-600', description: 'Raise an issue' },
+  { id: 'qa5', label: 'User Guide', icon: HelpCircle, view: 'TENANT_GUIDE' as AppView, color: 'bg-purple-50 text-purple-600', description: 'How to use StayEg' },
 ];
 
 // ---------------------------------------------------------------------------

@@ -88,7 +88,7 @@ export default function TenantManagement() {
   const { data: pgs } = useQuery({
     queryKey: ['owner-pgs-tenants', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/pgs?ownerId=${ownerId}`);
       return res.json();
     },
     enabled: !!ownerId,
@@ -101,7 +101,7 @@ export default function TenantManagement() {
       const params = new URLSearchParams({ ownerId: ownerId! });
       if (filterPG !== 'all') params.set('pgId', filterPG);
       if (filterStatus !== 'all') params.set('status', filterStatus);
-      const res = await fetch(`/api/tenants?${params}`);
+      const res = await authFetch(`/api/tenants?${params}`);
       return res.json();
     },
     enabled: !!ownerId,

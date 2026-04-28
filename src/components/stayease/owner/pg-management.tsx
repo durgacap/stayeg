@@ -55,7 +55,7 @@ export default function PGManagement() {
   const { data: pgs, isLoading } = useQuery({
     queryKey: ['owner-pgs', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/pgs?ownerId=${ownerId}`);
       if (!res.ok) throw new Error('Failed to fetch PGs');
       return res.json();
     },

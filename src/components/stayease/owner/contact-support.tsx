@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { toast } from 'sonner';
 
 export default function OwnerContactSupport() {
@@ -24,7 +25,7 @@ export default function OwnerContactSupport() {
     }
     setIsSubmitting(true);
     try {
-      const res = await fetch('/api/contact', {
+      const res = await authFetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),

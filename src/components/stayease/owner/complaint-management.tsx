@@ -51,7 +51,7 @@ export default function ComplaintManagement() {
   const { data: ownerUser } = useQuery({
     queryKey: ['owner-user'],
     queryFn: async () => {
-      const res = await fetch('/api/auth?role=OWNER');
+      const res = await authFetch('/api/auth?role=OWNER');
       if (!res.ok) throw new Error('Failed to fetch owner');
       const users = await res.json();
       return (Array.isArray(users) ? users : users.users)?.[0] || null;
@@ -62,7 +62,7 @@ export default function ComplaintManagement() {
   const { data: pgs } = useQuery({
     queryKey: ['owner-pgs-complaints', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/pgs?ownerId=${ownerId}`);
       return res.json();
     },
     enabled: !!ownerId,
@@ -72,7 +72,7 @@ export default function ComplaintManagement() {
   const { data: workers } = useQuery({
     queryKey: ['workers-all'],
     queryFn: async () => {
-      const res = await fetch('/api/workers');
+      const res = await authFetch('/api/workers');
       return res.json();
     },
   });
@@ -82,7 +82,7 @@ export default function ComplaintManagement() {
     queryFn: async () => {
       if (pgIds.length === 0) return [];
       const results = await Promise.all(
-        pgIds.map((id: string) => fetch(`/api/complaints?pgId=${id}`).then(r => r.json()))
+        pgIds.map((id: string) => authFetch(`/api/complaints?pgId=${id}`).then(r => r.json()))
       );
       return results.flat();
     },

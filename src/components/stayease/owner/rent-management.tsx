@@ -47,7 +47,7 @@ export default function RentManagement() {
   const { data: tenants } = useQuery({
     queryKey: ['owner-tenants-rent', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/tenants?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/tenants?ownerId=${ownerId}`);
       return res.json();
     },
     enabled: !!ownerId,
@@ -57,7 +57,7 @@ export default function RentManagement() {
     queryKey: ['owner-rent-records', ownerId, filterMonth],
     queryFn: async () => {
       const params = new URLSearchParams({ ownerId: ownerId!, month: filterMonth });
-      const res = await fetch(`/api/rent-records?${params}`);
+      const res = await authFetch(`/api/rent-records?${params}`);
       return res.json();
     },
     enabled: !!ownerId,

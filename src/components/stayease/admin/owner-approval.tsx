@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Textarea } from '@/components/ui/textarea';
 import { Separator } from '@/components/ui/separator';
+import { authFetch } from '@/lib/api-client';
 import { Skeleton } from '@/components/ui/skeleton';
 
 const ADMIN_SECRET = 'stayeg-v1.2-secure-2025';
@@ -58,7 +59,7 @@ export default function OwnerApproval() {
   const fetchOwners = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await fetch('/api/admin/approve-owner', {
+      const res = await authFetch('/api/admin/approve-owner', {
         headers: { 'x-admin-secret': ADMIN_SECRET },
       });
       const json = await res.json();
@@ -72,7 +73,7 @@ export default function OwnerApproval() {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const res = await fetch('/api/admin/approve-owner', {
+      const res = await authFetch('/api/admin/approve-owner', {
         headers: { 'x-admin-secret': ADMIN_SECRET },
       });
       if (cancelled) return;
@@ -90,7 +91,7 @@ export default function OwnerApproval() {
   const handleAction = async (userId: string, action: 'approve' | 'reject', reason?: string) => {
     setActionLoading(userId);
     try {
-      const res = await fetch('/api/admin/approve-owner', {
+      const res = await authFetch('/api/admin/approve-owner', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

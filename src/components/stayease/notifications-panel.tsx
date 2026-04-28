@@ -27,6 +27,7 @@ import {
   PopoverTrigger,
   PopoverContent,
 } from '@/components/ui/popover';
+import { authFetch } from '@/lib/api-client';
 import { useAppStore } from '@/store/use-app-store';
 
 interface Notification {
@@ -152,9 +153,9 @@ export default function NotificationsPanel() {
     setIsLoading(true);
     try {
       const [bookingsRes, paymentsRes, complaintsRes] = await Promise.allSettled([
-        fetch(`/api/bookings?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
-        fetch(`/api/payments?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
-        fetch(`/api/complaints?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
+        authFetch(`/api/bookings?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
+        authFetch(`/api/payments?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
+        authFetch(`/api/complaints?userId=${currentUser.id}`).then((r) => (r.ok ? r.json() : [])),
       ]);
 
       const bookings = bookingsRes.status === 'fulfilled' ? (bookingsRes.value as any[]) : [];
@@ -322,7 +323,7 @@ export default function NotificationsPanel() {
         });
 
         // Fetch analytics for owner
-        const analyticsRes = await fetch(`/api/analytics?ownerId=${currentUser.id}`).then((r) =>
+        const analyticsRes = await authFetch(`/api/analytics?ownerId=${currentUser.id}`).then((r) =>
           r.ok ? r.json() : null
         );
         if (analyticsRes) {

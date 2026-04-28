@@ -37,7 +37,7 @@ export default function AdminDashboard() {
   const { data: allPGs, isLoading } = useQuery({
     queryKey: ['admin-pgs'],
     queryFn: async () => {
-      const res = await fetch('/api/pgs');
+      const res = await authFetch('/api/pgs');
       if (!res.ok) throw new Error('Failed to fetch PGs');
       return res.json();
     },
@@ -46,7 +46,7 @@ export default function AdminDashboard() {
   const { data: allUsers } = useQuery({
     queryKey: ['admin-users'],
     queryFn: async () => {
-      const res = await fetch('/api/auth');
+      const res = await authFetch('/api/auth');
       if (!res.ok) throw new Error('Failed to fetch users');
       return res.json();
     },

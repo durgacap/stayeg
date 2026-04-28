@@ -13,6 +13,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAppStore } from '@/store/use-app-store';
+import { authFetch } from '@/lib/api-client';
 import { CARD_BG, TEXT_COLOR } from '@/lib/constants';
 
 const formatCurrency = (amount: number) =>
@@ -30,7 +31,7 @@ export default function OwnerDashboard() {
   const { data: analytics, isLoading: analyticsLoading, isError, refetch } = useQuery({
     queryKey: ['owner-analytics', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/analytics?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/analytics?ownerId=${ownerId}`);
       if (!res.ok) throw new Error('Failed to fetch analytics');
       return res.json();
     },
@@ -41,7 +42,7 @@ export default function OwnerDashboard() {
   const { data: ownerPGs, isLoading: pgsLoading } = useQuery({
     queryKey: ['owner-pgs', ownerId],
     queryFn: async () => {
-      const res = await fetch(`/api/pgs?ownerId=${ownerId}`);
+      const res = await authFetch(`/api/pgs?ownerId=${ownerId}`);
       if (!res.ok) throw new Error('Failed to fetch PGs');
       return res.json();
     },
@@ -55,7 +56,7 @@ export default function OwnerDashboard() {
     queryFn: async () => {
       if (ownerPgIds.length === 0) return [];
       const results = await Promise.all(
-        ownerPgIds.map((id: string) => fetch(`/api/complaints?pgId=${id}`).then(r => r.json()).catch(() => []))
+        ownerPgIds.map((id: string) => authFetch(`/api/complaints?pgId=${id}`).then(r => r.json()).catch(() => []))
       );
       return results.flat();
     },
